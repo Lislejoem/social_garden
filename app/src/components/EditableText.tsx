@@ -1,8 +1,14 @@
+/**
+ * @file EditableText.tsx
+ * @description Inline editable text field. Click to edit, blur or Enter to save.
+ * Used throughout the app for editing contact names, locations, preferences, etc.
+ */
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
 import { Pencil, Check, X, Loader2 } from 'lucide-react';
 
+/** Props for EditableText component */
 interface EditableTextProps {
   value: string | null;
   onSave: (value: string) => Promise<void>;

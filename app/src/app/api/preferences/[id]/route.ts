@@ -1,3 +1,11 @@
+/**
+ * @file Preferences API Routes
+ * @description Update and delete ALWAYS/NEVER preferences.
+ *
+ * @endpoints
+ * PUT    /api/preferences/:id - Update preference category or content
+ * DELETE /api/preferences/:id - Delete a preference
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -5,7 +13,11 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-// PUT /api/preferences/[id] - Update a preference
+/**
+ * PUT /api/preferences/:id
+ * @body { category?: 'ALWAYS' | 'NEVER', content?: string }
+ * @returns Updated Preference
+ */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
@@ -30,7 +42,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-// DELETE /api/preferences/[id] - Delete a preference
+/**
+ * DELETE /api/preferences/:id
+ * @returns { success: true }
+ */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;

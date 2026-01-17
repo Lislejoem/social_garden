@@ -1,3 +1,23 @@
+/**
+ * @file Voice Note Ingestion API
+ * @description Processes voice transcripts using Claude AI to extract and store
+ * contact information, preferences, family members, and follow-up items (seedlings).
+ *
+ * @flow
+ * 1. Receives raw transcript (+ optional contactId for existing contacts)
+ * 2. Calls Claude AI to extract structured data (AIExtraction)
+ * 3. If dryRun=true, returns preview without saving (for user review)
+ * 4. If dryRun=false, creates/updates contact and related records
+ *
+ * @endpoint POST /api/ingest
+ * @body {
+ *   rawInput: string        - Voice transcript text (required)
+ *   contactId?: string      - Existing contact ID (for updates)
+ *   dryRun?: boolean        - If true, returns preview without saving
+ *   overrides?: AIExtraction - User-edited data to save instead of AI extraction
+ * }
+ * @returns IngestPreviewResponse (if dryRun) or IngestResponse with saved data summary
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { extractFromNote } from '@/lib/anthropic';
@@ -116,15 +136,17 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Add preferences
+    // Add preferences (with deduplication)
+    // Uses first 20 characters for partial matching to avoid near-duplicates
+    // e.g., "Loves Italian food" won't duplicate "Loves Italian food from that place"
     if (extraction.preferences && extraction.preferences.length > 0) {
       for (const pref of extraction.preferences) {
-        // Check if similar preference already exists
+        // Check if similar preference already exists using partial match
         const existing = await prisma.preference.findFirst({
           where: {
             contactId: contact.id,
             content: {
-              contains: pref.content.substring(0, 20), // Partial match
+              contains: pref.content.substring(0, 20),
             },
           },
         });

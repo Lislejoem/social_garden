@@ -1,6 +1,19 @@
+/**
+ * @file Anthropic Claude API Integration
+ * @description Extracts structured contact data from voice note transcripts using Claude AI.
+ *
+ * @flow
+ * 1. Receives raw transcript text from voice note
+ * 2. Sends to Claude with SYSTEM_PROMPT defining extraction rules
+ * 3. Claude returns JSON with contact info, preferences, family, seedlings
+ * 4. Response is parsed and returned as AIExtraction type
+ *
+ * @requires ANTHROPIC_API_KEY environment variable
+ */
 import Anthropic from '@anthropic-ai/sdk';
 import type { AIExtraction } from '@/types';
 
+/** Anthropic client instance (uses ANTHROPIC_API_KEY from env) */
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
@@ -34,6 +47,17 @@ Guidelines:
 - If the interaction type isn't clear, default to "VOICE" for voice notes
 - Be liberal in extracting useful information - it's better to capture something than miss it`;
 
+/**
+ * Extract structured contact information from a voice note transcript.
+ *
+ * @param rawInput - The voice transcript text to analyze
+ * @returns AIExtraction object with parsed contact data
+ * @throws Error if Claude returns no text or invalid JSON
+ *
+ * @example
+ * const extraction = await extractFromNote("Just talked to Sarah, she loves hiking and her son Jake is turning 5");
+ * // Returns: { contactName: "Sarah", preferences: [...], familyMembers: [...], ... }
+ */
 export async function extractFromNote(rawInput: string): Promise<AIExtraction> {
   const message = await anthropic.messages.create({
     model: 'claude-sonnet-4-20250514',

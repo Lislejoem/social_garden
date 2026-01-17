@@ -1,3 +1,22 @@
+/**
+ * @file ProfileClient.tsx
+ * @description Client-side contact profile page with inline editing capabilities.
+ * Manages voice note processing, CRUD operations for all contact-related entities.
+ *
+ * @features
+ * - Inline editing for name, location, and cadence
+ * - Voice note recording and AI extraction preview
+ * - CRUD operations for preferences, family members, and seedlings
+ * - Health-based visual theming (thriving/growing/thirsty/parched)
+ *
+ * @handlers
+ * - handleVoiceNote: Sends transcript to API with dryRun=true, shows preview modal
+ * - handleConfirmSave: Saves edited extraction data from preview modal
+ * - handleUpdateContact: Generic field update (name, location, cadence)
+ * - handleUpdate/DeletePreference: Preference CRUD via /api/preferences/[id]
+ * - handleUpdate/DeleteFamilyMember: Family member CRUD via /api/family-members/[id]
+ * - handleUpdate/DeleteSeedling: Seedling CRUD via /api/seedlings/[id]
+ */
 'use client';
 
 import { useState } from 'react';
@@ -59,11 +78,16 @@ interface ContactData {
   familyMembers: FamilyMember[];
 }
 
+/** Props for ProfileClient component */
 interface ProfileClientProps {
+  /** Complete contact data with computed health status */
   contact: ContactData;
 }
 
-
+/**
+ * Visual theme configuration for each health status.
+ * Maps health levels to Tailwind classes and icons for consistent UI.
+ */
 const HEALTH_THEMES: Record<
   HealthStatus,
   {

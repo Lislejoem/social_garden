@@ -1,3 +1,8 @@
+/**
+ * @file ContactCard.tsx
+ * @description Dashboard card displaying contact summary with health status.
+ * Shows avatar, name, location, health indicator, and preference preview.
+ */
 'use client';
 
 import Link from 'next/link';
@@ -15,6 +20,7 @@ import {
 } from 'lucide-react';
 import type { HealthStatus, Cadence, Socials } from '@/types';
 
+/** Props for ContactCard component */
 interface ContactCardProps {
   id: string;
   name: string;

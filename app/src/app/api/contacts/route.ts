@@ -1,7 +1,18 @@
+/**
+ * @file Contacts API Routes
+ * @description CRUD operations for contacts collection.
+ *
+ * @endpoints
+ * GET  /api/contacts - Fetch all contacts with preferences and last interaction
+ * POST /api/contacts - Create a new contact
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// GET /api/contacts - Get all contacts
+/**
+ * GET /api/contacts
+ * @returns Contact[] with preferences and most recent interaction
+ */
 export async function GET() {
   try {
     const contacts = await prisma.contact.findMany({
@@ -25,7 +36,11 @@ export async function GET() {
   }
 }
 
-// POST /api/contacts - Create a new contact
+/**
+ * POST /api/contacts
+ * @body { name: string, avatarUrl?: string, location?: string, birthday?: string, cadence?: Cadence, socials?: Socials }
+ * @returns Created Contact (201) or error
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

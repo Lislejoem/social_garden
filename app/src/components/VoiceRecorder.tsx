@@ -1,3 +1,18 @@
+/**
+ * @file VoiceRecorder.tsx
+ * @description Floating voice recorder button with modal for recording voice notes.
+ * Uses Web Speech API for browser-native speech recognition (Chrome/Edge only).
+ *
+ * @props
+ * - onTranscriptComplete: Callback with final transcript text
+ *
+ * @flow
+ * 1. User clicks floating mic button
+ * 2. Modal opens with recording interface
+ * 3. Speech recognition captures audio and displays interim results
+ * 4. User clicks send to submit final transcript
+ * 5. onTranscriptComplete callback invoked
+ */
 'use client';
 
 import { useState, useRef, useEffect } from 'react';

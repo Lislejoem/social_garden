@@ -1,3 +1,23 @@
+/**
+ * @file VoicePreviewModal.tsx
+ * @description Editable preview modal for AI-extracted voice note data.
+ * Allows users to review, modify, add, or remove extracted items before saving.
+ *
+ * @flow
+ * 1. Receives AI extraction data from /api/ingest?dryRun=true
+ * 2. User can edit contact name, location, interaction summary
+ * 3. User can add/edit/remove preferences, family members, seedlings
+ * 4. User can toggle preference category (ALWAYS <-> NEVER)
+ * 5. On confirm, calls onConfirm with edited AIExtraction data
+ *
+ * @editing
+ * Uses a field-based editing pattern:
+ * - editingField: tracks which field is being edited (null when not editing)
+ * - editValue: temporary value during editing
+ * - startEdit(field, value): enters edit mode
+ * - saveEdit(field): commits change to local state
+ * - cancelEdit(): exits edit mode without saving
+ */
 'use client';
 
 import { useState } from 'react';
@@ -18,11 +38,19 @@ import {
 } from 'lucide-react';
 import type { AIExtraction, Category } from '@/types';
 
+/**
+ * Props for VoicePreviewModal component
+ */
 interface VoicePreviewModalProps {
+  /** Initial AI-extracted data from voice note */
   extraction: AIExtraction;
+  /** Matched existing contact if updating (null for new contacts) */
   existingContact: { id: string; name: string; location: string | null } | null;
+  /** Whether this will create a new contact */
   isNewContact: boolean;
+  /** Save handler - receives edited extraction data */
   onConfirm: (data: AIExtraction) => Promise<void>;
+  /** Cancel handler - closes modal without saving */
   onCancel: () => void;
 }
 

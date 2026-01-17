@@ -1,3 +1,9 @@
+/**
+ * @file Contact Seedlings API
+ * @description Create seedlings (follow-up items) for a specific contact.
+ *
+ * @endpoint POST /api/contacts/:id/seedlings - Create a new ACTIVE seedling
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -5,7 +11,11 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-// POST /api/contacts/[id]/seedlings - Add a new seedling
+/**
+ * POST /api/contacts/:id/seedlings
+ * @body { content: string } - The follow-up item text
+ * @returns Created Seedling with status ACTIVE (201)
+ */
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;

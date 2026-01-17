@@ -1,11 +1,22 @@
+/**
+ * @file Type Definitions
+ * @description Centralized TypeScript interfaces for the Social Garden app.
+ * All data models, API request/response types, and component props are defined here.
+ */
 import type { HealthStatus, Cadence } from '@/lib/health';
 
 export type { HealthStatus, Cadence };
 
+/** Preference category: ALWAYS (likes) or NEVER (dislikes/avoid) */
 export type Category = 'ALWAYS' | 'NEVER';
+
+/** Type of interaction/contact with a person */
 export type InteractionType = 'CALL' | 'TEXT' | 'MEET' | 'VOICE';
+
+/** Seedling status: ACTIVE (pending) or PLANTED (completed) */
 export type SeedlingStatus = 'ACTIVE' | 'PLANTED';
 
+/** Social media and contact information links */
 export interface Socials {
   instagram?: string;
   linkedin?: string;
@@ -14,12 +25,14 @@ export interface Socials {
   address?: string;
 }
 
+/** ALWAYS/NEVER preference item */
 export interface Preference {
   id: string;
   category: Category;
   content: string;
 }
 
+/** Logged interaction/contact with a person */
 export interface Interaction {
   id: string;
   date: Date;
@@ -27,6 +40,7 @@ export interface Interaction {
   summary: string;
 }
 
+/** Follow-up item / conversation starter */
 export interface Seedling {
   id: string;
   content: string;
@@ -34,12 +48,14 @@ export interface Seedling {
   createdAt: Date;
 }
 
+/** Important person related to a contact (family, friends, pets) */
 export interface FamilyMember {
   id: string;
   name: string;
   relation: string;
 }
 
+/** Core contact entity with all related data */
 export interface Contact {
   id: string;
   name: string;

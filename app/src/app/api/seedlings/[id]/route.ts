@@ -1,3 +1,15 @@
+/**
+ * @file Seedlings API Routes
+ * @description Update and delete seedlings (follow-up items).
+ *
+ * @endpoints
+ * PUT    /api/seedlings/:id - Update content or mark as PLANTED
+ * DELETE /api/seedlings/:id - Delete a seedling
+ *
+ * @status
+ * ACTIVE  - Pending follow-up
+ * PLANTED - Completed/actioned
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -5,7 +17,11 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-// PUT /api/seedlings/[id] - Update a seedling
+/**
+ * PUT /api/seedlings/:id
+ * @body { content?: string, status?: 'ACTIVE' | 'PLANTED' }
+ * @returns Updated Seedling
+ */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
@@ -30,7 +46,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-// DELETE /api/seedlings/[id] - Delete a seedling
+/**
+ * DELETE /api/seedlings/:id
+ * @returns { success: true }
+ */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;

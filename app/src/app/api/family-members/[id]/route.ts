@@ -1,3 +1,11 @@
+/**
+ * @file Family Members API Routes
+ * @description Update and delete family members / important people.
+ *
+ * @endpoints
+ * PUT    /api/family-members/:id - Update name or relation
+ * DELETE /api/family-members/:id - Delete a family member
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -5,7 +13,11 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-// PUT /api/family-members/[id] - Update a family member
+/**
+ * PUT /api/family-members/:id
+ * @body { name?: string, relation?: string }
+ * @returns Updated FamilyMember
+ */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
@@ -30,7 +42,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-// DELETE /api/family-members/[id] - Delete a family member
+/**
+ * DELETE /api/family-members/:id
+ * @returns { success: true }
+ */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;

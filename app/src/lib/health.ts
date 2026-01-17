@@ -1,7 +1,26 @@
+/**
+ * @file Health Status Calculation Utilities
+ * @description Computes relationship "health" based on contact cadence and
+ * time since last interaction. Uses a garden metaphor (thriving→parched).
+ *
+ * @algorithm
+ * Health is determined by comparing days since last contact against cadence thresholds:
+ * - thriving: within 50% of thirsty threshold (recently contacted)
+ * - growing: within thirsty threshold (on track)
+ * - thirsty: past thirsty but before parched (should reach out soon)
+ * - parched: past parched threshold (overdue for contact)
+ */
+
+/** Relationship health status (garden metaphor) */
 export type HealthStatus = 'thriving' | 'growing' | 'thirsty' | 'parched';
+
+/** Desired contact frequency */
 export type Cadence = 'OFTEN' | 'REGULARLY' | 'SELDOMLY' | 'RARELY';
 
-// Thresholds in days for each cadence level
+/**
+ * Days thresholds for each cadence level.
+ * thirsty = should reach out soon, parched = overdue
+ */
 const THRESHOLDS: Record<Cadence, { thirsty: number; parched: number }> = {
   OFTEN: { thirsty: 10, parched: 14 },      // Every 7-10 days
   REGULARLY: { thirsty: 30, parched: 45 },  // Every 3-4 weeks
@@ -9,6 +28,13 @@ const THRESHOLDS: Record<Cadence, { thirsty: number; parched: number }> = {
   RARELY: { thirsty: 180, parched: 365 },   // Every 6-12 months
 };
 
+/**
+ * Calculate relationship health based on cadence and last interaction.
+ *
+ * @param cadence - Desired contact frequency (OFTEN, REGULARLY, SELDOMLY, RARELY)
+ * @param lastInteractionDate - Date of most recent interaction (null = never)
+ * @returns HealthStatus - thriving, growing, thirsty, or parched
+ */
 export function calculateHealth(
   cadence: Cadence,
   lastInteractionDate: Date | null
@@ -43,6 +69,12 @@ export function calculateHealth(
   return 'parched';
 }
 
+/**
+ * Get the most recent interaction date from an array of interactions.
+ *
+ * @param interactions - Array of interactions with date field
+ * @returns Most recent Date or null if no interactions
+ */
 export function getLastInteractionDate(
   interactions: { date: Date }[]
 ): Date | null {
@@ -55,6 +87,12 @@ export function getLastInteractionDate(
   }, interactions[0].date);
 }
 
+/**
+ * Format a date as a human-readable relative time string.
+ *
+ * @param date - Date to format (null = "Never contacted")
+ * @returns String like "Today", "Yesterday", "2 weeks ago", "3 months ago"
+ */
 export function formatLastContact(date: Date | null): string {
   if (!date) {
     return 'Never contacted';

@@ -1,3 +1,12 @@
+/**
+ * @file Single Contact API Routes
+ * @description CRUD operations for individual contacts.
+ *
+ * @endpoints
+ * GET    /api/contacts/:id - Fetch contact with all related data
+ * PUT    /api/contacts/:id - Update contact fields
+ * DELETE /api/contacts/:id - Delete contact (cascades to related records)
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -5,7 +14,10 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-// GET /api/contacts/[id] - Get a single contact
+/**
+ * GET /api/contacts/:id
+ * @returns Contact with preferences, interactions, seedlings, familyMembers
+ */
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
@@ -41,7 +53,11 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-// PUT /api/contacts/[id] - Update a contact
+/**
+ * PUT /api/contacts/:id
+ * @body Partial<Contact> - Any subset of contact fields to update
+ * @returns Updated Contact
+ */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
@@ -74,7 +90,11 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-// DELETE /api/contacts/[id] - Delete a contact
+/**
+ * DELETE /api/contacts/:id
+ * Cascades to delete preferences, interactions, seedlings, familyMembers
+ * @returns { success: true }
+ */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
