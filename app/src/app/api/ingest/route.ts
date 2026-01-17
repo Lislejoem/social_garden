@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { extractFromNote } from '@/lib/anthropic';
+import type { AIExtraction, IngestPreviewResponse } from '@/types';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { rawInput, contactId } = body;
+    const { rawInput, contactId, dryRun, overrides } = body;
 
     if (!rawInput) {
       return NextResponse.json(
@@ -14,8 +15,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Extract structured data using Claude
-    const extraction = await extractFromNote(rawInput);
+    // Extract structured data using Claude (or use overrides if provided)
+    const extraction: AIExtraction = overrides || await extractFromNote(rawInput);
 
     if (!extraction.contactName) {
       return NextResponse.json(
@@ -24,21 +25,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let contact;
-    let isNewContact = false;
+    // Check if contact exists
+    let existingContact = null;
+    let isNewContact = true;
 
-    // If contactId is provided, update that contact
     if (contactId) {
-      contact = await prisma.contact.findUnique({
+      existingContact = await prisma.contact.findUnique({
         where: { id: contactId },
+        select: { id: true, name: true, location: true },
       });
 
-      if (!contact) {
+      if (!existingContact) {
         return NextResponse.json(
           { error: 'Contact not found' },
           { status: 404 }
         );
       }
+      isNewContact = false;
     } else {
       // Try to find existing contact by name (case-insensitive)
       const existingContacts = await prisma.contact.findMany({
@@ -47,20 +50,49 @@ export async function POST(request: NextRequest) {
             equals: extraction.contactName,
           },
         },
+        select: { id: true, name: true, location: true },
       });
 
       if (existingContacts.length > 0) {
-        contact = existingContacts[0];
-      } else {
-        // Create new contact
-        contact = await prisma.contact.create({
-          data: {
-            name: extraction.contactName,
-            location: extraction.location || null,
-          },
-        });
-        isNewContact = true;
+        existingContact = existingContacts[0];
+        isNewContact = false;
       }
+    }
+
+    // If dryRun, return preview without saving
+    if (dryRun) {
+      const previewResponse: IngestPreviewResponse = {
+        success: true,
+        preview: true,
+        extraction,
+        existingContact,
+        isNewContact,
+      };
+      return NextResponse.json(previewResponse);
+    }
+
+    // Actual save logic
+    let contact;
+
+    if (existingContact) {
+      contact = await prisma.contact.findUnique({
+        where: { id: existingContact.id },
+      });
+    } else {
+      // Create new contact
+      contact = await prisma.contact.create({
+        data: {
+          name: extraction.contactName,
+          location: extraction.location || null,
+        },
+      });
+    }
+
+    if (!contact) {
+      return NextResponse.json(
+        { error: 'Failed to find or create contact' },
+        { status: 500 }
+      );
     }
 
     // Track what was updated

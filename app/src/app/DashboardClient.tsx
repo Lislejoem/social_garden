@@ -6,7 +6,9 @@ import { Plus, Gift, Droplets } from 'lucide-react';
 import ContactCard from '@/components/ContactCard';
 import SearchBar from '@/components/SearchBar';
 import VoiceRecorder from '@/components/VoiceRecorder';
-import type { HealthStatus, Cadence, Socials } from '@/types';
+import VoicePreviewModal from '@/components/VoicePreviewModal';
+import ConfirmationToast from '@/components/ConfirmationToast';
+import type { HealthStatus, Cadence, Socials, AIExtraction, IngestPreviewResponse } from '@/types';
 
 interface ContactData {
   id: string;
@@ -31,6 +33,17 @@ export default function DashboardClient({
   const [contacts, setContacts] = useState(initialContacts);
   const [filteredContacts, setFilteredContacts] = useState(initialContacts);
 
+  // Preview modal state
+  const [previewData, setPreviewData] = useState<{
+    extraction: AIExtraction;
+    existingContact: { id: string; name: string; location: string | null } | null;
+    isNewContact: boolean;
+    rawInput: string;
+  } | null>(null);
+
+  // Toast state
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
   const handleSearch = (query: string) => {
     if (!query.trim()) {
       setFilteredContacts(contacts);
@@ -50,18 +63,56 @@ export default function DashboardClient({
   };
 
   const handleVoiceNote = async (transcript: string) => {
+    // First, get a preview with dryRun
     const response = await fetch('/api/ingest', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ rawInput: transcript }),
+      body: JSON.stringify({ rawInput: transcript, dryRun: true }),
     });
 
     if (!response.ok) {
       throw new Error('Failed to process voice note');
     }
 
-    // Refresh the page to show updated data
+    const preview: IngestPreviewResponse = await response.json();
+
+    // Show the preview modal
+    setPreviewData({
+      extraction: preview.extraction,
+      existingContact: preview.existingContact || null,
+      isNewContact: preview.isNewContact,
+      rawInput: transcript,
+    });
+  };
+
+  const handleConfirmSave = async (editedData: AIExtraction) => {
+    if (!previewData) return;
+
+    const response = await fetch('/api/ingest', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        rawInput: previewData.rawInput,
+        overrides: editedData,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to save changes');
+    }
+
+    const result = await response.json();
+
+    // Close modal and show toast
+    setPreviewData(null);
+    setToastMessage(result.summary);
+
+    // Refresh data
     router.refresh();
+  };
+
+  const handleCancelPreview = () => {
+    setPreviewData(null);
   };
 
   // Calculate stats
@@ -201,6 +252,25 @@ export default function DashboardClient({
 
       {/* Floating Voice Recorder */}
       <VoiceRecorder onTranscriptComplete={handleVoiceNote} />
+
+      {/* Preview Modal */}
+      {previewData && (
+        <VoicePreviewModal
+          extraction={previewData.extraction}
+          existingContact={previewData.existingContact}
+          isNewContact={previewData.isNewContact}
+          onConfirm={handleConfirmSave}
+          onCancel={handleCancelPreview}
+        />
+      )}
+
+      {/* Confirmation Toast */}
+      {toastMessage && (
+        <ConfirmationToast
+          message={toastMessage}
+          onClose={() => setToastMessage(null)}
+        />
+      )}
     </div>
   );
 }

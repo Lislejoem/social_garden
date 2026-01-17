@@ -93,3 +93,22 @@ export interface AIExtraction {
   interactionSummary?: string;
   interactionType?: InteractionType;
 }
+
+// Voice Preview types
+export interface IngestPreviewResponse {
+  success: boolean;
+  preview: true;
+  extraction: AIExtraction;
+  existingContact?: {
+    id: string;
+    name: string;
+    location: string | null;
+  } | null;
+  isNewContact: boolean;
+}
+
+// Extended IngestRequest with dryRun and overrides
+export interface IngestRequestWithOptions extends IngestRequest {
+  dryRun?: boolean;
+  overrides?: AIExtraction;
+}
