@@ -4,18 +4,21 @@
  * Manages voice note processing, CRUD operations for all contact-related entities.
  *
  * @features
- * - Inline editing for name, location, and cadence
+ * - Inline editing for name, location, cadence, and birthday
+ * - Quick interaction logging (Call/Text/Meet buttons)
  * - Voice note recording and AI extraction preview
- * - CRUD operations for preferences, family members, and seedlings
+ * - CRUD operations for preferences, family members, seedlings, and interactions
  * - Health-based visual theming (thriving/growing/thirsty/parched)
+ * - Social links editing modal
  *
  * @handlers
  * - handleVoiceNote: Sends transcript to API with dryRun=true, shows preview modal
  * - handleConfirmSave: Saves edited extraction data from preview modal
- * - handleUpdateContact: Generic field update (name, location, cadence)
+ * - handleUpdateContact: Generic field update (name, location, cadence, birthday, socials)
  * - handleUpdate/DeletePreference: Preference CRUD via /api/preferences/[id]
  * - handleUpdate/DeleteFamilyMember: Family member CRUD via /api/family-members/[id]
  * - handleUpdate/DeleteSeedling: Seedling CRUD via /api/seedlings/[id]
+ * - handleUpdate/DeleteInteraction: Interaction CRUD via /api/interactions/[id]
  */
 'use client';
 
@@ -39,6 +42,7 @@ import {
   Star,
   Wind,
   Plus,
+  Pencil,
 } from 'lucide-react';
 import InteractionTimeline from '@/components/InteractionTimeline';
 import VoiceRecorder from '@/components/VoiceRecorder';
@@ -49,6 +53,9 @@ import EditableCadence from '@/components/EditableCadence';
 import EditablePreference from '@/components/EditablePreference';
 import EditableFamilyMember from '@/components/EditableFamilyMember';
 import EditableSeedling from '@/components/EditableSeedling';
+import QuickLogInteraction from '@/components/QuickLogInteraction';
+import BirthdaySection from '@/components/BirthdaySection';
+import EditSocialsModal from '@/components/EditSocialsModal';
 import type {
   HealthStatus,
   Cadence,
@@ -61,6 +68,7 @@ import type {
   IngestPreviewResponse,
   Category,
   SeedlingStatus,
+  InteractionType,
 } from '@/types';
 
 interface ContactData {
@@ -138,6 +146,9 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
   // Toast state
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Socials modal state
+  const [isSocialsModalOpen, setIsSocialsModalOpen] = useState(false);
+
   const handleVoiceNote = async (transcript: string) => {
     // First, get a preview with dryRun
     const response = await fetch('/api/ingest', {
@@ -211,7 +222,7 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
   };
 
   // Contact field handlers
-  const handleUpdateContact = async (field: string, value: string) => {
+  const handleUpdateContact = async (field: string, value: unknown) => {
     const response = await fetch(`/api/contacts/${contact.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -227,6 +238,14 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
 
   const handleUpdateCadence = async (cadence: Cadence) => {
     await handleUpdateContact('cadence', cadence);
+  };
+
+  const handleUpdateBirthday = async (birthday: Date | null) => {
+    await handleUpdateContact('birthday', birthday?.toISOString() || null);
+  };
+
+  const handleUpdateSocials = async (socials: Socials) => {
+    await handleUpdateContact('socials', socials);
   };
 
   // Preference handlers
@@ -319,6 +338,41 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
     router.refresh();
   };
 
+  // Interaction handlers
+  const handleUpdateInteraction = async (
+    id: string,
+    data: { summary?: string; date?: string; type?: InteractionType }
+  ) => {
+    const response = await fetch(`/api/interactions/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update interaction');
+    }
+
+    router.refresh();
+  };
+
+  const handleDeleteInteraction = async (id: string) => {
+    const response = await fetch(`/api/interactions/${id}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete interaction');
+    }
+
+    router.refresh();
+  };
+
+  const handleQuickLogSuccess = () => {
+    setToastMessage(`Logged interaction with ${contact.name}`);
+    router.refresh();
+  };
+
   // Extract topics from ALWAYS preferences (items that seem like interests)
   const topics = contact.preferences
     .filter((p) => p.category === 'ALWAYS')
@@ -328,6 +382,13 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
   const alwaysPrefs = contact.preferences.filter((p) => p.category === 'ALWAYS');
   const neverPrefs = contact.preferences.filter((p) => p.category === 'NEVER');
   const activeSeedlings = contact.seedlings.filter((s) => s.status === 'ACTIVE');
+
+  const hasSocials = contact.socials && (
+    contact.socials.instagram ||
+    contact.socials.linkedin ||
+    contact.socials.email ||
+    contact.socials.phone
+  );
 
   return (
     <div className="min-h-screen pb-24">
@@ -349,7 +410,7 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
 
       <main className="max-w-6xl mx-auto px-6 mt-12">
         {/* Header Section */}
-        <section className="flex flex-col md:flex-row gap-10 items-start md:items-center mb-16">
+        <section className="flex flex-col md:flex-row gap-10 items-start md:items-center mb-12">
           <div className="relative">
             {contact.avatarUrl ? (
               <img
@@ -396,7 +457,7 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
               <div className="flex items-center gap-3">
                 {contact.socials?.instagram && (
                   <a
-                    href={contact.socials.instagram}
+                    href={`https://instagram.com/${contact.socials.instagram.replace('@', '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -422,9 +483,26 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
                     <Phone className="w-5 h-5 hover:text-emerald-600 cursor-pointer transition-colors" />
                   </a>
                 )}
+                {/* Edit Socials Button */}
+                <button
+                  onClick={() => setIsSocialsModalOpen(true)}
+                  className="p-1.5 text-stone-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                  title="Edit social links"
+                >
+                  <Pencil className="w-4 h-4" />
+                </button>
               </div>
             </div>
           </div>
+        </section>
+
+        {/* Quick Log Interaction Buttons */}
+        <section className="mb-12">
+          <QuickLogInteraction
+            contactId={contact.id}
+            contactName={contact.name}
+            onSuccess={handleQuickLogSuccess}
+          />
         </section>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
@@ -456,6 +534,12 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
                 </div>
               </div>
             )}
+
+            {/* Birthday Section */}
+            <BirthdaySection
+              birthday={contact.birthday}
+              onSave={handleUpdateBirthday}
+            />
 
             {/* Preference Board (Always/Never) */}
             {(alwaysPrefs.length > 0 || neverPrefs.length > 0) && (
@@ -542,8 +626,12 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
               </div>
             )}
 
-            {/* Interaction History (Summarized) */}
-            <InteractionTimeline interactions={contact.interactions} />
+            {/* Interaction History (Editable) */}
+            <InteractionTimeline
+              interactions={contact.interactions}
+              onUpdate={handleUpdateInteraction}
+              onDelete={handleDeleteInteraction}
+            />
           </div>
 
           {/* Right Column: The Seedling Bed */}
@@ -602,6 +690,14 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
           onCancel={handleCancelPreview}
         />
       )}
+
+      {/* Edit Socials Modal */}
+      <EditSocialsModal
+        isOpen={isSocialsModalOpen}
+        onClose={() => setIsSocialsModalOpen(false)}
+        socials={contact.socials}
+        onSave={handleUpdateSocials}
+      />
 
       {/* Confirmation Toast */}
       {toastMessage && (

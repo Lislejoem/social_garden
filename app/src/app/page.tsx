@@ -4,7 +4,8 @@ import {
   getLastInteractionDate,
   formatLastContact,
 } from '@/lib/health';
-import type { Cadence, Socials } from '@/types';
+import { hasUpcomingBirthday } from '@/lib/birthday';
+import type { Cadence, Socials, HealthStatus } from '@/types';
 import DashboardClient from './DashboardClient';
 
 async function getContacts() {
@@ -48,6 +49,7 @@ async function getContacts() {
       name: contact.name,
       avatarUrl: contact.avatarUrl,
       location: contact.location,
+      birthday: contact.birthday,
       cadence: contact.cadence as Cadence,
       health,
       lastContactFormatted: formatLastContact(lastInteractionDate),
@@ -57,8 +59,21 @@ async function getContacts() {
   });
 }
 
+function calculateFilterCounts(contacts: Awaited<ReturnType<typeof getContacts>>) {
+  const needsWater = contacts.filter(
+    (c) => c.health === 'thirsty' || c.health === 'parched'
+  ).length;
+
+  const upcomingBirthdays = contacts.filter(
+    (c) => hasUpcomingBirthday(c.birthday, 30)
+  ).length;
+
+  return { needsWater, upcomingBirthdays };
+}
+
 export default async function Home() {
   const contacts = await getContacts();
+  const filterCounts = calculateFilterCounts(contacts);
 
-  return <DashboardClient initialContacts={contacts} />;
+  return <DashboardClient initialContacts={contacts} filterCounts={filterCounts} />;
 }

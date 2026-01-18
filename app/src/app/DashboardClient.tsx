@@ -1,13 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Gift, Droplets } from 'lucide-react';
 import ContactCard from '@/components/ContactCard';
 import SearchBar from '@/components/SearchBar';
+import FilterPresets, { FilterType } from '@/components/FilterPresets';
 import VoiceRecorder from '@/components/VoiceRecorder';
 import VoicePreviewModal from '@/components/VoicePreviewModal';
 import ConfirmationToast from '@/components/ConfirmationToast';
+import { hasUpcomingBirthday } from '@/lib/birthday';
 import type { HealthStatus, Cadence, Socials, AIExtraction, IngestPreviewResponse } from '@/types';
 
 interface ContactData {
@@ -15,6 +17,7 @@ interface ContactData {
   name: string;
   avatarUrl: string | null;
   location: string | null;
+  birthday: Date | null;
   cadence: Cadence;
   health: HealthStatus;
   lastContactFormatted: string;
@@ -24,14 +27,20 @@ interface ContactData {
 
 interface DashboardClientProps {
   initialContacts: ContactData[];
+  filterCounts: {
+    needsWater: number;
+    upcomingBirthdays: number;
+  };
 }
 
 export default function DashboardClient({
   initialContacts,
+  filterCounts,
 }: DashboardClientProps) {
   const router = useRouter();
-  const [contacts, setContacts] = useState(initialContacts);
-  const [filteredContacts, setFilteredContacts] = useState(initialContacts);
+  const [contacts] = useState(initialContacts);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState<FilterType>('all');
 
   // Preview modal state
   const [previewData, setPreviewData] = useState<{
@@ -44,22 +53,43 @@ export default function DashboardClient({
   // Toast state
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  const handleSearch = (query: string) => {
-    if (!query.trim()) {
-      setFilteredContacts(contacts);
-      return;
+  // Filter contacts based on search query and active filter
+  const filteredContacts = useMemo(() => {
+    let result = contacts;
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const lowerQuery = searchQuery.toLowerCase();
+      result = result.filter(
+        (contact) =>
+          contact.name.toLowerCase().includes(lowerQuery) ||
+          contact.location?.toLowerCase().includes(lowerQuery) ||
+          contact.preferencesPreview.some((p) =>
+            p.toLowerCase().includes(lowerQuery)
+          )
+      );
     }
 
-    const lowerQuery = query.toLowerCase();
-    const filtered = contacts.filter(
-      (contact) =>
-        contact.name.toLowerCase().includes(lowerQuery) ||
-        contact.location?.toLowerCase().includes(lowerQuery) ||
-        contact.preferencesPreview.some((p) =>
-          p.toLowerCase().includes(lowerQuery)
-        )
-    );
-    setFilteredContacts(filtered);
+    // Apply preset filter
+    if (activeFilter === 'needsWater') {
+      result = result.filter(
+        (contact) => contact.health === 'thirsty' || contact.health === 'parched'
+      );
+    } else if (activeFilter === 'upcomingBirthdays') {
+      result = result.filter((contact) =>
+        hasUpcomingBirthday(contact.birthday, 30)
+      );
+    }
+
+    return result;
+  }, [contacts, searchQuery, activeFilter]);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
+  const handleFilterChange = (filter: FilterType) => {
+    setActiveFilter(filter);
   };
 
   const handleVoiceNote = async (transcript: string) => {
@@ -196,6 +226,17 @@ export default function DashboardClient({
         {/* Search Bar */}
         <SearchBar onSearch={handleSearch} />
 
+        {/* Filter Presets */}
+        {contacts.length > 0 && (
+          <div className="mt-4 mb-8">
+            <FilterPresets
+              activeFilter={activeFilter}
+              onFilterChange={handleFilterChange}
+              counts={filterCounts}
+            />
+          </div>
+        )}
+
         {/* Contact Grid */}
         {filteredContacts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -203,21 +244,23 @@ export default function DashboardClient({
               <ContactCard key={contact.id} {...contact} />
             ))}
 
-            {/* Add new contact card */}
-            <a
-              href="/contact/new"
-              className="border-4 border-dashed border-stone-100 rounded-5xl p-10 flex flex-col items-center justify-center text-stone-300 hover:border-emerald-200 hover:text-emerald-700 hover:bg-emerald-50/30 transition-all group min-h-[350px]"
-            >
-              <div className="w-16 h-16 rounded-3xl border-2 border-dashed border-stone-200 flex items-center justify-center mb-6 group-hover:border-emerald-300 group-hover:bg-white transition-all">
-                <Plus className="w-8 h-8" />
-              </div>
-              <p className="font-serif text-xl italic text-stone-500">
-                Plant a New Connection
-              </p>
-              <p className="text-xs font-sans uppercase tracking-[0.2em] mt-2 opacity-60">
-                Add to your garden
-              </p>
-            </a>
+            {/* Add new contact card - only show when not filtering */}
+            {activeFilter === 'all' && !searchQuery && (
+              <a
+                href="/contact/new"
+                className="border-4 border-dashed border-stone-100 rounded-5xl p-10 flex flex-col items-center justify-center text-stone-300 hover:border-emerald-200 hover:text-emerald-700 hover:bg-emerald-50/30 transition-all group min-h-[350px]"
+              >
+                <div className="w-16 h-16 rounded-3xl border-2 border-dashed border-stone-200 flex items-center justify-center mb-6 group-hover:border-emerald-300 group-hover:bg-white transition-all">
+                  <Plus className="w-8 h-8" />
+                </div>
+                <p className="font-serif text-xl italic text-stone-500">
+                  Plant a New Connection
+                </p>
+                <p className="text-xs font-sans uppercase tracking-[0.2em] mt-2 opacity-60">
+                  Add to your garden
+                </p>
+              </a>
+            )}
           </div>
         ) : contacts.length === 0 ? (
           // Empty state
@@ -241,11 +284,21 @@ export default function DashboardClient({
             </a>
           </div>
         ) : (
-          // No search results
+          // No search/filter results
           <div className="text-center py-20">
             <p className="text-stone-500">
-              No contacts match your search. Try a different query.
+              {activeFilter !== 'all'
+                ? `No contacts match the "${activeFilter === 'needsWater' ? 'Needs Water' : 'Upcoming Birthdays'}" filter.`
+                : 'No contacts match your search. Try a different query.'}
             </p>
+            {activeFilter !== 'all' && (
+              <button
+                onClick={() => setActiveFilter('all')}
+                className="mt-4 text-emerald-700 font-medium hover:underline"
+              >
+                Clear filter
+              </button>
+            )}
           </div>
         )}
       </main>

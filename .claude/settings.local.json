@@ -17,7 +17,8 @@
       "Bash(npx tsc:*)",
       "Bash(del \"\\\\?\\\\C:\\\\Users\\\\lisle\\\\Personal Projects\\\\social_garden\\\\nul\")",
       "Bash(cmd.exe /c \"del \\\\?\\\\C:\\\\Users\\\\lisle\\\\Personal Projects\\\\social_garden\\\\nul\")",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(ls -la \"C:\\\\Users\\\\lisle\\\\Personal Projects\\\\social_garden\\\\app\\\\src\\\\app\\\\contact\"\" 2>/dev/null || echo \"Path check failed \")"
     ]
   }
 }
