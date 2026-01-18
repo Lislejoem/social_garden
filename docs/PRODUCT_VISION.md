@@ -6,7 +6,7 @@ A living document of ideas for evolving Social Garden from its current state to 
 
 ## Part 1: Completing Version 1
 
-These are gaps in the current implementation that should be addressed before calling this a "complete" v1 product.
+These are gaps and features needed to call this a "complete" v1 product.
 
 ### 1.1 Critical Missing Pieces
 
@@ -19,7 +19,6 @@ These are gaps in the current implementation that should be addressed before cal
 **Birthday UI**
 - Currently: Field exists in database, stored via AI extraction, but never displayed
 - Needed: Show birthday on profile, age calculation, birthday highlight on dashboard
-- Question: Should birthdays drive notifications? Or just be visible?
 
 **Edit Social Links**
 - Currently: Can add socials during contact creation, but can't edit after
@@ -36,7 +35,39 @@ These are gaps in the current implementation that should be addressed before cal
 - Needed: Edit summary, change date, delete interaction
 - Why: Mistakes happen; AI extractions aren't always perfect
 
-### 1.2 Polish Items for V1
+### 1.2 New V1 Features
+
+**Contact Briefing (AI-Powered)**
+- Combines relationship summary + conversation prep into one feature
+- On each contact profile, show an AI-generated briefing:
+  - "Here's what you know about Sarah at a glance"
+  - "Things to ask about" based on history
+  - "Last time you talked, she mentioned her mom was having surgery"
+  - "Her son Max starts college this fall"
+- Pulls from: seedlings, recent interactions, family member events, preferences
+- Refreshes on-demand when user requests it on the profile
+- Why: Makes every interaction more meaningful
+
+**Smart Reminders**
+- Daily/weekly digest: "3 contacts need attention"
+- Birthday reminders: "Sarah's birthday is in 3 days"
+- Follow-up reminders based on seedlings: "You said you'd check in about Mike's job search"
+- Implementation note: Scope carefully when building - ask questions about notification frequency, channels, timing preferences
+
+**Quick Capture Widget**
+- Home screen widget (mobile) for instant voice notes
+- One tap → record → done
+- Process in background
+- Why: Reduce friction for the most common action
+
+**Photo & Screenshot Capture**
+- Take a photo → AI extracts context
+- "Dinner at Sarah's house" → logs interaction, extracts what you ate together
+- Screenshots of text conversations → AI summarizes the exchange
+- Allow additional context via voice or typing alongside the photo/screenshot
+- Why: Sometimes a picture captures the moment better than words
+
+### 1.3 Polish Items for V1
 
 **Avatar Upload**
 - Currently: Stores avatarUrl but no way to set it
@@ -56,76 +87,38 @@ These are gaps in the current implementation that should be addressed before cal
 - Currently: Generic error handling, limited user-facing messages
 - Needed: Clear error states, retry options, "what went wrong" explanations
 
+**Offline Support**
+- Voice notes queue for processing when back online
+- Local-first data storage with sync
+- Why: App should work anywhere, anytime
+
 ---
 
-## Part 2: Recommended Features (Think Big!)
+## Part 2: Version 2 Features
 
-These are features that would make Social Garden genuinely compelling and differentiated.
+Features that will make Social Garden genuinely compelling and differentiated.
 
-### 2.1 AI-Powered Insights
+### 2.1 Social Monitoring & Contextual Prompts
 
-**Relationship Summaries**
-- "Here's what you know about Sarah at a glance"
-- Auto-generated from all interactions, preferences, family members
-- Refreshes periodically or on-demand
-- Surfaces things like "You've talked about her job stress in your last 3 conversations"
+**Social Feed Monitoring**
+- Connect LinkedIn, Facebook (and potentially Instagram, Twitter)
+- Get notified when a contact posts something significant:
+  - "David just posted about a promotion"
+  - "Sarah shared an article about her industry"
+  - "Mike announced he's moving to a new city"
+- Prompt: "Might be a good time to reach out"
+- Privacy note: Needs careful consideration of data handling and user consent
 
-**Conversation Prep**
-- Before a call/meeting, generate "Things to ask about" based on history
-- "Last time you talked, she mentioned her mom was having surgery - you might want to ask how that went"
-- "Her son Max starts college this fall - that might be worth mentioning"
-- Could pull from seedlings, recent interactions, and family member events
+### 2.2 Life Events Timeline
 
-**Pattern Detection**
-- "You tend to reach out to professional contacts more than personal ones"
-- "You've been talking to Sarah a lot lately - is there something going on?"
-- "You mentioned 'work stress' in conversations with 5 different people this month"
-- Surfaces trends you might not notice yourself
-
-**Relationship Health Forecasting**
-- "If you don't reach out to David in the next week, he'll move to 'parched'"
-- Calendar-style view of upcoming health transitions
-- Helps prioritize who to reach out to
-
-### 2.2 Proactive Nudges
-
-**Smart Reminders**
-- Daily/weekly digest: "3 contacts need attention"
-- Birthday reminders: "Sarah's birthday is in 3 days"
-- Follow-up reminders based on seedlings: "You said you'd check in about Mike's job search"
-
-**Contextual Prompts**
-- "You're near the coffee shop where you usually meet Alex" (location-aware)
-- "It's been 2 weeks since you talked to your mom" (relationship-specific)
-- "David just posted about a promotion - might be a good time to reach out" (social-aware, if integrated)
-
-**"Best Time to Reach Out" Suggestions**
-- Learn patterns from past interactions (you usually text Sarah on weekends)
-- Suggest optimal timing for reconnection
-
-### 2.3 Deep Relationship Data
-
-**Life Events Timeline**
-- Track major events: new job, moved cities, had a baby, got married
-- These become permanent context for the relationship
+**Major Life Event Tracking**
+- Track significant events: new job, moved cities, had a baby, got married, promotion
 - Can be extracted from voice notes or added manually
+- Visual emphasis in timeline: bigger fonts, icons, distinct styling
 - "Sarah: Moved to Austin (March 2025), Started at Stripe (June 2025)"
+- These become permanent context for the relationship
 
-**Gift Ideas & History**
-- Track what you've given and when
-- AI suggests gift ideas based on preferences
-- "You got her a Kindle last year; she mentioned loving mystery novels recently"
-
-**Communication Preferences**
-- Some people prefer texts, others calls, others only see you in person
-- Track and suggest the right channel for each person
-
-**Relationship Milestones**
-- "You've known David for 5 years today"
-- "This is your 50th interaction with Sarah"
-- Celebrate the relationships, not just maintain them
-
-### 2.4 Organization & Views
+### 2.3 Organization & Views
 
 **Contact Groups (Gardens)**
 - "Work Friends", "College Crew", "Mentors", "Family"
@@ -138,42 +131,64 @@ These are features that would make Social Garden genuinely compelling and differ
 - "When I'm in Austin, who should I reach out to?"
 - Great for travel planning
 
-**Calendar View**
-- See interactions over time
-- Plan future interactions
-- Visualize relationship health trends
-
-**Relationship Graph**
-- Visual web of connections
-- "Sarah knows Mike" (they're both in your contacts and you mentioned them together)
-- See clusters and bridges in your network
-
-### 2.5 Capture Enhancements
-
-**Quick Capture Widget**
-- Home screen widget (mobile) for instant voice notes
-- One tap → record → done
-- Process in background
-
-**Photo Notes**
-- Take a photo → AI extracts context
-- "Dinner at Sarah's house" → logs interaction, maybe extracts what you ate together
-- Screenshots of text conversations → AI summarizes
+### 2.4 Capture Enhancements
 
 **Calendar Integration**
 - Sync with Google/Apple calendar
 - Auto-create interactions from calendar events titled "Coffee with Sarah"
 - Suggest logging after meetings end
 
-**Email/Text Import** (advanced)
-- Connect email/iMessage (with consent)
+**Voice Journal Mode**
+- End-of-day journal: "Tell me about your day"
+- AI extracts all the people you mentioned and creates interactions
+- "I grabbed coffee with Sarah, then had a tough meeting with my boss David..."
+- Low-friction daily capture
+
+**Meeting Transcription**
+- Record meetings/calls (with consent) → auto-generate summaries
+- Extract action items, preferences, topics discussed
+- Never forget what was said
+- Security note: Needs careful thought about storage, encryption, consent
+
+**Message Import** (Advanced)
+- Connect email, iMessage, Instagram DMs, Telegram (with consent)
 - Auto-log communication frequency
 - Extract important details from messages
-- Question: Privacy implications - would you want this?
+- Privacy note: This needs extensive discussion before implementation - concerns about data access, storage, and potential misuse
+
+### 2.5 Discovery Sharing (Unified Integration Feature)
+
+**Track What You Experience, Share What Matters**
+
+The core idea: You discover things every day - music, books, restaurants, places, shows, articles. Some of your contacts would love to hear about them. This feature connects your discoveries to your relationships.
+
+**How it works:**
+1. **Capture your discoveries** (manual or via integrations):
+   - Music: Spotify/Apple Music integration or manual logging
+   - Books/Media: Goodreads, Letterboxd, or manual logging
+   - Places: Location check-ins, restaurant visits, travel
+   - Articles/Content: Save links, share what you're reading
+
+2. **AI matches discoveries to contacts based on their preferences:**
+   - "You just listened to a 90s hip-hop playlist - Sarah loves that genre"
+   - "You finished a sci-fi novel - Mike mentioned he's into sci-fi"
+   - "You found a great Ethiopian restaurant - Sarah loves Ethiopian food"
+   - "You're visiting Austin - you have 3 contacts there"
+
+3. **Proactive suggestions:**
+   - "Share this playlist with Sarah?"
+   - "Recommend this book to Mike?"
+   - "Text David that you're in his city?"
+
+4. **Track what you've shared:**
+   - "You recommended Dune to Mike last month - ask if he started it"
+   - "You shared that restaurant with Sarah - did she try it?"
+
+**Why this matters:** Relationships thrive on shared experiences and thoughtful recommendations. This turns your everyday discoveries into relationship-building opportunities.
 
 ---
 
-## Part 3: Further-Out Ideas (Creative & Unexpected)
+## Part 3: Further-Out Ideas (V3+)
 
 These are ideas that push the boundaries - possible, interesting, but not obvious.
 
@@ -191,48 +206,25 @@ These are ideas that push the boundaries - possible, interesting, but not obviou
 - You get accurate data; they get to control their info
 - "I'm trying to be a better friend - help me remember what matters to you"
 
-### 3.2 Ambient & Passive Intelligence
+### 3.2 Advanced AI Features
 
-**Voice Journal Mode**
-- End-of-day journal: "Tell me about your day"
-- AI extracts all the people you mentioned and creates interactions
-- "I grabbed coffee with Sarah, then had a tough meeting with my boss David..."
-- Low-friction daily capture
+**Pattern Detection**
+- "You tend to reach out to professional contacts more than personal ones"
+- "You've been talking to Sarah a lot lately - is there something going on?"
+- "You mentioned 'work stress' in conversations with 5 different people this month"
+- Surfaces trends you might not notice yourself
 
-**Meeting Transcription**
-- Record meetings/calls (with consent) → auto-generate summaries
-- Extract action items, preferences, topics discussed
-- Never forget what was said
+**Relationship Health Forecasting**
+- "If you don't reach out to David in the next week, he'll move to 'parched'"
+- Calendar-style view of upcoming health transitions
+- Helps prioritize who to reach out to
 
-**Smart Watch Integration**
-- Tap to start recording after a conversation
-- Quick "log interaction" from wrist
-- Vibrate reminder: "You're meeting Sarah in 10 minutes - here's what to ask about"
+**AI "Before You Meet" Briefing**
+- 24 hours before a calendar event with a contact:
+- Get a briefing: recent interactions, their current situation, suggested topics, gifts if it's their birthday soon
+- Like a relationship executive assistant
 
-### 3.3 Relationship Growth Features
-
-**Conversation Starters**
-- "I don't know what to talk about with David anymore"
-- AI generates suggestions based on shared interests, recent events, their preferences
-- "Ask about the hiking trip he was planning"
-- "He loves talking about woodworking - ask what he's building"
-
-**Relationship Goals**
-- Set goals: "I want to deepen my friendship with Sarah"
-- AI suggests actions: "Try meeting in person instead of just texting"
-- Track progress over time
-
-**Conflict Notes**
-- Track unresolved tensions or difficult topics
-- "Sarah and I had a disagreement about X - I should be sensitive about that"
-- Private, but helps you navigate relationships thoughtfully
-
-**Gratitude Prompts**
-- "What do you appreciate about David?"
-- Build a private gratitude log for each relationship
-- Reminds you why people matter when you're feeling disconnected
-
-### 3.4 Network-Level Intelligence
+### 3.3 Network-Level Intelligence
 
 **Introducer Suggestions**
 - "Sarah is looking for a job in tech; you know David at Google"
@@ -244,31 +236,11 @@ These are ideas that push the boundaries - possible, interesting, but not obviou
 - Trends over time: "Your network health improved 15% this month"
 - Balance indicators: "80% of your interactions are with 20% of your contacts"
 
-**Circle of Influence Visualization**
-- Concentric circles: close friends → friends → acquaintances → distant
-- See how relationships drift over time
-- Set intentions: "I want to move David closer to my inner circle"
+### 3.4 Gift Ideas & History
 
-### 3.5 Unusual Integrations
-
-**Spotify/Music Context**
-- "Sarah loves 90s hip-hop" - suggest a playlist to share
-- "What music was playing when you last met?"
-- Soundtrack to your relationships
-
-**Book/Media Recommendations**
-- "Sarah mentioned she's into sci-fi" → suggest books to recommend
-- Track what you've recommended and their reactions
-
-**Restaurant/Experience Tracking**
-- "Great restaurants I've been to with Sarah"
-- "Sarah loves Ethiopian food" → suggest places near you
-- Build shared experience memories
-
-**AI "Before You Meet" Briefing**
-- 24 hours before a calendar event with a contact:
-- Get a briefing: recent interactions, their current situation, suggested topics, gifts if it's their birthday soon
-- Like a relationship executive assistant
+- Track what you've given and when
+- AI suggests gift ideas based on preferences
+- "You got her a Kindle last year; she mentioned loving mystery novels recently"
 
 ---
 
@@ -282,17 +254,15 @@ These are ideas that push the boundaries - possible, interesting, but not obviou
 
 3. **Platform Priority**: **75% Mobile, 25% Desktop** - Mobile is primary (voice recording, quick capture, on-the-go access), but desktop is more than nice-to-have. Users need a good experience on both, with mobile being the priority.
 
-### Still Open Questions
+4. **Offline Support**: **YES** - Voice notes should queue for processing when back online. Local-first approach.
 
-1. **Offline Support**: Should the app work fully offline? Voice notes would queue for processing when back online.
+5. **Data Ownership**: **YES** - Users should be able to export all their data easily and import from other sources.
 
-2. **Data Ownership**: Should users be able to export all their data easily? Import from other CRMs?
+6. **Relationship Types**: **UNIFIED UX** - Same interface for personal and professional relationships. No separate modes.
 
-3. **Relationship Types**: Should we explicitly support "professional" vs "personal" relationships with different UX? Or keep it unified?
+7. **Family as Special Category**: **NO** - Family members treated the same as any other contact. No special health rules.
 
-4. **Family as Special Category**: Should family members in contacts be treated differently than friends? (e.g., parents always stay in "thriving" category)
-
-5. **Monetization**: Any thoughts on free vs paid features? This affects what to build first.
+8. **Monetization**: **NOT NOW** - This is a personal project for now. Monetization can be figured out later if needed.
 
 ### Assumptions Made
 
@@ -307,33 +277,45 @@ These are ideas that push the boundaries - possible, interesting, but not obviou
 
 ## Part 5: Suggested Prioritization
 
-### Immediate (V1 Completion)
+### V1 - Complete Product
+Core functionality + AI briefing + smart capture
+
 1. Manual interaction logging
-2. Birthday display & basic reminders
+2. Birthday display
 3. Edit social links
 4. Dashboard filtering/sorting
 5. Interaction editing
+6. **Contact Briefing (AI-powered)** - relationship summary + conversation prep
+7. **Smart Reminders** - digest, birthdays, seedling follow-ups
+8. **Quick Capture Widget** - one-tap voice recording
+9. **Photo & Screenshot Capture** - with AI extraction
+10. Offline support with queue
+11. Polish items (avatar, history link, error feedback)
 
-### Near-Term (V1.5 - Delight)
-1. Relationship summaries (AI-generated)
-2. Conversation prep
-3. Life events timeline
-4. Contact groups
-5. Better mobile experience
+### V2 - Differentiation
+Deep integrations + organization + advanced capture
 
-### Medium-Term (V2 - Differentiation)
-1. Smart reminders & nudges
-2. Calendar integration
-3. Photo/screenshot capture
+1. Social feed monitoring (LinkedIn/Facebook notifications)
+2. Life events timeline (with visual emphasis)
+3. Contact groups (Gardens)
 4. Map view
-5. Gift tracking
+5. Calendar integration
+6. Voice journal mode
+7. Meeting transcription
+8. Message import (email, iMessage, Instagram, Telegram)
+9. **Discovery Sharing** - track experiences, match to contacts, suggest sharing
 
-### Long-Term (V3 - Innovation)
-1. Voice journal mode
-2. Shared gardens
-3. Network health dashboard
-4. Meeting transcription
-5. Relationship goals
+### V3 - Innovation
+Network intelligence + mutual tools
+
+1. Shared gardens (couples/partners)
+2. Relationship requests
+3. Pattern detection
+4. Health forecasting
+5. Network health dashboard
+6. Introducer suggestions
+7. Gift tracking & suggestions
+8. AI "Before You Meet" briefing
 
 ---
 
@@ -343,5 +325,10 @@ These are ideas that push the boundaries - possible, interesting, but not obviou
 - Voice notes are processed by Claude AI via `/api/ingest` with a dry-run preview flow
 - The codebase uses Next.js 14 App Router with strict TypeScript
 - Key files: `anthropic.ts` (AI), `health.ts` (status calculation), `prisma/schema.prisma` (data model)
-- The user is excited about AI-powered insights, deep relationship data, AND simplicity - find the balance
-- No feature is off the table - they said "no restrictions" and want to explore everything
+- Joe is excited about AI-powered insights, deep relationship data, AND simplicity - find the balance
+- No feature is off the table - he said "no restrictions" and wants to explore everything
+- **Smart Reminders**: When implementing, ask scoping questions about notification frequency, channels, and timing
+- **Message Import**: Extensive privacy discussion needed before implementation
+- **Meeting Transcription**: Security discussion needed before implementation
+- Platform priority is 75% mobile, 25% desktop
+- Offline support with queue is confirmed for V1
