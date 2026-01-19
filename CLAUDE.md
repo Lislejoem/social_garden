@@ -116,4 +116,4 @@ TypeScript interfaces at `app/src/types/index.ts`.
 ## At the end of each plan, do these
 
 - Review and update `CLAUDE.md`, skills, subagents, and documentation files with every code run to ensure they are always up to date. If a file is missing, add one.
-- Update `docs/PRODUCT_VISION.md` to reflect the current state of the project. Add recommendations for next steps.
+- Update `docs/PRODUCT_VISION.md` to reflect the current state of the project. Add recommendations for next steps and update other listed features based on what was just updated.

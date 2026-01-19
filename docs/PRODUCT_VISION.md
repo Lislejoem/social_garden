@@ -10,31 +10,6 @@ These are gaps and features needed to call this a "complete" v1 product.
 
 ### 1.1 Critical Missing Pieces
 
-**Manual Interaction Logging**
-- Currently: Can only log interactions via voice notes
-- Needed: Quick-log button for "I just called Sarah" or "Texted with Mike"
-- Why: Not every interaction warrants a voice note; sometimes you just want to tap and go
-- Location: Contact profile page, maybe also dashboard quick-action
-
-**Birthday UI**
-- Currently: Field exists in database, stored via AI extraction, but never displayed
-- Needed: Show birthday on profile, age calculation, birthday highlight on dashboard
-
-**Edit Social Links**
-- Currently: Can add socials during contact creation, but can't edit after
-- Needed: Inline editing for Instagram, LinkedIn, phone, email, address
-- Location: Contact profile page, similar to EditableText pattern
-
-**Dashboard Sorting & Filtering**
-- Currently: Search only, returns all contacts
-- Needed: Filter by health status (show me all parched contacts), sort by last contact date, sort by name
-- Why: As contact list grows, users need better organization
-
-**Interaction Editing**
-- Currently: Interactions are read-only after creation
-- Needed: Edit summary, change date, delete interaction
-- Why: Mistakes happen; AI extractions aren't always perfect
-
 ### 1.2 New V1 Features
 
 **Contact Briefing (AI-Powered)**
@@ -91,6 +66,32 @@ These are gaps and features needed to call this a "complete" v1 product.
 - Voice notes queue for processing when back online
 - Local-first data storage with sync
 - Why: App should work anywhere, anytime
+
+**Manual Interaction Logging**
+- Currently: The manual interaction logging (clicking Call, Text, or Meet on someone's profile page) doesn't update any other information other than an interaction in the Recent Growth section
+- Needed: Parse the entry so it can update the rest of the profile (maybe parse it like the text from a voice note so we don't need to build that infra again?)
+
+**Birthday UI, Year**
+- Currently: Great! But requires a year.
+- Needed: Allow for a birthday entry without a year (in case I don't know it)
+
+**Birthday UI, Date**
+- Currently: There's a bug with the date where the day entered sets the birthday to the previous day. (e.g. an edit to Sep 28, 2014 shows the birthday as Sep 27, 2014)
+
+**Dashboard Searching**
+- Currently: The search doesn't search within the Recent Growth summaries
+- Needed: Allow the search feature to search within Recent Growth summaries
+- Consideration: Can we set up the search to not use a ton of resources?
+
+**Interactions via Voice**
+- Currently: Interactions recorded via Voice are marked as `VOICE`
+- Needed: Interactions recorded via Voice should be marked as Meet, Text, Call, etc. based on the content of the note
+
+**Interaction Types**
+- Currently: Interactions are logged as either text, voice, meet, or call
+- Needed: 
+   - We need to add interactions for Instagram, Telegram, and LinkedIn. 
+   - To do so, change `TEXT` to `MESSAGE` and add a dropdown from which to select Text, Instagram, Telegram, and LinkedIn. Then, use one of those 4 options as the option that appears in the Recent Growth section.
 
 ---
 
