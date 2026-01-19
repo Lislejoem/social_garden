@@ -11,15 +11,17 @@ datasource db {
 }
 
 model Contact {
-  id        String    @id @default(cuid())
-  name      String
-  avatarUrl String?
-  location  String?
-  birthday  DateTime?
-  cadence   String    @default("REGULARLY") // OFTEN, REGULARLY, SELDOMLY, RARELY
-  socials   String?   // JSON string: {instagram, linkedin, email, phone, address}
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id            String    @id @default(cuid())
+  name          String
+  avatarUrl     String?
+  location      String?
+  birthday      DateTime? // Full birthday with year (optional)
+  birthdayMonth Int?      // Month 1-12 for birthday without year
+  birthdayDay   Int?      // Day 1-31 for birthday without year
+  cadence       String    @default("REGULARLY") // OFTEN, REGULARLY, SELDOMLY, RARELY
+  socials       String?   // JSON string: {instagram, linkedin, email, phone, address}
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   preferences   Preference[]
   interactions  Interaction[]
@@ -39,7 +41,8 @@ model Interaction {
   id        String   @id @default(cuid())
   contactId String
   date      DateTime @default(now())
-  type      String   // CALL, TEXT, MEET, VOICE
+  type      String   // CALL, MESSAGE, MEET, VOICE
+  platform  String?  // For MESSAGE type: text, instagram, telegram, linkedin
   summary   String
   contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
 }

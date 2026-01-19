@@ -44,17 +44,25 @@ async function getContacts() {
       .slice(0, 3)
       .map((p) => p.content);
 
+    // Get interaction summaries for search (limit to recent 20 for performance)
+    const interactionSummaries = contact.interactions
+      .slice(0, 20)
+      .map((i) => i.summary);
+
     return {
       id: contact.id,
       name: contact.name,
       avatarUrl: contact.avatarUrl,
       location: contact.location,
       birthday: contact.birthday,
+      birthdayMonth: contact.birthdayMonth,
+      birthdayDay: contact.birthdayDay,
       cadence: contact.cadence as Cadence,
       health,
       lastContactFormatted: formatLastContact(lastInteractionDate),
       socials,
       preferencesPreview,
+      interactionSummaries,
     };
   });
 }
@@ -64,9 +72,16 @@ function calculateFilterCounts(contacts: Awaited<ReturnType<typeof getContacts>>
     (c) => c.health === 'thirsty' || c.health === 'parched'
   ).length;
 
-  const upcomingBirthdays = contacts.filter(
-    (c) => hasUpcomingBirthday(c.birthday, 30)
-  ).length;
+  const upcomingBirthdays = contacts.filter((c) => {
+    // Check full birthday first, then month/day only
+    if (c.birthday) {
+      return hasUpcomingBirthday(c.birthday, 30);
+    }
+    if (c.birthdayMonth && c.birthdayDay) {
+      return hasUpcomingBirthday(c.birthdayMonth, c.birthdayDay, 30);
+    }
+    return false;
+  }).length;
 
   return { needsWater, upcomingBirthdays };
 }

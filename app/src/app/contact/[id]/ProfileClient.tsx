@@ -69,6 +69,7 @@ import type {
   Category,
   SeedlingStatus,
   InteractionType,
+  MessagePlatform,
 } from '@/types';
 
 interface ContactData {
@@ -77,6 +78,8 @@ interface ContactData {
   avatarUrl: string | null;
   location: string | null;
   birthday: Date | null;
+  birthdayMonth: number | null;
+  birthdayDay: number | null;
   cadence: Cadence;
   socials: Socials | null;
   health: HealthStatus;
@@ -240,8 +243,29 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
     await handleUpdateContact('cadence', cadence);
   };
 
-  const handleUpdateBirthday = async (birthday: Date | null) => {
-    await handleUpdateContact('birthday', birthday?.toISOString() || null);
+  const handleUpdateBirthday = async (data: {
+    birthday?: Date | null;
+    birthdayMonth?: number | null;
+    birthdayDay?: number | null
+  }) => {
+    try {
+      const response = await fetch(`/api/contacts/${contact.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          birthday: data.birthday?.toISOString() || null,
+          birthdayMonth: data.birthdayMonth,
+          birthdayDay: data.birthdayDay,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update birthday');
+      }
+      router.refresh();
+    } catch (error) {
+      console.error('Failed to update birthday:', error);
+      throw error;
+    }
   };
 
   const handleUpdateSocials = async (socials: Socials) => {
@@ -341,7 +365,7 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
   // Interaction handlers
   const handleUpdateInteraction = async (
     id: string,
-    data: { summary?: string; date?: string; type?: InteractionType }
+    data: { summary?: string; date?: string; type?: InteractionType; platform?: MessagePlatform | null }
   ) => {
     const response = await fetch(`/api/interactions/${id}`, {
       method: 'PUT',
@@ -538,6 +562,8 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
             {/* Birthday Section */}
             <BirthdaySection
               birthday={contact.birthday}
+              birthdayMonth={contact.birthdayMonth}
+              birthdayDay={contact.birthdayDay}
               onSave={handleUpdateBirthday}
             />
 

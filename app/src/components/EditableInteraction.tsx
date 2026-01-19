@@ -1,20 +1,27 @@
 'use client';
 
-import { useState } from 'react';
-import { Pencil, Trash2, Loader2, Check, X } from 'lucide-react';
-import type { Interaction, InteractionType } from '@/types';
+import { useState, useEffect } from 'react';
+import { Pencil, Trash2, Loader2, Check, X, MessageSquare, Send } from 'lucide-react';
+import type { Interaction, InteractionType, MessagePlatform } from '@/types';
 
 interface EditableInteractionProps {
   interaction: Interaction;
-  onUpdate: (id: string, data: { summary?: string; date?: string; type?: InteractionType }) => Promise<void>;
+  onUpdate: (id: string, data: { summary?: string; date?: string; type?: InteractionType; platform?: MessagePlatform | null }) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
 }
 
 const INTERACTION_TYPES: { value: InteractionType; label: string }[] = [
   { value: 'CALL', label: 'Call' },
-  { value: 'TEXT', label: 'Text' },
+  { value: 'MESSAGE', label: 'Message' },
   { value: 'MEET', label: 'Meet' },
   { value: 'VOICE', label: 'Voice' },
+];
+
+const MESSAGE_PLATFORMS: { value: MessagePlatform; label: string }[] = [
+  { value: 'text', label: 'Text' },
+  { value: 'instagram', label: 'Instagram' },
+  { value: 'telegram', label: 'Telegram' },
+  { value: 'linkedin', label: 'LinkedIn' },
 ];
 
 function formatDate(date: Date): string {
@@ -27,7 +34,17 @@ function formatDate(date: Date): string {
 
 function formatDateForInput(date: Date): string {
   const d = new Date(date);
-  return d.toISOString().split('T')[0];
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function getDisplayLabel(type: InteractionType, platform?: MessagePlatform | null): string {
+  if (type === 'MESSAGE' && platform) {
+    return platform.charAt(0).toUpperCase() + platform.slice(1);
+  }
+  return type;
 }
 
 export default function EditableInteraction({
@@ -43,6 +60,14 @@ export default function EditableInteraction({
   const [editSummary, setEditSummary] = useState(interaction.summary);
   const [editDate, setEditDate] = useState(formatDateForInput(interaction.date));
   const [editType, setEditType] = useState<InteractionType>(interaction.type);
+  const [editPlatform, setEditPlatform] = useState<MessagePlatform>(interaction.platform || 'text');
+
+  // Reset platform when switching away from MESSAGE type
+  useEffect(() => {
+    if (editType !== 'MESSAGE') {
+      setEditPlatform('text');
+    }
+  }, [editType]);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -51,6 +76,7 @@ export default function EditableInteraction({
         summary: editSummary,
         date: editDate,
         type: editType,
+        platform: editType === 'MESSAGE' ? editPlatform : null,
       });
       setIsEditing(false);
     } catch (error) {
@@ -64,6 +90,7 @@ export default function EditableInteraction({
     setEditSummary(interaction.summary);
     setEditDate(formatDateForInput(interaction.date));
     setEditType(interaction.type);
+    setEditPlatform(interaction.platform || 'text');
     setIsEditing(false);
   };
 
@@ -115,7 +142,7 @@ export default function EditableInteraction({
       <div className="relative pl-8 pb-8 border-l-2 border-stone-100 last:border-0 last:pb-0">
         <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-white border-2 border-emerald-400 shadow-sm" />
         <div className="bg-white p-5 rounded-3xl border border-emerald-200 shadow-sm space-y-4">
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap">
             <input
               type="date"
               value={editDate}
@@ -133,6 +160,19 @@ export default function EditableInteraction({
                 </option>
               ))}
             </select>
+            {editType === 'MESSAGE' && (
+              <select
+                value={editPlatform}
+                onChange={(e) => setEditPlatform(e.target.value as MessagePlatform)}
+                className="px-3 py-2 text-sm border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+              >
+                {MESSAGE_PLATFORMS.map((p) => (
+                  <option key={p.value} value={p.value}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
           <textarea
             value={editSummary}
@@ -176,7 +216,7 @@ export default function EditableInteraction({
           {formatDate(interaction.date)}
         </span>
         <span className="px-2 py-0.5 bg-stone-100 text-[10px] font-bold rounded-md text-stone-500">
-          {interaction.type}
+          {getDisplayLabel(interaction.type, interaction.platform)}
         </span>
         <div className="flex-1" />
         <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">

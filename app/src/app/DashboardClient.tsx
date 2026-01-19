@@ -18,11 +18,14 @@ interface ContactData {
   avatarUrl: string | null;
   location: string | null;
   birthday: Date | null;
+  birthdayMonth: number | null;
+  birthdayDay: number | null;
   cadence: Cadence;
   health: HealthStatus;
   lastContactFormatted: string;
   socials: Socials | null;
   preferencesPreview: string[];
+  interactionSummaries: string[];
 }
 
 interface DashboardClientProps {
@@ -66,6 +69,9 @@ export default function DashboardClient({
           contact.location?.toLowerCase().includes(lowerQuery) ||
           contact.preferencesPreview.some((p) =>
             p.toLowerCase().includes(lowerQuery)
+          ) ||
+          contact.interactionSummaries.some((s) =>
+            s.toLowerCase().includes(lowerQuery)
           )
       );
     }
@@ -76,9 +82,16 @@ export default function DashboardClient({
         (contact) => contact.health === 'thirsty' || contact.health === 'parched'
       );
     } else if (activeFilter === 'upcomingBirthdays') {
-      result = result.filter((contact) =>
-        hasUpcomingBirthday(contact.birthday, 30)
-      );
+      result = result.filter((contact) => {
+        // Check full birthday first, then month/day only
+        if (contact.birthday) {
+          return hasUpcomingBirthday(contact.birthday, 30);
+        }
+        if (contact.birthdayMonth && contact.birthdayDay) {
+          return hasUpcomingBirthday(contact.birthdayMonth, contact.birthdayDay, 30);
+        }
+        return false;
+      });
     }
 
     return result;

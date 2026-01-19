@@ -82,13 +82,19 @@ See `app/src/lib/health.ts` for implementation.
 ## Data Models
 
 Five core models in `app/prisma/schema.prisma`:
-- **Contact:** Person info (name, location, birthday, cadence, socials)
+- **Contact:** Person info (name, location, birthday, birthdayMonth, birthdayDay, cadence, socials)
 - **Preference:** ALWAYS/NEVER items (likes, dislikes, allergies)
-- **Interaction:** Contact log (CALL, TEXT, MEET, VOICE with summary)
+- **Interaction:** Contact log (CALL, MESSAGE, MEET, VOICE with summary + platform for MESSAGE type)
 - **Seedling:** Follow-up items (ACTIVE or PLANTED status)
 - **FamilyMember:** Related people (partner, children, pets)
 
 TypeScript interfaces at `app/src/types/index.ts`.
+
+### Interaction Types
+- `CALL` - Phone call
+- `MESSAGE` - Text/chat message with platform: text, instagram, telegram, linkedin
+- `MEET` - In-person meeting
+- `VOICE` - Voice note (created via /api/ingest)
 
 ## Code Style
 
@@ -102,8 +108,52 @@ TypeScript interfaces at `app/src/types/index.ts`.
 
 - **AI Extraction:** `app/src/lib/anthropic.ts` - Claude system prompt and parsing
 - **Health Logic:** `app/src/lib/health.ts` - calculateHealth(), formatLastContact()
+- **Birthday Logic:** `app/src/lib/birthday.ts` - Age, zodiac, countdown calculations
 - **Main API:** `app/src/app/api/ingest/route.ts` - Voice note processing
 - **Types:** `app/src/types/index.ts` - All TypeScript interfaces
+
+## API Routes
+
+| Route | Methods | Description |
+|-------|---------|-------------|
+| `/api/ingest` | POST | Voice note AI processing (dry-run + save) |
+| `/api/contacts` | GET, POST | List all contacts, create new contact |
+| `/api/contacts/[id]` | GET, PUT, DELETE | Single contact CRUD |
+| `/api/interactions` | POST | Create new interaction |
+| `/api/interactions/[id]` | PUT, DELETE | Update/delete interaction |
+| `/api/preferences/[id]` | PUT, DELETE | Update/delete preference |
+| `/api/seedlings/[id]` | PUT, DELETE | Update/delete seedling |
+| `/api/family-members/[id]` | PUT, DELETE | Update/delete family member |
+
+## Components
+
+### Core UI Components
+| Component | Description |
+|-----------|-------------|
+| `ContactCard.tsx` | Dashboard card showing contact health, name, preferences |
+| `QuickLogInteraction.tsx` | Quick tap buttons for logging calls/texts/meetings |
+| `BirthdaySection.tsx` | Birthday display/edit with zodiac and countdown |
+| `EditSocialsModal.tsx` | Modal for editing social links |
+| `InteractionTimeline.tsx` | Timeline of recent interactions |
+| `EditableInteraction.tsx` | Editable interaction item in timeline |
+| `FilterPresets.tsx` | Dashboard filter buttons (All/Needs Water/Birthdays) |
+| `SearchBar.tsx` | Dashboard search input |
+
+### Editable Components
+| Component | Description |
+|-----------|-------------|
+| `EditableText.tsx` | Inline text editing with hover reveal |
+| `EditableCadence.tsx` | Cadence dropdown editor |
+| `EditableLocation.tsx` | Location field editor |
+| `EditablePreference.tsx` | Single preference item editor |
+| `EditableSeedling.tsx` | Seedling item editor with status toggle |
+| `EditableFamilyMember.tsx` | Family member editor |
+
+### Voice Components
+| Component | Description |
+|-----------|-------------|
+| `VoiceButton.tsx` | Recording button with Web Speech API |
+| `VoicePreviewModal.tsx` | Preview/edit AI extraction before save |
 
 ## Gotchas
 

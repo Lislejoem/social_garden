@@ -3,7 +3,7 @@
  * @description Update and delete individual interactions.
  *
  * @endpoints
- * PUT    /api/interactions/:id - Update summary, date, or type
+ * PUT    /api/interactions/:id - Update summary, date, type, or platform
  * DELETE /api/interactions/:id - Delete an interaction
  */
 import { NextRequest, NextResponse } from 'next/server';
@@ -13,35 +13,54 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
+const VALID_TYPES = ['CALL', 'MESSAGE', 'MEET', 'VOICE'];
+const VALID_PLATFORMS = ['text', 'instagram', 'telegram', 'linkedin'];
+
 /**
  * PUT /api/interactions/:id
- * @body { summary?: string, date?: string, type?: string }
+ * @body { summary?: string, date?: string, type?: string, platform?: string }
  * @returns Updated Interaction
  */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
     const body = await request.json();
-    const { summary, date, type } = body;
+    const { summary, date, type, platform } = body;
 
     // Validate type if provided
+    if (type && !VALID_TYPES.includes(type)) {
+      return NextResponse.json(
+        { error: `type must be one of: ${VALID_TYPES.join(', ')}` },
+        { status: 400 }
+      );
+    }
+
+    // Validate platform if provided
+    if (platform && !VALID_PLATFORMS.includes(platform)) {
+      return NextResponse.json(
+        { error: `platform must be one of: ${VALID_PLATFORMS.join(', ')}` },
+        { status: 400 }
+      );
+    }
+
+    // Build update data
+    const updateData: Record<string, unknown> = {};
+    if (summary !== undefined) updateData.summary = summary;
+    if (date !== undefined) updateData.date = new Date(date);
     if (type) {
-      const validTypes = ['CALL', 'TEXT', 'MEET', 'VOICE'];
-      if (!validTypes.includes(type)) {
-        return NextResponse.json(
-          { error: `type must be one of: ${validTypes.join(', ')}` },
-          { status: 400 }
-        );
+      updateData.type = type;
+      // Clear platform if type is not MESSAGE
+      if (type !== 'MESSAGE') {
+        updateData.platform = null;
       }
+    }
+    if (platform !== undefined) {
+      updateData.platform = platform;
     }
 
     const interaction = await prisma.interaction.update({
       where: { id },
-      data: {
-        ...(summary !== undefined && { summary }),
-        ...(date !== undefined && { date: new Date(date) }),
-        ...(type && { type }),
-      },
+      data: updateData,
     });
 
     // Update the parent contact's updatedAt timestamp

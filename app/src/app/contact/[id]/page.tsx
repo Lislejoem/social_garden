@@ -55,6 +55,8 @@ async function getContact(id: string) {
     avatarUrl: contact.avatarUrl,
     location: contact.location,
     birthday: contact.birthday,
+    birthdayMonth: contact.birthdayMonth,
+    birthdayDay: contact.birthdayDay,
     cadence: contact.cadence as Cadence,
     socials,
     health,
@@ -66,7 +68,8 @@ async function getContact(id: string) {
     interactions: contact.interactions.map((i) => ({
       id: i.id,
       date: i.date,
-      type: i.type as 'CALL' | 'TEXT' | 'MEET' | 'VOICE',
+      type: i.type as 'CALL' | 'MESSAGE' | 'MEET' | 'VOICE',
+      platform: i.platform as 'text' | 'instagram' | 'telegram' | 'linkedin' | null,
       summary: i.summary,
     })),
     seedlings: contact.seedlings.map((s) => ({

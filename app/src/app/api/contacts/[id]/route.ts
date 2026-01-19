@@ -62,7 +62,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
     const body = await request.json();
-    const { name, avatarUrl, location, birthday, cadence, socials } = body;
+    const { name, avatarUrl, location, birthday, birthdayMonth, birthdayDay, cadence, socials } = body;
 
     const contact = await prisma.contact.update({
       where: { id },
@@ -73,6 +73,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         ...(birthday !== undefined && {
           birthday: birthday ? new Date(birthday) : null,
         }),
+        ...(birthdayMonth !== undefined && { birthdayMonth }),
+        ...(birthdayDay !== undefined && { birthdayDay }),
         ...(cadence && { cadence }),
         ...(socials !== undefined && {
           socials: socials ? JSON.stringify(socials) : null,

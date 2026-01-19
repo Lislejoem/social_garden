@@ -11,7 +11,10 @@ export type { HealthStatus, Cadence };
 export type Category = 'ALWAYS' | 'NEVER';
 
 /** Type of interaction/contact with a person */
-export type InteractionType = 'CALL' | 'TEXT' | 'MEET' | 'VOICE';
+export type InteractionType = 'CALL' | 'MESSAGE' | 'MEET' | 'VOICE';
+
+/** Platform for MESSAGE type interactions */
+export type MessagePlatform = 'text' | 'instagram' | 'telegram' | 'linkedin';
 
 /** Seedling status: ACTIVE (pending) or PLANTED (completed) */
 export type SeedlingStatus = 'ACTIVE' | 'PLANTED';
@@ -37,6 +40,7 @@ export interface Interaction {
   id: string;
   date: Date;
   type: InteractionType;
+  platform?: MessagePlatform | null;
   summary: string;
 }
 
@@ -62,6 +66,8 @@ export interface Contact {
   avatarUrl: string | null;
   location: string | null;
   birthday: Date | null;
+  birthdayMonth: number | null; // 1-12 for birthday without year
+  birthdayDay: number | null;   // 1-31 for birthday without year
   cadence: Cadence;
   socials: Socials | null;
   createdAt: Date;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Cake, Pencil, Loader2, Check, X, PartyPopper, Plus } from 'lucide-react';
 import {
   calculateAge,
@@ -8,23 +8,69 @@ import {
   getZodiacSign,
   formatBirthday,
   formatBirthdayForInput,
+  parseBirthdayFromInput,
 } from '@/lib/birthday';
+
+const MONTHS = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
 
 interface BirthdaySectionProps {
   birthday: Date | null;
-  onSave: (birthday: Date | null) => Promise<void>;
+  birthdayMonth: number | null;
+  birthdayDay: number | null;
+  onSave: (data: { birthday?: Date | null; birthdayMonth?: number | null; birthdayDay?: number | null }) => Promise<void>;
 }
 
-export default function BirthdaySection({ birthday, onSave }: BirthdaySectionProps) {
+export default function BirthdaySection({ birthday, birthdayMonth, birthdayDay, onSave }: BirthdaySectionProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [editValue, setEditValue] = useState(birthday ? formatBirthdayForInput(birthday) : '');
+
+  // Edit state
+  const [includeYear, setIncludeYear] = useState(!!birthday);
+  const [editMonth, setEditMonth] = useState(birthday ? birthday.getMonth() + 1 : (birthdayMonth || 1));
+  const [editDay, setEditDay] = useState(birthday ? birthday.getDate() : (birthdayDay || 1));
+  const [editYear, setEditYear] = useState(birthday ? birthday.getFullYear() : new Date().getFullYear() - 30);
+
+  // Determine if we have any birthday info
+  const hasBirthday = birthday || (birthdayMonth && birthdayDay);
+
+  // Reset edit state when entering edit mode
+  useEffect(() => {
+    if (isEditing) {
+      setIncludeYear(!!birthday);
+      setEditMonth(birthday ? birthday.getMonth() + 1 : (birthdayMonth || 1));
+      setEditDay(birthday ? birthday.getDate() : (birthdayDay || 1));
+      setEditYear(birthday ? birthday.getFullYear() : new Date().getFullYear() - 30);
+    }
+  }, [isEditing, birthday, birthdayMonth, birthdayDay]);
+
+  // Get days in selected month
+  const getDaysInMonth = (month: number, year: number) => {
+    return new Date(year, month, 0).getDate();
+  };
+
+  const daysInMonth = getDaysInMonth(editMonth, editYear);
+
+  // Adjust day if it exceeds days in month
+  useEffect(() => {
+    if (editDay > daysInMonth) {
+      setEditDay(daysInMonth);
+    }
+  }, [editMonth, editYear, editDay, daysInMonth]);
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const newBirthday = editValue ? new Date(editValue) : null;
-      await onSave(newBirthday);
+      if (includeYear) {
+        // Save full birthday
+        const newBirthday = new Date(editYear, editMonth - 1, editDay, 12, 0, 0);
+        await onSave({ birthday: newBirthday, birthdayMonth: null, birthdayDay: null });
+      } else {
+        // Save month/day only
+        await onSave({ birthday: null, birthdayMonth: editMonth, birthdayDay: editDay });
+      }
       setIsEditing(false);
     } catch (error) {
       console.error('Failed to save birthday:', error);
@@ -34,15 +80,13 @@ export default function BirthdaySection({ birthday, onSave }: BirthdaySectionPro
   };
 
   const handleCancel = () => {
-    setEditValue(birthday ? formatBirthdayForInput(birthday) : '');
     setIsEditing(false);
   };
 
   const handleClear = async () => {
     setIsSaving(true);
     try {
-      await onSave(null);
-      setEditValue('');
+      await onSave({ birthday: null, birthdayMonth: null, birthdayDay: null });
       setIsEditing(false);
     } catch (error) {
       console.error('Failed to clear birthday:', error);
@@ -52,7 +96,7 @@ export default function BirthdaySection({ birthday, onSave }: BirthdaySectionPro
   };
 
   // Empty state
-  if (!birthday && !isEditing) {
+  if (!hasBirthday && !isEditing) {
     return (
       <div className="bg-white rounded-3xl border border-stone-100 p-6 shadow-sm">
         <div className="flex items-center gap-3 mb-4">
@@ -80,13 +124,53 @@ export default function BirthdaySection({ birthday, onSave }: BirthdaySectionPro
           <h3 className="text-lg font-serif font-bold text-stone-800">Birthday</h3>
         </div>
         <div className="space-y-4">
-          <input
-            type="date"
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
-            className="w-full px-4 py-3 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            autoFocus
-          />
+          {/* Month and Day selectors */}
+          <div className="flex gap-3">
+            <select
+              value={editMonth}
+              onChange={(e) => setEditMonth(Number(e.target.value))}
+              className="flex-1 px-4 py-3 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+            >
+              {MONTHS.map((month, index) => (
+                <option key={month} value={index + 1}>{month}</option>
+              ))}
+            </select>
+            <select
+              value={editDay}
+              onChange={(e) => setEditDay(Number(e.target.value))}
+              className="w-24 px-4 py-3 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+            >
+              {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => (
+                <option key={day} value={day}>{day}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Include year checkbox */}
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={includeYear}
+              onChange={(e) => setIncludeYear(e.target.checked)}
+              className="w-5 h-5 rounded border-stone-300 text-emerald-600 focus:ring-emerald-500"
+            />
+            <span className="text-sm text-stone-600">I know the year</span>
+          </label>
+
+          {/* Year selector (only if include year is checked) */}
+          {includeYear && (
+            <input
+              type="number"
+              value={editYear}
+              onChange={(e) => setEditYear(Number(e.target.value))}
+              min={1900}
+              max={new Date().getFullYear()}
+              className="w-full px-4 py-3 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              placeholder="Year"
+            />
+          )}
+
+          {/* Action buttons */}
           <div className="flex gap-2 flex-wrap">
             <button
               onClick={handleSave}
@@ -104,7 +188,7 @@ export default function BirthdaySection({ birthday, onSave }: BirthdaySectionPro
               <X className="w-4 h-4" />
               Cancel
             </button>
-            {birthday && (
+            {hasBirthday && (
               <button
                 onClick={handleClear}
                 disabled={isSaving}
@@ -119,10 +203,16 @@ export default function BirthdaySection({ birthday, onSave }: BirthdaySectionPro
     );
   }
 
-  // Display mode
-  const age = calculateAge(birthday);
-  const daysUntil = daysUntilBirthday(birthday);
-  const zodiac = getZodiacSign(birthday);
+  // Display mode - determine what to show
+  const hasFullBirthday = !!birthday;
+  const month = hasFullBirthday ? birthday.getMonth() + 1 : birthdayMonth!;
+  const day = hasFullBirthday ? birthday.getDate() : birthdayDay!;
+
+  const age = hasFullBirthday ? calculateAge(birthday) : null;
+  const daysUntil = hasFullBirthday ? daysUntilBirthday(birthday) : daysUntilBirthday(month, day);
+  const zodiac = hasFullBirthday ? getZodiacSign(birthday) : getZodiacSign(month, day);
+  const displayDate = hasFullBirthday ? formatBirthday(birthday) : formatBirthday(month, day);
+
   const isToday = daysUntil === 0;
   const isSoon = daysUntil > 0 && daysUntil <= 30;
 
@@ -143,9 +233,12 @@ export default function BirthdaySection({ birthday, onSave }: BirthdaySectionPro
       </div>
 
       <div className="space-y-2">
-        <p className="text-lg font-medium text-stone-800">{formatBirthday(birthday)}</p>
+        <p className="text-lg font-medium text-stone-800">{displayDate}</p>
         <p className="text-stone-500 text-sm">
-          {age} years old <span className="mx-2">·</span> {zodiac.symbol} {zodiac.name}
+          {age !== null ? (
+            <>{age} years old <span className="mx-2">·</span> </>
+          ) : null}
+          {zodiac.symbol} {zodiac.name}
         </p>
 
         {isToday ? (

@@ -49,9 +49,10 @@ These are gaps and features needed to call this a "complete" v1 product.
 - Options: File upload, or URL input, or pull from social profiles
 - Question: Is this important for v1, or can we ship with initials-only?
 
-**"View All History" Link**
-- Currently: Shows in InteractionTimeline but doesn't navigate anywhere
-- Needed: Full interaction history page, or expandable timeline
+**~~"View All History" Link~~** ✅ COMPLETED
+- ~~Currently: Shows in InteractionTimeline but doesn't navigate anywhere~~
+- ~~Needed: Full interaction history page, or expandable timeline~~
+- **Implemented:** Expandable timeline with "View All History" toggle button, shows count of interactions
 
 **Topics of Interest Section**
 - Currently: Filters preferences by character length (>15 chars) as a heuristic
@@ -71,27 +72,28 @@ These are gaps and features needed to call this a "complete" v1 product.
 - Currently: The manual interaction logging (clicking Call, Text, or Meet on someone's profile page) doesn't update any other information other than an interaction in the Recent Growth section
 - Needed: Parse the entry so it can update the rest of the profile (maybe parse it like the text from a voice note so we don't need to build that infra again?)
 
-**Birthday UI, Year**
-- Currently: Great! But requires a year.
-- Needed: Allow for a birthday entry without a year (in case I don't know it)
+**~~Birthday UI, Year~~** ✅ COMPLETED
+- ~~Currently: Great! But requires a year.~~
+- ~~Needed: Allow for a birthday entry without a year (in case I don't know it)~~
+- **Implemented:** Month/day dropdowns with optional "I know the year" checkbox. Supports partial birthdays with zodiac and countdown.
 
-**Birthday UI, Date**
-- Currently: There's a bug with the date where the day entered sets the birthday to the previous day. (e.g. an edit to Sep 28, 2014 shows the birthday as Sep 27, 2014)
+**~~Birthday UI, Date~~** ✅ COMPLETED
+- ~~Currently: There's a bug with the date where the day entered sets the birthday to the previous day. (e.g. an edit to Sep 28, 2014 shows the birthday as Sep 27, 2014)~~
+- **Fixed:** Timezone handling corrected using local date parsing instead of UTC
 
-**Dashboard Searching**
-- Currently: The search doesn't search within the Recent Growth summaries
-- Needed: Allow the search feature to search within Recent Growth summaries
-- Consideration: Can we set up the search to not use a ton of resources?
+**~~Dashboard Searching~~** ✅ COMPLETED
+- ~~Currently: The search doesn't search within the Recent Growth summaries~~
+- ~~Needed: Allow the search feature to search within Recent Growth summaries~~
+- **Implemented:** Search now includes interaction summaries (limited to 20 most recent per contact for performance)
 
 **Interactions via Voice**
 - Currently: Interactions recorded via Voice are marked as `VOICE`
 - Needed: Interactions recorded via Voice should be marked as Meet, Text, Call, etc. based on the content of the note
 
-**Interaction Types**
-- Currently: Interactions are logged as either text, voice, meet, or call
-- Needed: 
-   - We need to add interactions for Instagram, Telegram, and LinkedIn. 
-   - To do so, change `TEXT` to `MESSAGE` and add a dropdown from which to select Text, Instagram, Telegram, and LinkedIn. Then, use one of those 4 options as the option that appears in the Recent Growth section.
+**~~Interaction Types~~** ✅ COMPLETED
+- ~~Currently: Interactions are logged as either text, voice, meet, or call~~
+- ~~Needed: We need to add interactions for Instagram, Telegram, and LinkedIn.~~
+- **Implemented:** MESSAGE type with platform selector (Text, Instagram, Telegram, LinkedIn). Displays platform name in timeline.
 
 ---
 
@@ -281,17 +283,38 @@ These are ideas that push the boundaries - possible, interesting, but not obviou
 ### V1 - Complete Product
 Core functionality + AI briefing + smart capture
 
-1. Manual interaction logging
-2. Birthday display
-3. Edit social links
-4. Dashboard filtering/sorting
-5. Interaction editing
-6. **Contact Briefing (AI-powered)** - relationship summary + conversation prep
-7. **Smart Reminders** - digest, birthdays, seedling follow-ups
-8. **Quick Capture Widget** - one-tap voice recording
-9. **Photo & Screenshot Capture** - with AI extraction
-10. Offline support with queue
-11. Polish items (avatar, history link, error feedback)
+#### Completed ✅
+1. ~~Manual interaction logging~~ ✅
+2. ~~Birthday display~~ ✅
+3. ~~Edit social links~~ ✅
+4. ~~Dashboard filtering/sorting~~ ✅
+5. ~~Interaction editing~~ ✅
+6. ~~Birthday date bug fix~~ ✅
+7. ~~Birthday without year~~ ✅
+8. ~~Interaction types (IG/Telegram/LinkedIn)~~ ✅
+9. ~~Dashboard search in summaries~~ ✅
+10. ~~View All History link~~ ✅
+
+#### Remaining V1 Items
+11. **Contact Briefing (AI-powered)** - relationship summary + conversation prep
+12. **Smart Reminders** - digest, birthdays, seedling follow-ups
+13. **Quick Capture Widget** - one-tap voice recording
+14. **Photo & Screenshot Capture** - with AI extraction
+15. Offline support with queue
+16. Avatar upload
+17. Error feedback improvements
+18. Topics of Interest semantic classification
+19. Voice → inferred interaction type
+20. Manual interaction parsing (update profile from interaction summary)
+
+### Recommended Next Steps
+Based on current progress, here are recommended next features to implement:
+
+1. **Contact Briefing (AI-powered)** - High value, leverages existing AI infrastructure
+2. **Avatar Upload** - Low complexity, improves visual appeal
+3. **Voice → Inferred Type** - Medium complexity, extends existing voice processing
+4. **Error Feedback** - Improves UX across the app
+5. **Manual Interaction Parsing** - Reuses voice note AI infrastructure
 
 ### V2 - Differentiation
 Deep integrations + organization + advanced capture

@@ -1,12 +1,15 @@
 /**
  * @file Birthday Utilities
  * @description Helper functions for birthday calculations and zodiac signs.
+ * Supports both full birthdays (with year) and partial birthdays (month/day only).
  */
 
 /**
- * Calculate age from a birthdate
+ * Calculate age from a birthdate (requires year)
+ * Returns null if birthday doesn't have a year
  */
-export function calculateAge(birthday: Date): number {
+export function calculateAge(birthday: Date | null): number | null {
+  if (!birthday) return null;
   const today = new Date();
   const birthDate = new Date(birthday);
   let age = today.getFullYear() - birthDate.getFullYear();
@@ -22,17 +25,29 @@ export function calculateAge(birthday: Date): number {
 /**
  * Calculate days until next birthday
  * Returns 0 if today is the birthday
+ * Supports both full Date and month/day only
  */
-export function daysUntilBirthday(birthday: Date): number {
+export function daysUntilBirthday(birthday: Date): number;
+export function daysUntilBirthday(month: number, day: number): number;
+export function daysUntilBirthday(birthdayOrMonth: Date | number, day?: number): number {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const birthDate = new Date(birthday);
-  const nextBirthday = new Date(
-    today.getFullYear(),
-    birthDate.getMonth(),
-    birthDate.getDate()
-  );
+  let month: number;
+  let dayOfMonth: number;
+
+  if (typeof birthdayOrMonth === 'number') {
+    // Month/day only
+    month = birthdayOrMonth - 1; // Convert 1-12 to 0-11
+    dayOfMonth = day!;
+  } else {
+    // Full Date
+    const birthDate = new Date(birthdayOrMonth);
+    month = birthDate.getMonth();
+    dayOfMonth = birthDate.getDate();
+  }
+
+  const nextBirthday = new Date(today.getFullYear(), month, dayOfMonth);
 
   // If birthday has passed this year, use next year
   if (nextBirthday < today) {
@@ -47,11 +62,27 @@ export function daysUntilBirthday(birthday: Date): number {
 
 /**
  * Check if birthday is within the next N days
+ * Supports both full Date and month/day only
  */
-export function hasUpcomingBirthday(birthday: Date | null, withinDays: number = 30): boolean {
-  if (!birthday) return false;
-  const days = daysUntilBirthday(birthday);
-  return days <= withinDays;
+export function hasUpcomingBirthday(birthday: Date | null, withinDays?: number): boolean;
+export function hasUpcomingBirthday(month: number | null, day: number | null, withinDays?: number): boolean;
+export function hasUpcomingBirthday(
+  birthdayOrMonth: Date | number | null,
+  dayOrWithinDays?: number | null,
+  withinDays: number = 30
+): boolean {
+  if (birthdayOrMonth === null) return false;
+
+  if (typeof birthdayOrMonth === 'number') {
+    // Month/day only
+    if (dayOrWithinDays === null || dayOrWithinDays === undefined) return false;
+    const days = daysUntilBirthday(birthdayOrMonth, dayOrWithinDays);
+    return days <= withinDays;
+  } else {
+    // Full Date
+    const days = daysUntilBirthday(birthdayOrMonth);
+    return days <= (dayOrWithinDays ?? 30);
+  }
 }
 
 /**
@@ -83,25 +114,36 @@ const ZODIAC_SIGNS: ZodiacSign[] = [
 
 /**
  * Get zodiac sign for a birthday
+ * Supports both full Date and month/day only
  */
-export function getZodiacSign(birthday: Date): { name: string; symbol: string } {
-  const birthDate = new Date(birthday);
-  const month = birthDate.getMonth() + 1; // 1-12
-  const day = birthDate.getDate();
+export function getZodiacSign(birthday: Date): { name: string; symbol: string };
+export function getZodiacSign(month: number, day: number): { name: string; symbol: string };
+export function getZodiacSign(birthdayOrMonth: Date | number, day?: number): { name: string; symbol: string } {
+  let month: number;
+  let dayOfMonth: number;
+
+  if (typeof birthdayOrMonth === 'number') {
+    month = birthdayOrMonth; // Already 1-12
+    dayOfMonth = day!;
+  } else {
+    const birthDate = new Date(birthdayOrMonth);
+    month = birthDate.getMonth() + 1; // 1-12
+    dayOfMonth = birthDate.getDate();
+  }
 
   for (const sign of ZODIAC_SIGNS) {
     // Handle Capricorn which spans year boundary
     if (sign.startMonth > sign.endMonth) {
       if (
-        (month === sign.startMonth && day >= sign.startDay) ||
-        (month === sign.endMonth && day <= sign.endDay)
+        (month === sign.startMonth && dayOfMonth >= sign.startDay) ||
+        (month === sign.endMonth && dayOfMonth <= sign.endDay)
       ) {
         return { name: sign.name, symbol: sign.symbol };
       }
     } else {
       if (
-        (month === sign.startMonth && day >= sign.startDay) ||
-        (month === sign.endMonth && day <= sign.endDay) ||
+        (month === sign.startMonth && dayOfMonth >= sign.startDay) ||
+        (month === sign.endMonth && dayOfMonth <= sign.endDay) ||
         (month > sign.startMonth && month < sign.endMonth)
       ) {
         return { name: sign.name, symbol: sign.symbol };
@@ -115,9 +157,20 @@ export function getZodiacSign(birthday: Date): { name: string; symbol: string } 
 
 /**
  * Format birthday for display
+ * Supports both full Date and month/day only
  */
-export function formatBirthday(birthday: Date): string {
-  return new Date(birthday).toLocaleDateString('en-US', {
+export function formatBirthday(birthday: Date): string;
+export function formatBirthday(month: number, day: number): string;
+export function formatBirthday(birthdayOrMonth: Date | number, day?: number): string {
+  if (typeof birthdayOrMonth === 'number') {
+    // Month/day only - create a date just for formatting
+    const date = new Date(2000, birthdayOrMonth - 1, day!);
+    return date.toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+    });
+  }
+  return new Date(birthdayOrMonth).toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
     year: 'numeric',
@@ -126,8 +179,21 @@ export function formatBirthday(birthday: Date): string {
 
 /**
  * Format birthday for input[type="date"]
+ * Uses local date parts to avoid timezone shift issues
  */
 export function formatBirthdayForInput(birthday: Date): string {
   const d = new Date(birthday);
-  return d.toISOString().split('T')[0];
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+/**
+ * Parse a date string from input[type="date"] as local date
+ * Sets time to noon to avoid DST boundary issues
+ */
+export function parseBirthdayFromInput(dateString: string): Date {
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day, 12, 0, 0);
 }
