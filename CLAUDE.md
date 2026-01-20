@@ -169,7 +169,7 @@ AI automatically infers interaction type from voice note content (e.g., "grabbed
 
 | Route | Methods | Description |
 |-------|---------|-------------|
-| `/api/ingest` | POST | Voice note AI processing (dry-run + save) |
+| `/api/ingest` | POST | Voice note & manual interaction AI processing (dry-run + save) |
 | `/api/contacts` | GET, POST | List all contacts, create new contact |
 | `/api/contacts/[id]` | GET, PUT, DELETE | Single contact CRUD |
 | `/api/contacts/[id]/briefing` | POST | Generate AI-powered contact briefing |
@@ -186,7 +186,7 @@ AI automatically infers interaction type from voice note content (e.g., "grabbed
 |-----------|-------------|
 | `ContactCard.tsx` | Dashboard card showing contact health, name, preferences |
 | `ContactBriefing.tsx` | AI-generated conversation prep (summary, highlights, starters) |
-| `QuickLogInteraction.tsx` | Quick tap buttons for logging calls/texts/meetings |
+| `QuickLogInteraction.tsx` | Quick tap buttons for logging calls/texts/meetings. With summary: uses AI processing via `/api/ingest`. Without summary: direct save to `/api/interactions`. |
 | `BirthdaySection.tsx` | Birthday display/edit with zodiac and countdown |
 | `EditSocialsModal.tsx` | Modal for editing social links |
 | `EditAvatarModal.tsx` | Modal for editing avatar (manual URL or Gravatar) |

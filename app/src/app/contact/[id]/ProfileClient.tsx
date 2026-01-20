@@ -423,6 +423,15 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
     router.refresh();
   };
 
+  const handleQuickLogPreview = (data: {
+    extraction: AIExtraction;
+    existingContact: { id: string; name: string; location: string | null } | null;
+    isNewContact: boolean;
+    rawInput: string;
+  }) => {
+    setPreviewData(data);
+  };
+
   // Extract topics from ALWAYS preferences (items that seem like interests)
   const topics = contact.preferences
     .filter((p) => p.category === 'ALWAYS')
@@ -560,6 +569,7 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
             contactId={contact.id}
             contactName={contact.name}
             onSuccess={handleQuickLogSuccess}
+            onPreview={handleQuickLogPreview}
           />
         </section>
 

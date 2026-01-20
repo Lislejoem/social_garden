@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Phone, MessageSquare, Users, Loader2, X, Send } from 'lucide-react';
-import type { InteractionType, MessagePlatform } from '@/types';
+import type { InteractionType, MessagePlatform, AIExtraction } from '@/types';
 
 // Instagram icon (custom SVG)
 const InstagramIcon = ({ className }: { className?: string }) => (
@@ -22,6 +22,34 @@ interface QuickLogInteractionProps {
   contactId: string;
   contactName: string;
   onSuccess: () => void;
+  onPreview: (data: {
+    extraction: AIExtraction;
+    existingContact: { id: string; name: string; location: string | null } | null;
+    isNewContact: boolean;
+    rawInput: string;
+  }) => void;
+}
+
+/**
+ * Builds a natural language description for AI processing from manual interaction data.
+ * This format matches what the AI expects from voice note transcripts.
+ */
+function buildRawInput(
+  type: InteractionType,
+  platform: MessagePlatform,
+  summary: string,
+  contactName: string
+): string {
+  const typeDescriptions: Record<InteractionType, string> = {
+    CALL: `Had a phone call with ${contactName}`,
+    MESSAGE: platform === 'text'
+      ? `Texted ${contactName}`
+      : `Messaged ${contactName} on ${platform}`,
+    MEET: `Met up with ${contactName}`,
+    VOICE: `Talked with ${contactName}`,
+  };
+
+  return `${typeDescriptions[type]}. ${summary}`;
 }
 
 const INTERACTION_BUTTONS: {
@@ -69,6 +97,7 @@ export default function QuickLogInteraction({
   contactId,
   contactName,
   onSuccess,
+  onPreview,
 }: QuickLogInteractionProps) {
   const [selectedType, setSelectedType] = useState<InteractionType | null>(null);
   const [selectedPlatform, setSelectedPlatform] = useState<MessagePlatform>('text');
@@ -92,6 +121,52 @@ export default function QuickLogInteraction({
   const handleSave = async () => {
     if (!selectedType) return;
 
+    const summaryText = summary.trim();
+
+    // If user entered a summary, use AI processing with preview
+    if (summaryText) {
+      setIsSaving(true);
+      try {
+        // Build a natural language description for AI
+        const rawInput = buildRawInput(selectedType, selectedPlatform, summaryText, contactName);
+
+        const response = await fetch('/api/ingest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            rawInput,
+            contactId,
+            dryRun: true,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to process');
+        }
+
+        const preview = await response.json();
+
+        // Pass to parent to show preview modal
+        onPreview({
+          extraction: preview.extraction,
+          existingContact: preview.existingContact,
+          isNewContact: preview.isNewContact,
+          rawInput,
+        });
+
+        // Reset form
+        setSelectedType(null);
+        setSummary('');
+        setSelectedPlatform('text');
+      } catch (error) {
+        console.error('Failed to process interaction:', error);
+      } finally {
+        setIsSaving(false);
+      }
+      return;
+    }
+
+    // No summary - direct save (existing behavior)
     setIsSaving(true);
     try {
       const response = await fetch('/api/interactions', {
@@ -101,7 +176,7 @@ export default function QuickLogInteraction({
           contactId,
           type: selectedType,
           platform: selectedType === 'MESSAGE' ? selectedPlatform : undefined,
-          summary: summary.trim() || undefined, // Let API generate default if empty
+          summary: undefined, // Let API generate default
         }),
       });
 

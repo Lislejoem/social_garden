@@ -68,9 +68,10 @@ These are gaps and features needed to call this a "complete" v1 product.
 - Local-first data storage with sync
 - Why: App should work anywhere, anytime
 
-**Manual Interaction Logging**
-- Currently: The manual interaction logging (clicking Call, Text, or Meet on someone's profile page) doesn't update any other information other than an interaction in the Recent Growth section
-- Needed: Parse the entry so it can update the rest of the profile (maybe parse it like the text from a voice note so we don't need to build that infra again?)
+**~~Manual Interaction Parsing~~** ✅ COMPLETED
+- ~~Currently: The manual interaction logging (clicking Call, Text, or Meet on someone's profile page) doesn't update any other information other than an interaction in the Recent Growth section~~
+- ~~Needed: Parse the entry so it can update the rest of the profile (maybe parse it like the text from a voice note so we don't need to build that infra again?)~~
+- **Implemented:** When a summary is provided in manual interaction logging, it's sent through the same AI pipeline as voice notes. The VoicePreviewModal shows extracted preferences, family members, and seedlings for user review before saving. If no summary is provided, the interaction is saved directly (existing behavior).
 
 **~~Birthday UI, Year~~** ✅ COMPLETED
 - ~~Currently: Great! But requires a year.~~
@@ -106,6 +107,10 @@ These are gaps and features needed to call this a "complete" v1 product.
 - Consideration: 
    1. Not sure what the best option is. Maybe only regenerate it when one hasn't been generated in a while? Or only when new information is added?
    2. It doesn't have to be this exactly. Ask before implementing anything.
+
+**Interaction Hot Fixes**
+- When the user mentions a date in the interaction logging, the date is not saved as the date of the interaction. We need to ensure the date updates based on the content of the message, especially relative dates like "yesterday", "last week", etc.
+- When editing the date of interactions, the date is assigned as the day previous to the date set. (This was a previous issue with another part of the app with logging dates as UTC. We should scrape the codebase to ensure dates are handled appropriately, fix them, then add to documentation how we approach dates and times.)
 
 ---
 
@@ -317,16 +322,16 @@ Core functionality + AI briefing + smart capture
 17. Error feedback improvements
 18. Topics of Interest semantic classification
 19. ~~Voice → inferred interaction type~~ ✅
-20. Manual interaction parsing (update profile from interaction summary)
+20. ~~Manual interaction parsing~~ ✅
 
 ### Recommended Next Steps
 Based on current progress, here are recommended next features to implement:
 
-1. **Manual Interaction Parsing** - Reuses voice note AI infrastructure
-2. **Contact Briefing Hot Fixes** - Avoid regenerating on every profile load
-3. **Error Feedback** - Improves UX across the app
-4. **Smart Reminders** - High value but requires scoping discussion first
-5. **Topics of Interest Classification** - Let AI tag topics vs preferences semantically
+1. **Contact Briefing Hot Fixes** - Avoid regenerating on every profile load, show as modal
+2. **Error Feedback** - Improves UX across the app
+3. **Smart Reminders** - High value but requires scoping discussion first
+4. **Topics of Interest Classification** - Let AI tag topics vs preferences semantically
+5. **Offline Support** - Queue voice notes for processing when back online
 
 ### V2 - Differentiation
 Deep integrations + organization + advanced capture
@@ -358,7 +363,8 @@ Network intelligence + mutual tools
 ## Notes for Future Claude
 
 - The health system uses a gardening metaphor: thriving → growing → thirsty → parched
-- Voice notes are processed by Claude AI via `/api/ingest` with a dry-run preview flow
+- Voice notes and manual interactions (with summaries) are processed by Claude AI via `/api/ingest` with a dry-run preview flow
+- **Manual Interaction Parsing**: When a summary is entered in QuickLogInteraction, it builds a natural language prompt via `buildRawInput()` and sends it to `/api/ingest`. The `onPreview` callback shows the VoicePreviewModal for user review. Without a summary, interactions save directly to `/api/interactions`.
 - Contact briefings are generated via `/api/contacts/[id]/briefing` using `generateBriefing()` in anthropic.ts
 - The codebase uses Next.js 14 App Router with strict TypeScript
 - **Testing**: Vitest with React Testing Library. Run `npm test` or `npm run test:run`. Mocking Anthropic SDK requires `vi.hoisted()`.
