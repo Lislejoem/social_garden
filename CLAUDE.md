@@ -1,3 +1,47 @@
+# Foundational Rules
+
+## Our Working Relationship
+
+- We're colleagues working together. I'm "Joe", you're "Claude". You MUST use these names so any communication is abundantly clear. There's no hierarchy.
+- YOU MUST call out bad ideas, unreasonable expectations, and mistakes - I depend on this.
+- You have issues with memory formation both during and between conversations. Use skills and documentation religiously to remember things before you forget them.
+
+## Test Driven Development  (TDD)
+ 
+- FOR EVERY NEW FEATURE OR BUGFIX, YOU MUST follow Test Driven Development :
+    1. Write a failing test that correctly validates the desired functionality
+    2. Run the test to confirm it fails as expected
+    3. Write ONLY enough code to make the failing test pass
+    4. Run the test to confirm success
+    5. Refactor if needed while keeping tests green
+
+## Testing
+
+Tests use Vitest with React Testing Library. Test files follow `*.test.ts(x)` pattern.
+
+```bash
+npm test             # Watch mode
+npm run test:run     # Single run
+```
+
+Test configuration in `vitest.config.ts`. Mocking Anthropic SDK requires `vi.hoisted()` for proper initialization order.
+
+## Writing Code
+
+- YOU MUST make the SMALLEST reasonable changes to achieve the desired outcome.
+- YOU MUST WORK HARD to reduce code duplication, even if the refactoring takes extra effort.
+- Fix broken things immediately when you find them. Don't ask permission to fix bugs.
+
+## Naming
+
+- Names MUST tell what code does, not how it's implemented or its history
+- When changing code, never document the old behavior or the behavior change
+
+## At the end of each plan, do these
+
+- Review and update `CLAUDE.md` and relevant skills, subagents, documentation, and test files with every code run to ensure they are always up to date. If a skill, subagent, documentation file, or test file is missing, create one.
+- Update `docs/PRODUCT_VISION.md` to reflect the current state of the project. Add recommendations for next steps and update other listed features based on what was just updated.
+
 # Social Garden
 
 Personal CRM app for nurturing relationships. Voice notes are transcribed and processed by Claude AI to extract contact information, preferences, family members, and follow-up items.
@@ -46,6 +90,8 @@ app/
 npm run dev          # Start development server (port 3000)
 npm run build        # Production build
 npm run lint         # ESLint check
+npm test             # Run tests in watch mode (Vitest)
+npm run test:run     # Run tests once
 npx prisma studio    # Visual database browser
 npx prisma db push   # Sync schema to database
 npx prisma generate  # Regenerate Prisma client
@@ -106,10 +152,11 @@ TypeScript interfaces at `app/src/types/index.ts`.
 
 ## Key Files
 
-- **AI Extraction:** `app/src/lib/anthropic.ts` - Claude system prompt and parsing
+- **AI Integration:** `app/src/lib/anthropic.ts` - extractFromNote() and generateBriefing() functions
 - **Health Logic:** `app/src/lib/health.ts` - calculateHealth(), formatLastContact()
 - **Birthday Logic:** `app/src/lib/birthday.ts` - Age, zodiac, countdown calculations
-- **Main API:** `app/src/app/api/ingest/route.ts` - Voice note processing
+- **Voice Processing API:** `app/src/app/api/ingest/route.ts` - Voice note processing
+- **Briefing API:** `app/src/app/api/contacts/[id]/briefing/route.ts` - AI briefing generation
 - **Types:** `app/src/types/index.ts` - All TypeScript interfaces
 
 ## API Routes
@@ -119,6 +166,7 @@ TypeScript interfaces at `app/src/types/index.ts`.
 | `/api/ingest` | POST | Voice note AI processing (dry-run + save) |
 | `/api/contacts` | GET, POST | List all contacts, create new contact |
 | `/api/contacts/[id]` | GET, PUT, DELETE | Single contact CRUD |
+| `/api/contacts/[id]/briefing` | POST | Generate AI-powered contact briefing |
 | `/api/interactions` | POST | Create new interaction |
 | `/api/interactions/[id]` | PUT, DELETE | Update/delete interaction |
 | `/api/preferences/[id]` | PUT, DELETE | Update/delete preference |
@@ -131,6 +179,7 @@ TypeScript interfaces at `app/src/types/index.ts`.
 | Component | Description |
 |-----------|-------------|
 | `ContactCard.tsx` | Dashboard card showing contact health, name, preferences |
+| `ContactBriefing.tsx` | AI-generated conversation prep (summary, highlights, starters) |
 | `QuickLogInteraction.tsx` | Quick tap buttons for logging calls/texts/meetings |
 | `BirthdaySection.tsx` | Birthday display/edit with zodiac and countdown |
 | `EditSocialsModal.tsx` | Modal for editing social links |
@@ -160,10 +209,4 @@ TypeScript interfaces at `app/src/types/index.ts`.
 - `socials` field stored as JSON string in SQLite, parsed in components
 - Next.js 14 async params: `const { id } = await params` (not destructure directly)
 - Web Speech API only works in Chrome/Edge (not Firefox/Safari)
-- No test framework installed yet
 - ANTHROPIC_API_KEY required in `.env.local`
-
-## At the end of each plan, do these
-
-- Review and update `CLAUDE.md`, skills, subagents, and documentation files with every code run to ensure they are always up to date. If a file is missing, add one.
-- Update `docs/PRODUCT_VISION.md` to reflect the current state of the project. Add recommendations for next steps and update other listed features based on what was just updated.
