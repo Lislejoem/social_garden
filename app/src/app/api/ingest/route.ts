@@ -204,10 +204,12 @@ export async function POST(request: NextRequest) {
 
     // Add interaction
     if (extraction.interactionSummary) {
+      const interactionType = extraction.interactionType || 'VOICE';
       await prisma.interaction.create({
         data: {
           contactId: contact.id,
-          type: extraction.interactionType || 'VOICE',
+          type: interactionType,
+          platform: interactionType === 'MESSAGE' ? (extraction.interactionPlatform || 'text') : null,
           summary: extraction.interactionSummary,
         },
       });

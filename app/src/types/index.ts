@@ -11,10 +11,8 @@ export type { HealthStatus, Cadence };
 export type Category = 'ALWAYS' | 'NEVER';
 
 /** Type of interaction/contact with a person */
-export type InteractionType = 'CALL' | 'MESSAGE' | 'MEET' | 'VOICE';
-
-/** Platform for MESSAGE type interactions */
-export type MessagePlatform = 'text' | 'instagram' | 'telegram' | 'linkedin';
+import type { InteractionType, MessagePlatform } from '@/lib/interactions';
+export type { InteractionType, MessagePlatform };
 
 /** Seedling status: ACTIVE (pending) or PLANTED (completed) */
 export type SeedlingStatus = 'ACTIVE' | 'PLANTED';
@@ -119,6 +117,7 @@ export interface AIExtraction {
   seedlings?: string[];
   interactionSummary?: string;
   interactionType?: InteractionType;
+  interactionPlatform?: MessagePlatform;
 }
 
 // Voice Preview types

@@ -36,7 +36,8 @@ import {
   Trash2,
   Plus,
 } from 'lucide-react';
-import type { AIExtraction, Category } from '@/types';
+import type { AIExtraction, Category, InteractionType, MessagePlatform } from '@/types';
+import { INTERACTION_TYPES, PLATFORMS, TYPE_LABELS, PLATFORM_LABELS } from '@/lib/interactions';
 
 /**
  * Props for VoicePreviewModal component
@@ -503,6 +504,50 @@ export default function VoicePreviewModal({
                 <MessageSquare className="w-4 h-4" />
                 Interaction Summary
               </h4>
+
+              {/* Interaction Type Selector */}
+              <div className="flex flex-wrap gap-2">
+                {INTERACTION_TYPES.map((type) => (
+                  <button
+                    key={type}
+                    onClick={() => {
+                      if (type !== 'MESSAGE') {
+                        // Clear platform when switching away from MESSAGE
+                        setData({ ...data, interactionType: type, interactionPlatform: undefined });
+                      } else {
+                        // Set default platform when switching to MESSAGE
+                        setData({ ...data, interactionType: type, interactionPlatform: data.interactionPlatform || 'text' });
+                      }
+                    }}
+                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+                      (data.interactionType || 'VOICE') === type
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                    }`}
+                  >
+                    {TYPE_LABELS[type]}
+                  </button>
+                ))}
+              </div>
+
+              {/* Platform Selector (only for MESSAGE type) */}
+              {(data.interactionType || 'VOICE') === 'MESSAGE' && (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-stone-500">Platform:</span>
+                  <select
+                    value={data.interactionPlatform || 'text'}
+                    onChange={(e) => setData({ ...data, interactionPlatform: e.target.value as MessagePlatform })}
+                    className="px-3 py-2 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  >
+                    {PLATFORMS.map((platform) => (
+                      <option key={platform} value={platform}>
+                        {PLATFORM_LABELS[platform]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               {editingField === 'interactionSummary' ? (
                 <div className="flex flex-col gap-2">
                   <textarea

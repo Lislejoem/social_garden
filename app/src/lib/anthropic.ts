@@ -12,6 +12,7 @@
  */
 import Anthropic from '@anthropic-ai/sdk';
 import type { AIExtraction, ContactBriefing, Preference, Interaction, Seedling, FamilyMember, Cadence } from '@/types';
+import { generateTypeInferencePrompt, INTERACTION_TYPES, PLATFORMS } from './interactions';
 
 /** Anthropic client instance (uses ANTHROPIC_API_KEY from env) */
 const anthropic = new Anthropic({
@@ -36,7 +37,8 @@ Return ONLY valid JSON with this structure:
   ],
   "seedlings": ["string - future follow-up items, things to remember to ask about"],
   "interactionSummary": "string - brief summary of this interaction/conversation",
-  "interactionType": "CALL | TEXT | MEET | VOICE"
+  "interactionType": "${INTERACTION_TYPES.join(' | ')}",
+  "interactionPlatform": "${PLATFORMS.join(' | ')}" (only include if interactionType is MESSAGE)
 }
 
 Guidelines:
@@ -44,8 +46,8 @@ Guidelines:
 - For preferences, distinguish between things they ALWAYS want vs things to NEVER do/mention
 - Seedlings are future-focused: follow-ups, gifts to consider, things to check in about
 - Keep interactionSummary concise (1-2 sentences)
-- If the interaction type isn't clear, default to "VOICE" for voice notes
-- Be liberal in extracting useful information - it's better to capture something than miss it`;
+- Be liberal in extracting useful information - it's better to capture something than miss it
+${generateTypeInferencePrompt()}`;
 
 /**
  * Extract structured contact information from a voice note transcript.

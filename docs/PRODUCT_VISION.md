@@ -86,14 +86,26 @@ These are gaps and features needed to call this a "complete" v1 product.
 - ~~Needed: Allow the search feature to search within Recent Growth summaries~~
 - **Implemented:** Search now includes interaction summaries (limited to 20 most recent per contact for performance)
 
-**Interactions via Voice**
-- Currently: Interactions recorded via Voice are marked as `VOICE`
-- Needed: Interactions recorded via Voice should be marked as Meet, Text, Call, etc. based on the content of the note
+**~~Interactions via Voice~~** ✅ COMPLETED
+- ~~Currently: Interactions recorded via Voice are marked as `VOICE`~~
+- ~~Needed: Interactions recorded via Voice should be marked as Meet, Text, Call, etc. based on the content of the note~~
+- **Implemented:** AI now infers interaction type (CALL, MESSAGE, MEET, VOICE) from voice note content. VoicePreviewModal shows type selector with platform dropdown for MESSAGE type. Centralized config in `interactions.ts` makes adding new platforms/types trivial.
 
 **~~Interaction Types~~** ✅ COMPLETED
 - ~~Currently: Interactions are logged as either text, voice, meet, or call~~
 - ~~Needed: We need to add interactions for Instagram, Telegram, and LinkedIn.~~
 - **Implemented:** MESSAGE type with platform selector (Text, Instagram, Telegram, LinkedIn). Displays platform name in timeline.
+
+**Contact Briefing Hot Fixes**
+- Currently: 
+   1. Regenerates a new contact briefing each time you open a profile
+   2. Conversation prep takes up a ton of space right at the top and people may not even want it
+- Needed: 
+   1. Don't do it every time, and don't do it unless Conversation Prep is opened.
+   2. Put Conversation Prep as a button at the top of a profile, and have it appear as a modal when clicked on.
+- Consideration: 
+   1. Not sure what the best option is. Maybe only regenerate it when one hasn't been generated in a while? Or only when new information is added?
+   2. It doesn't have to be this exactly. Ask before implementing anything.
 
 ---
 
@@ -304,14 +316,14 @@ Core functionality + AI briefing + smart capture
 16. Offline support with queue
 17. Error feedback improvements
 18. Topics of Interest semantic classification
-19. Voice → inferred interaction type
+19. ~~Voice → inferred interaction type~~ ✅
 20. Manual interaction parsing (update profile from interaction summary)
 
 ### Recommended Next Steps
 Based on current progress, here are recommended next features to implement:
 
-1. **Voice → Inferred Type** - Medium complexity, extends existing voice processing
-2. **Manual Interaction Parsing** - Reuses voice note AI infrastructure
+1. **Manual Interaction Parsing** - Reuses voice note AI infrastructure
+2. **Contact Briefing Hot Fixes** - Avoid regenerating on every profile load
 3. **Error Feedback** - Improves UX across the app
 4. **Smart Reminders** - High value but requires scoping discussion first
 5. **Topics of Interest Classification** - Let AI tag topics vs preferences semantically
@@ -350,7 +362,8 @@ Network intelligence + mutual tools
 - Contact briefings are generated via `/api/contacts/[id]/briefing` using `generateBriefing()` in anthropic.ts
 - The codebase uses Next.js 14 App Router with strict TypeScript
 - **Testing**: Vitest with React Testing Library. Run `npm test` or `npm run test:run`. Mocking Anthropic SDK requires `vi.hoisted()`.
-- Key files: `anthropic.ts` (AI - extraction + briefing), `avatar.ts` (Gravatar + multi-source), `health.ts` (status calculation), `prisma/schema.prisma` (data model)
+- Key files: `anthropic.ts` (AI - extraction + briefing), `avatar.ts` (Gravatar + multi-source), `health.ts` (status calculation), `interactions.ts` (interaction types & platforms config), `prisma/schema.prisma` (data model)
+- **Interaction Types**: Centralized in `interactions.ts`. To add a new platform (e.g., WhatsApp): add to PLATFORMS array, add keywords to PLATFORM_KEYWORDS, add label to PLATFORM_LABELS. AI prompt, UI, and types auto-update.
 - **Avatar System**: Uses `avatarSource` and `preferredAvatarSource` fields. Currently supports manual URL and Gravatar. Designed for LinkedIn/Instagram OAuth integration in V2.
 - Joe is excited about AI-powered insights, deep relationship data, AND simplicity - find the balance
 - No feature is off the table - he said "no restrictions" and wants to explore everything

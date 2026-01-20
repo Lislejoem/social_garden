@@ -137,10 +137,14 @@ Five core models in `app/prisma/schema.prisma`:
 TypeScript interfaces at `app/src/types/index.ts`.
 
 ### Interaction Types
+Centralized in `app/src/lib/interactions.ts`. To add a new platform/type, update only this file.
+
 - `CALL` - Phone call
 - `MESSAGE` - Text/chat message with platform: text, instagram, telegram, linkedin
 - `MEET` - In-person meeting
-- `VOICE` - Voice note (created via /api/ingest)
+- `VOICE` - Voice note (default when type can't be inferred)
+
+AI automatically infers interaction type from voice note content (e.g., "grabbed coffee" → MEET).
 
 ## Code Style
 
@@ -156,6 +160,7 @@ TypeScript interfaces at `app/src/types/index.ts`.
 - **Avatar Utilities:** `app/src/lib/avatar.ts` - getGravatarUrl(), resolveAvatarUrl(), getAvailableAvatarSources()
 - **Health Logic:** `app/src/lib/health.ts` - calculateHealth(), formatLastContact()
 - **Birthday Logic:** `app/src/lib/birthday.ts` - Age, zodiac, countdown calculations
+- **Interactions Config:** `app/src/lib/interactions.ts` - Types, platforms, keywords for AI inference
 - **Voice Processing API:** `app/src/app/api/ingest/route.ts` - Voice note processing
 - **Briefing API:** `app/src/app/api/contacts/[id]/briefing/route.ts` - AI briefing generation
 - **Types:** `app/src/types/index.ts` - All TypeScript interfaces

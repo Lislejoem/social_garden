@@ -16,7 +16,245 @@ vi.mock('@anthropic-ai/sdk', () => {
 });
 
 // Import after mock is set up
-import { generateBriefing } from './anthropic';
+import { extractFromNote, generateBriefing } from './anthropic';
+
+describe('extractFromNote', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('extracts contact name and basic fields', async () => {
+    const mockResponse = {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            contactName: 'Sarah',
+            interactionSummary: 'Had coffee together',
+            interactionType: 'MEET',
+          }),
+        },
+      ],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    const result = await extractFromNote('Had coffee with Sarah today');
+
+    expect(result.contactName).toBe('Sarah');
+    expect(result.interactionSummary).toBe('Had coffee together');
+    expect(result.interactionType).toBe('MEET');
+  });
+
+  it('infers MEET type from in-person keywords', async () => {
+    const mockResponse = {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            contactName: 'Mike',
+            interactionSummary: 'Grabbed lunch and discussed his new job',
+            interactionType: 'MEET',
+          }),
+        },
+      ],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    const result = await extractFromNote('Grabbed lunch with Mike and he told me about his new job');
+
+    expect(result.interactionType).toBe('MEET');
+  });
+
+  it('infers CALL type from phone keywords', async () => {
+    const mockResponse = {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            contactName: 'John',
+            interactionSummary: 'Phone call about weekend plans',
+            interactionType: 'CALL',
+          }),
+        },
+      ],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    const result = await extractFromNote('Called John to discuss weekend plans');
+
+    expect(result.interactionType).toBe('CALL');
+  });
+
+  it('infers MESSAGE type from text keywords', async () => {
+    const mockResponse = {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            contactName: 'Lisa',
+            interactionSummary: 'Quick text about meeting time',
+            interactionType: 'MESSAGE',
+            interactionPlatform: 'text',
+          }),
+        },
+      ],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    const result = await extractFromNote('Texted Lisa about when to meet');
+
+    expect(result.interactionType).toBe('MESSAGE');
+    expect(result.interactionPlatform).toBe('text');
+  });
+
+  it('infers MESSAGE with instagram platform', async () => {
+    const mockResponse = {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            contactName: 'Emma',
+            interactionSummary: 'DM about the party',
+            interactionType: 'MESSAGE',
+            interactionPlatform: 'instagram',
+          }),
+        },
+      ],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    const result = await extractFromNote('DMed Emma on Instagram about the party this weekend');
+
+    expect(result.interactionType).toBe('MESSAGE');
+    expect(result.interactionPlatform).toBe('instagram');
+  });
+
+  it('infers MESSAGE with linkedin platform', async () => {
+    const mockResponse = {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            contactName: 'David',
+            interactionSummary: 'LinkedIn message about job opportunity',
+            interactionType: 'MESSAGE',
+            interactionPlatform: 'linkedin',
+          }),
+        },
+      ],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    const result = await extractFromNote('Sent David a message on LinkedIn about the job opening');
+
+    expect(result.interactionType).toBe('MESSAGE');
+    expect(result.interactionPlatform).toBe('linkedin');
+  });
+
+  it('defaults to VOICE when no clear interaction type', async () => {
+    const mockResponse = {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            contactName: 'Sarah',
+            interactionSummary: 'Note about her birthday preferences',
+            interactionType: 'VOICE',
+          }),
+        },
+      ],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    const result = await extractFromNote('Just want to remember that Sarah loves chocolate cake');
+
+    expect(result.interactionType).toBe('VOICE');
+  });
+
+  it('throws error when no text response from Claude', async () => {
+    const mockResponse = {
+      content: [],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    await expect(extractFromNote('test input')).rejects.toThrow('No text response from Claude');
+  });
+
+  it('throws error when response is not valid JSON', async () => {
+    const mockResponse = {
+      content: [
+        {
+          type: 'text',
+          text: 'This is not JSON',
+        },
+      ],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    await expect(extractFromNote('test input')).rejects.toThrow('Failed to parse AI response as JSON');
+  });
+
+  it('extracts preferences and family members', async () => {
+    const mockResponse = {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            contactName: 'Amy',
+            preferences: [
+              { category: 'ALWAYS', content: 'Loves hiking' },
+              { category: 'NEVER', content: 'Allergic to shellfish' },
+            ],
+            familyMembers: [
+              { name: 'Tom', relation: 'Husband' },
+            ],
+            interactionType: 'MEET',
+          }),
+        },
+      ],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    const result = await extractFromNote('Met with Amy who loves hiking. She mentioned she is allergic to shellfish. Her husband Tom was there too.');
+
+    expect(result.preferences).toHaveLength(2);
+    expect(result.preferences?.[0].category).toBe('ALWAYS');
+    expect(result.familyMembers).toHaveLength(1);
+    expect(result.familyMembers?.[0].name).toBe('Tom');
+  });
+
+  it('extracts seedlings (follow-up items)', async () => {
+    const mockResponse = {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            contactName: 'Chris',
+            seedlings: ['Ask about interview results', 'Remember to send book recommendation'],
+            interactionType: 'CALL',
+          }),
+        },
+      ],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    const result = await extractFromNote('Called Chris, he has a job interview next week');
+
+    expect(result.seedlings).toHaveLength(2);
+    expect(result.seedlings).toContain('Ask about interview results');
+  });
+});
 
 describe('generateBriefing', () => {
   beforeEach(() => {
