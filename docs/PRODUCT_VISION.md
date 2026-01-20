@@ -44,10 +44,10 @@ These are gaps and features needed to call this a "complete" v1 product.
 
 ### 1.3 Polish Items for V1
 
-**Avatar Upload**
-- Currently: Stores avatarUrl but no way to set it
-- Options: File upload, or URL input, or pull from social profiles
-- Question: Is this important for v1, or can we ship with initials-only?
+**~~Avatar Upload~~** ✅ COMPLETED
+- ~~Currently: Stores avatarUrl but no way to set it~~
+- ~~Options: File upload, or URL input, or pull from social profiles~~
+- **Implemented:** EditAvatarModal with manual URL input and Gravatar auto-fetch. Extensible design ready for LinkedIn/Instagram OAuth integration in V2. Uses `avatarSource` and `preferredAvatarSource` fields for future multi-source support.
 
 **~~"View All History" Link~~** ✅ COMPLETED
 - ~~Currently: Shows in InteractionTimeline but doesn't navigate anywhere~~
@@ -295,13 +295,13 @@ Core functionality + AI briefing + smart capture
 9. ~~Dashboard search in summaries~~ ✅
 10. ~~View All History link~~ ✅
 11. ~~Contact Briefing (AI-powered)~~ ✅ - relationship summary, highlights, conversation starters
+12. ~~Avatar Upload~~ ✅ - manual URL input, Gravatar auto-fetch, extensible for OAuth
 
 #### Remaining V1 Items
-12. **Smart Reminders** - digest, birthdays, seedling follow-ups
-13. **Quick Capture Widget** - one-tap voice recording
-14. **Photo & Screenshot Capture** - with AI extraction
-15. Offline support with queue
-16. Avatar upload
+13. **Smart Reminders** - digest, birthdays, seedling follow-ups
+14. **Quick Capture Widget** - one-tap voice recording
+15. **Photo & Screenshot Capture** - with AI extraction
+16. Offline support with queue
 17. Error feedback improvements
 18. Topics of Interest semantic classification
 19. Voice → inferred interaction type
@@ -310,11 +310,11 @@ Core functionality + AI briefing + smart capture
 ### Recommended Next Steps
 Based on current progress, here are recommended next features to implement:
 
-1. **Avatar Upload** - Low complexity, improves visual appeal significantly
-2. **Voice → Inferred Type** - Medium complexity, extends existing voice processing
-3. **Manual Interaction Parsing** - Reuses voice note AI infrastructure
-4. **Error Feedback** - Improves UX across the app
-5. **Smart Reminders** - High value but requires scoping discussion first
+1. **Voice → Inferred Type** - Medium complexity, extends existing voice processing
+2. **Manual Interaction Parsing** - Reuses voice note AI infrastructure
+3. **Error Feedback** - Improves UX across the app
+4. **Smart Reminders** - High value but requires scoping discussion first
+5. **Topics of Interest Classification** - Let AI tag topics vs preferences semantically
 
 ### V2 - Differentiation
 Deep integrations + organization + advanced capture
@@ -350,7 +350,8 @@ Network intelligence + mutual tools
 - Contact briefings are generated via `/api/contacts/[id]/briefing` using `generateBriefing()` in anthropic.ts
 - The codebase uses Next.js 14 App Router with strict TypeScript
 - **Testing**: Vitest with React Testing Library. Run `npm test` or `npm run test:run`. Mocking Anthropic SDK requires `vi.hoisted()`.
-- Key files: `anthropic.ts` (AI - extraction + briefing), `health.ts` (status calculation), `prisma/schema.prisma` (data model)
+- Key files: `anthropic.ts` (AI - extraction + briefing), `avatar.ts` (Gravatar + multi-source), `health.ts` (status calculation), `prisma/schema.prisma` (data model)
+- **Avatar System**: Uses `avatarSource` and `preferredAvatarSource` fields. Currently supports manual URL and Gravatar. Designed for LinkedIn/Instagram OAuth integration in V2.
 - Joe is excited about AI-powered insights, deep relationship data, AND simplicity - find the balance
 - No feature is off the table - he said "no restrictions" and wants to explore everything
 - **Smart Reminders**: When implementing, ask scoping questions about notification frequency, channels, and timing

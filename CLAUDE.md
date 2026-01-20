@@ -153,6 +153,7 @@ TypeScript interfaces at `app/src/types/index.ts`.
 ## Key Files
 
 - **AI Integration:** `app/src/lib/anthropic.ts` - extractFromNote() and generateBriefing() functions
+- **Avatar Utilities:** `app/src/lib/avatar.ts` - getGravatarUrl(), resolveAvatarUrl(), getAvailableAvatarSources()
 - **Health Logic:** `app/src/lib/health.ts` - calculateHealth(), formatLastContact()
 - **Birthday Logic:** `app/src/lib/birthday.ts` - Age, zodiac, countdown calculations
 - **Voice Processing API:** `app/src/app/api/ingest/route.ts` - Voice note processing
@@ -183,6 +184,7 @@ TypeScript interfaces at `app/src/types/index.ts`.
 | `QuickLogInteraction.tsx` | Quick tap buttons for logging calls/texts/meetings |
 | `BirthdaySection.tsx` | Birthday display/edit with zodiac and countdown |
 | `EditSocialsModal.tsx` | Modal for editing social links |
+| `EditAvatarModal.tsx` | Modal for editing avatar (manual URL or Gravatar) |
 | `InteractionTimeline.tsx` | Timeline of recent interactions |
 | `EditableInteraction.tsx` | Editable interaction item in timeline |
 | `FilterPresets.tsx` | Dashboard filter buttons (All/Needs Water/Birthdays) |

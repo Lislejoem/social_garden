@@ -56,6 +56,7 @@ import EditableSeedling from '@/components/EditableSeedling';
 import QuickLogInteraction from '@/components/QuickLogInteraction';
 import BirthdaySection from '@/components/BirthdaySection';
 import EditSocialsModal from '@/components/EditSocialsModal';
+import EditAvatarModal from '@/components/EditAvatarModal';
 import ContactBriefing from '@/components/ContactBriefing';
 import type {
   HealthStatus,
@@ -71,12 +72,15 @@ import type {
   SeedlingStatus,
   InteractionType,
   MessagePlatform,
+  AvatarSource,
 } from '@/types';
 
 interface ContactData {
   id: string;
   name: string;
   avatarUrl: string | null;
+  avatarSource: AvatarSource | null;
+  preferredAvatarSource: AvatarSource | null;
   location: string | null;
   birthday: Date | null;
   birthdayMonth: number | null;
@@ -152,6 +156,9 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
 
   // Socials modal state
   const [isSocialsModalOpen, setIsSocialsModalOpen] = useState(false);
+
+  // Avatar modal state
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
 
   const handleVoiceNote = async (transcript: string) => {
     // First, get a preview with dryRun
@@ -271,6 +278,24 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
 
   const handleUpdateSocials = async (socials: Socials) => {
     await handleUpdateContact('socials', socials);
+  };
+
+  const handleUpdateAvatar = async (data: {
+    avatarUrl: string | null;
+    avatarSource: AvatarSource | null;
+    preferredAvatarSource: AvatarSource | null;
+  }) => {
+    const response = await fetch(`/api/contacts/${contact.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update avatar');
+    }
+
+    router.refresh();
   };
 
   // Preference handlers
@@ -436,7 +461,7 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
       <main className="max-w-6xl mx-auto px-6 mt-12">
         {/* Header Section */}
         <section className="flex flex-col md:flex-row gap-10 items-start md:items-center mb-12">
-          <div className="relative">
+          <div className="relative group">
             {contact.avatarUrl ? (
               <img
                 src={contact.avatarUrl}
@@ -453,6 +478,14 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
             >
               {theme.icon}
             </div>
+            {/* Edit Avatar Button */}
+            <button
+              onClick={() => setIsAvatarModalOpen(true)}
+              className="absolute -bottom-2 -left-2 p-2.5 bg-white rounded-xl shadow-lg border border-stone-200 text-stone-400 hover:text-emerald-600 hover:border-emerald-300 opacity-0 group-hover:opacity-100 transition-all duration-200"
+              title="Edit avatar"
+            >
+              <Pencil className="w-4 h-4" />
+            </button>
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-4 mb-2">
@@ -732,6 +765,17 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
         onClose={() => setIsSocialsModalOpen(false)}
         socials={contact.socials}
         onSave={handleUpdateSocials}
+      />
+
+      {/* Edit Avatar Modal */}
+      <EditAvatarModal
+        isOpen={isAvatarModalOpen}
+        onClose={() => setIsAvatarModalOpen(false)}
+        onSave={handleUpdateAvatar}
+        currentAvatarUrl={contact.avatarUrl}
+        currentAvatarSource={contact.avatarSource}
+        preferredAvatarSource={contact.preferredAvatarSource}
+        socials={contact.socials}
       />
 
       {/* Confirmation Toast */}

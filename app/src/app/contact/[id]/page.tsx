@@ -5,7 +5,7 @@ import {
   calculateHealth,
   getLastInteractionDate,
 } from '@/lib/health';
-import type { Cadence, Socials, Preference, Interaction, Seedling, FamilyMember } from '@/types';
+import type { Cadence, Socials, Preference, Interaction, Seedling, FamilyMember, AvatarSource } from '@/types';
 import ProfileClient from './ProfileClient';
 
 interface PageProps {
@@ -53,6 +53,8 @@ async function getContact(id: string) {
     id: contact.id,
     name: contact.name,
     avatarUrl: contact.avatarUrl,
+    avatarSource: contact.avatarSource as AvatarSource | null,
+    preferredAvatarSource: contact.preferredAvatarSource as AvatarSource | null,
     location: contact.location,
     birthday: contact.birthday,
     birthdayMonth: contact.birthdayMonth,

@@ -11,10 +11,12 @@ datasource db {
 }
 
 model Contact {
-  id            String    @id @default(cuid())
-  name          String
-  avatarUrl     String?
-  location      String?
+  id                    String    @id @default(cuid())
+  name                  String
+  avatarUrl             String?
+  avatarSource          String?   // 'manual' | 'gravatar' | 'linkedin' | 'instagram'
+  preferredAvatarSource String?   // User's preferred source when multiple available
+  location              String?
   birthday      DateTime? // Full birthday with year (optional)
   birthdayMonth Int?      // Month 1-12 for birthday without year
   birthdayDay   Int?      // Day 1-31 for birthday without year

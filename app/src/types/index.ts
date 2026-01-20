@@ -19,6 +19,9 @@ export type MessagePlatform = 'text' | 'instagram' | 'telegram' | 'linkedin';
 /** Seedling status: ACTIVE (pending) or PLANTED (completed) */
 export type SeedlingStatus = 'ACTIVE' | 'PLANTED';
 
+/** Avatar source: where the profile picture comes from */
+export type AvatarSource = 'manual' | 'gravatar' | 'linkedin' | 'instagram';
+
 /** Social media and contact information links */
 export interface Socials {
   instagram?: string;
@@ -64,6 +67,8 @@ export interface Contact {
   id: string;
   name: string;
   avatarUrl: string | null;
+  avatarSource: AvatarSource | null;
+  preferredAvatarSource: AvatarSource | null;
   location: string | null;
   birthday: Date | null;
   birthdayMonth: number | null; // 1-12 for birthday without year
