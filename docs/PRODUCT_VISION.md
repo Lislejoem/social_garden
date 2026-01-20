@@ -12,16 +12,16 @@ These are gaps and features needed to call this a "complete" v1 product.
 
 ### 1.2 New V1 Features
 
-**Contact Briefing (AI-Powered)**
-- Combines relationship summary + conversation prep into one feature
-- On each contact profile, show an AI-generated briefing:
-  - "Here's what you know about Sarah at a glance"
-  - "Things to ask about" based on history
-  - "Last time you talked, she mentioned her mom was having surgery"
-  - "Her son Max starts college this fall"
-- Pulls from: seedlings, recent interactions, family member events, preferences
-- Refreshes on-demand when user requests it on the profile
-- Why: Makes every interaction more meaningful
+**~~Contact Briefing (AI-Powered)~~** ✅ COMPLETED
+- ~~Combines relationship summary + conversation prep into one feature~~
+- ~~On each contact profile, show an AI-generated briefing:~~
+  - ~~"Here's what you know about Sarah at a glance"~~
+  - ~~"Things to ask about" based on history~~
+  - ~~"Last time you talked, she mentioned her mom was having surgery"~~
+  - ~~"Her son Max starts college this fall"~~
+- ~~Pulls from: seedlings, recent interactions, family member events, preferences~~
+- ~~Refreshes on-demand when user requests it on the profile~~
+- **Implemented:** ContactBriefing component with AI-generated relationship summary, recent highlights, conversation starters, and upcoming milestones. Uses `/api/contacts/[id]/briefing` endpoint with `generateBriefing()` in anthropic.ts.
 
 **Smart Reminders**
 - Daily/weekly digest: "3 contacts need attention"
@@ -294,9 +294,9 @@ Core functionality + AI briefing + smart capture
 8. ~~Interaction types (IG/Telegram/LinkedIn)~~ ✅
 9. ~~Dashboard search in summaries~~ ✅
 10. ~~View All History link~~ ✅
+11. ~~Contact Briefing (AI-powered)~~ ✅ - relationship summary, highlights, conversation starters
 
 #### Remaining V1 Items
-11. **Contact Briefing (AI-powered)** - relationship summary + conversation prep
 12. **Smart Reminders** - digest, birthdays, seedling follow-ups
 13. **Quick Capture Widget** - one-tap voice recording
 14. **Photo & Screenshot Capture** - with AI extraction
@@ -310,11 +310,11 @@ Core functionality + AI briefing + smart capture
 ### Recommended Next Steps
 Based on current progress, here are recommended next features to implement:
 
-1. **Contact Briefing (AI-powered)** - High value, leverages existing AI infrastructure
-2. **Avatar Upload** - Low complexity, improves visual appeal
-3. **Voice → Inferred Type** - Medium complexity, extends existing voice processing
+1. **Avatar Upload** - Low complexity, improves visual appeal significantly
+2. **Voice → Inferred Type** - Medium complexity, extends existing voice processing
+3. **Manual Interaction Parsing** - Reuses voice note AI infrastructure
 4. **Error Feedback** - Improves UX across the app
-5. **Manual Interaction Parsing** - Reuses voice note AI infrastructure
+5. **Smart Reminders** - High value but requires scoping discussion first
 
 ### V2 - Differentiation
 Deep integrations + organization + advanced capture
@@ -347,8 +347,10 @@ Network intelligence + mutual tools
 
 - The health system uses a gardening metaphor: thriving → growing → thirsty → parched
 - Voice notes are processed by Claude AI via `/api/ingest` with a dry-run preview flow
+- Contact briefings are generated via `/api/contacts/[id]/briefing` using `generateBriefing()` in anthropic.ts
 - The codebase uses Next.js 14 App Router with strict TypeScript
-- Key files: `anthropic.ts` (AI), `health.ts` (status calculation), `prisma/schema.prisma` (data model)
+- **Testing**: Vitest with React Testing Library. Run `npm test` or `npm run test:run`. Mocking Anthropic SDK requires `vi.hoisted()`.
+- Key files: `anthropic.ts` (AI - extraction + briefing), `health.ts` (status calculation), `prisma/schema.prisma` (data model)
 - Joe is excited about AI-powered insights, deep relationship data, AND simplicity - find the balance
 - No feature is off the table - he said "no restrictions" and wants to explore everything
 - **Smart Reminders**: When implementing, ask scoping questions about notification frequency, channels, and timing

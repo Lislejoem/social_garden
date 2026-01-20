@@ -134,3 +134,15 @@ export interface IngestRequestWithOptions extends IngestRequest {
   dryRun?: boolean;
   overrides?: AIExtraction;
 }
+
+/** AI-generated briefing for a contact */
+export interface ContactBriefing {
+  /** High-level summary of the relationship */
+  relationshipSummary: string;
+  /** Recent highlights from interactions */
+  recentHighlights: string[];
+  /** Suggested conversation starters */
+  conversationStarters: string[];
+  /** Upcoming milestones or events to remember */
+  upcomingMilestones: string[];
+}

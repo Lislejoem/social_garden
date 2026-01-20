@@ -56,6 +56,7 @@ import EditableSeedling from '@/components/EditableSeedling';
 import QuickLogInteraction from '@/components/QuickLogInteraction';
 import BirthdaySection from '@/components/BirthdaySection';
 import EditSocialsModal from '@/components/EditSocialsModal';
+import ContactBriefing from '@/components/ContactBriefing';
 import type {
   HealthStatus,
   Cadence,
@@ -526,6 +527,14 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
             contactId={contact.id}
             contactName={contact.name}
             onSuccess={handleQuickLogSuccess}
+          />
+        </section>
+
+        {/* AI-Powered Contact Briefing */}
+        <section className="mb-12">
+          <ContactBriefing
+            contactId={contact.id}
+            contactName={contact.name}
           />
         </section>
 

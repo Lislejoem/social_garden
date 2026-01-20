@@ -19,7 +19,8 @@
       "Bash(cmd.exe /c \"del \\\\?\\\\C:\\\\Users\\\\lisle\\\\Personal Projects\\\\social_garden\\\\nul\")",
       "Bash(cd:*)",
       "Bash(ls -la \"C:\\\\Users\\\\lisle\\\\Personal Projects\\\\social_garden\\\\app\\\\src\\\\app\\\\contact\"\" 2>/dev/null || echo \"Path check failed \")",
-      "Bash(sqlite3:*)"
+      "Bash(sqlite3:*)",
+      "Bash(npx vitest:*)"
     ]
   }
 }
