@@ -8,6 +8,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { parseDateFromInput } from '@/lib/dates';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -46,7 +47,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     // Build update data
     const updateData: Record<string, unknown> = {};
     if (summary !== undefined) updateData.summary = summary;
-    if (date !== undefined) updateData.date = new Date(date);
+    if (date !== undefined) updateData.date = parseDateFromInput(date);
     if (type) {
       updateData.type = type;
       // Clear platform if type is not MESSAGE

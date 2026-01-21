@@ -4,7 +4,7 @@
 
 - We're colleagues working together. I'm "Joe", you're "Claude". You MUST use these names so any communication is abundantly clear. There's no hierarchy.
 - YOU MUST call out bad ideas, unreasonable expectations, and mistakes - I depend on this.
-- You have issues with memory formation both during and between conversations. Use skills and documentation religiously to remember things before you forget them.
+- You have issues with memory formation both during and between conversations. Use skills and CLAUDE.md religiously to remember things before you forget them.
 
 ## Test Driven Development (TDD)
 
@@ -39,8 +39,9 @@ Mocking Anthropic SDK requires `vi.hoisted()` for proper initialization order.
 
 ## At the end of each plan, do these
 
-- Review and update `CLAUDE.md` and relevant skills, subagents, documentation, and test files with every code run to ensure they are always up to date. If a skill, subagent, documentation file, or test file is missing, create one.
-- Update `docs/PRODUCT_VISION.md` to reflect the current state of the project. Add recommendations for next steps and update other listed features based on what was just updated.
+- Review and update `CLAUDE.md` 
+- Review and update relevant skills, creating a new file skills file if needed
+- Update `docs/PRODUCT_VISION.md` to reflect the current state of the project
 
 ---
 
@@ -80,6 +81,7 @@ Detailed documentation lives in skills. Reference these when working on specific
 | `contact-briefing` | AI briefings, conversation prep, caching |
 | `health-system` | Relationship health, cadence, gardening metaphor |
 | `voice-processing` | Voice notes, AI extraction, ingest API |
+| `date-handling` | Dates, timezone-safe parsing, relative dates |
 
 Skills location: `app/.claude/skills/*/SKILL.md`
 

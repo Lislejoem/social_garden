@@ -118,6 +118,8 @@ export interface AIExtraction {
   interactionSummary?: string;
   interactionType?: InteractionType;
   interactionPlatform?: MessagePlatform;
+  /** When the interaction occurred (ISO date string from AI, e.g., "2025-01-19") */
+  interactionDate?: string;
 }
 
 // Voice Preview types

@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Pencil, Trash2, Loader2, Check, X, MessageSquare, Send } from 'lucide-react';
+import { Pencil, Trash2, Loader2, Check, X } from 'lucide-react';
 import type { Interaction, InteractionType, MessagePlatform } from '@/types';
+import { formatDateForInput } from '@/lib/dates';
 
 interface EditableInteractionProps {
   interaction: Interaction;
@@ -30,14 +31,6 @@ function formatDate(date: Date): string {
     day: 'numeric',
     year: 'numeric',
   });
-}
-
-function formatDateForInput(date: Date): string {
-  const d = new Date(date);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
 }
 
 function getDisplayLabel(type: InteractionType, platform?: MessagePlatform | null): string {

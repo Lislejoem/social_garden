@@ -22,17 +22,11 @@ A complete, polished product that handles the core use case: helping users maint
 8. View All History link
 9. Contact Briefing (AI-powered) - relationship summary, highlights, conversation starters
 10. Avatar Upload - manual URL input, Gravatar auto-fetch
+11. Interaction date handling - relative dates ("yesterday", "last week") and timezone-safe editing
 
 ---
 
 ## Remaining V1 Items
-
-### Bug Fixes (Do First)
-
-**Interaction Date Handling**
-- Relative dates ("yesterday", "last week") in logged interactions are not parsed to update the interaction date
-- Editing interaction dates results in the day before the selected date being saved (likely UTC issue)
-- Action: Audit codebase for date handling, fix issues, document date/time approach
 
 ### Features
 
@@ -72,11 +66,10 @@ A complete, polished product that handles the core use case: helping users maint
 
 ## Recommended Next Steps
 
-1. **Interaction Date Handling** - Fix the relative date parsing and UTC issues
-2. **Error Feedback** - Improves UX across the entire app
-3. **Topics of Interest Classification** - Let AI tag topics vs preferences semantically
-4. **Smart Reminders** - High value but requires scoping discussion first
-5. **Offline Support** - Queue voice notes for processing when back online
+1. **Error Feedback** - Improves UX across the entire app
+2. **Topics of Interest Classification** - Let AI tag topics vs preferences semantically
+3. **Smart Reminders** - High value but requires scoping discussion first
+4. **Offline Support** - Queue voice notes for processing when back online
 
 ---
 

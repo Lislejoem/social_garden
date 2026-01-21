@@ -23,6 +23,8 @@ const SYSTEM_PROMPT = `You are a personal relationship assistant helping to main
 
 Extract structured data from the user's note about a person. The note may be a voice transcript, so be forgiving of minor transcription errors.
 
+Today's date is ${new Date().toISOString().split('T')[0]}.
+
 Return ONLY valid JSON with this structure:
 {
   "contactName": "string (required - the person's name)",
@@ -38,7 +40,8 @@ Return ONLY valid JSON with this structure:
   "seedlings": ["string - future follow-up items, things to remember to ask about"],
   "interactionSummary": "string - brief summary of this interaction/conversation",
   "interactionType": "${INTERACTION_TYPES.join(' | ')}",
-  "interactionPlatform": "${PLATFORMS.join(' | ')}" (only include if interactionType is MESSAGE)
+  "interactionPlatform": "${PLATFORMS.join(' | ')}" (only include if interactionType is MESSAGE),
+  "interactionDate": "YYYY-MM-DD format - when the interaction occurred"
 }
 
 Guidelines:
@@ -47,6 +50,7 @@ Guidelines:
 - Seedlings are future-focused: follow-ups, gifts to consider, things to check in about
 - Keep interactionSummary concise (1-2 sentences)
 - Be liberal in extracting useful information - it's better to capture something than miss it
+- For interactionDate: parse relative dates like "yesterday", "last week", "2 days ago" into actual dates. If no date is mentioned, omit this field.
 ${generateTypeInferencePrompt()}`;
 
 /**

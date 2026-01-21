@@ -21,6 +21,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { extractFromNote } from '@/lib/anthropic';
+import { parseDateFromInput, parseRelativeDate } from '@/lib/dates';
 import type { AIExtraction, IngestPreviewResponse } from '@/types';
 
 export async function POST(request: NextRequest) {
@@ -205,12 +206,26 @@ export async function POST(request: NextRequest) {
     // Add interaction
     if (extraction.interactionSummary) {
       const interactionType = extraction.interactionType || 'VOICE';
+
+      // Determine interaction date:
+      // 1. Use AI-extracted date if available (YYYY-MM-DD format)
+      // 2. Fall back to parsing relative dates from the summary
+      // 3. Default to now if no date found
+      let interactionDate: Date;
+      if (extraction.interactionDate) {
+        interactionDate = parseDateFromInput(extraction.interactionDate);
+      } else {
+        const parsedRelative = parseRelativeDate(extraction.interactionSummary);
+        interactionDate = parsedRelative || new Date();
+      }
+
       await prisma.interaction.create({
         data: {
           contactId: contact.id,
           type: interactionType,
           platform: interactionType === 'MESSAGE' ? (extraction.interactionPlatform || 'text') : null,
           summary: extraction.interactionSummary,
+          date: interactionDate,
         },
       });
       updates.interaction = true;
