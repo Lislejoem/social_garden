@@ -96,3 +96,26 @@ Import types from centralized location:
 ```typescript
 import type { Contact, Preference, HealthStatus } from '@/types';
 ```
+
+## Avatar System
+
+Profile photos use a multi-source approach with fallback chain.
+
+### Fields (on Contact model)
+- `avatarUrl` - The currently displayed avatar URL
+- `avatarSource` - Where the current avatar came from ('manual', 'gravatar', etc.)
+- `preferredAvatarSource` - User's preferred source for auto-fetch
+
+### Current Sources
+1. **Manual URL** - User pastes a URL directly
+2. **Gravatar** - Auto-fetches from Gravatar based on email
+
+### Adding New Sources
+The system is designed for OAuth integration (LinkedIn, Instagram) in V2:
+1. Add source to `avatarSource` enum in schema
+2. Add fetch logic to `app/src/lib/avatar.ts`
+3. Update `AvatarUpload.tsx` component with new option
+
+### Key Files
+- `app/src/lib/avatar.ts` - Gravatar fetch, URL validation
+- `app/src/components/AvatarUpload.tsx` - Upload UI component

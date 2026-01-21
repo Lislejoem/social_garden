@@ -36,6 +36,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       },
     });
 
+    // Touch Contact.updatedAt to invalidate cached briefing
+    await prisma.contact.update({
+      where: { id: seedling.contactId },
+      data: { updatedAt: new Date() },
+    });
+
     return NextResponse.json(seedling);
   } catch (error) {
     console.error('Failed to update seedling:', error);
@@ -54,8 +60,27 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
 
+    // Get the seedling first to find the contactId
+    const seedling = await prisma.seedling.findUnique({
+      where: { id },
+      select: { contactId: true },
+    });
+
+    if (!seedling) {
+      return NextResponse.json(
+        { error: 'Seedling not found' },
+        { status: 404 }
+      );
+    }
+
     await prisma.seedling.delete({
       where: { id },
+    });
+
+    // Touch Contact.updatedAt to invalidate cached briefing
+    await prisma.contact.update({
+      where: { id: seedling.contactId },
+      data: { updatedAt: new Date() },
     });
 
     return NextResponse.json({ success: true });

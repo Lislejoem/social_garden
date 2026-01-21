@@ -1,14 +1,22 @@
 /**
  * @file Contact Briefing API Route
- * @description Generates AI-powered briefings for contacts.
+ * @description Generates AI-powered briefings for contacts with caching.
  *
  * @endpoints
- * POST /api/contacts/:id/briefing - Generate a briefing for a contact
+ * POST /api/contacts/:id/briefing - Get or generate a briefing for a contact
+ *   Query params:
+ *   - forceRefresh=true - Bypass cache and generate a new briefing
+ *
+ * @caching
+ * Briefings are cached on the Contact record (cachedBriefing, briefingGeneratedAt).
+ * Cache is valid when briefingGeneratedAt >= updatedAt. When contact data changes
+ * (interactions, preferences, seedlings, family members), updatedAt advances and
+ * the cache is invalidated.
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateBriefing } from '@/lib/anthropic';
-import type { Cadence } from '@/types';
+import type { Cadence, ContactBriefing } from '@/types';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -16,12 +24,15 @@ interface RouteParams {
 
 /**
  * POST /api/contacts/:id/briefing
- * Generates an AI-powered briefing for the contact.
- * @returns ContactBriefing with relationship summary, highlights, conversation starters
+ * Returns cached briefing if valid, otherwise generates a new one.
+ * @query forceRefresh - Set to "true" to bypass cache
+ * @returns { success: true, briefing: ContactBriefing, fromCache: boolean }
  */
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
+    const { searchParams } = new URL(request.url);
+    const forceRefresh = searchParams.get('forceRefresh') === 'true';
 
     // Fetch the contact with all related data
     const contact = await prisma.contact.findUnique({
@@ -30,7 +41,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         preferences: true,
         interactions: {
           orderBy: { date: 'desc' },
-          take: 20, // Limit to recent interactions for context
+          take: 20,
         },
         seedlings: {
           orderBy: { createdAt: 'desc' },
@@ -44,6 +55,22 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         { error: 'Contact not found' },
         { status: 404 }
       );
+    }
+
+    // Check cache validity
+    const cacheValid =
+      !forceRefresh &&
+      contact.cachedBriefing &&
+      contact.briefingGeneratedAt &&
+      contact.briefingGeneratedAt >= contact.updatedAt;
+
+    if (cacheValid) {
+      const cachedBriefing = JSON.parse(contact.cachedBriefing!) as ContactBriefing;
+      return NextResponse.json({
+        success: true,
+        briefing: cachedBriefing,
+        fromCache: true,
+      });
     }
 
     // Generate the briefing using AI
@@ -77,9 +104,19 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       location: contact.location,
     });
 
+    // Cache the briefing
+    await prisma.contact.update({
+      where: { id },
+      data: {
+        cachedBriefing: JSON.stringify(briefing),
+        briefingGeneratedAt: new Date(),
+      },
+    });
+
     return NextResponse.json({
       success: true,
       briefing,
+      fromCache: false,
     });
   } catch (error) {
     console.error('Failed to generate briefing:', error);

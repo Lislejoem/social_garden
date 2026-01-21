@@ -32,6 +32,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       },
     });
 
+    // Touch Contact.updatedAt to invalidate cached briefing
+    await prisma.contact.update({
+      where: { id: familyMember.contactId },
+      data: { updatedAt: new Date() },
+    });
+
     return NextResponse.json(familyMember);
   } catch (error) {
     console.error('Failed to update family member:', error);
@@ -50,8 +56,27 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
 
+    // Get the family member first to find the contactId
+    const familyMember = await prisma.familyMember.findUnique({
+      where: { id },
+      select: { contactId: true },
+    });
+
+    if (!familyMember) {
+      return NextResponse.json(
+        { error: 'Family member not found' },
+        { status: 404 }
+      );
+    }
+
     await prisma.familyMember.delete({
       where: { id },
+    });
+
+    // Touch Contact.updatedAt to invalidate cached briefing
+    await prisma.contact.update({
+      where: { id: familyMember.contactId },
+      data: { updatedAt: new Date() },
     });
 
     return NextResponse.json({ success: true });

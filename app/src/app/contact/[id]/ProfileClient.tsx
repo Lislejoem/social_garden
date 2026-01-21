@@ -57,7 +57,8 @@ import QuickLogInteraction from '@/components/QuickLogInteraction';
 import BirthdaySection from '@/components/BirthdaySection';
 import EditSocialsModal from '@/components/EditSocialsModal';
 import EditAvatarModal from '@/components/EditAvatarModal';
-import ContactBriefing from '@/components/ContactBriefing';
+import ContactBriefingButton from '@/components/ContactBriefingButton';
+import ContactBriefingModal from '@/components/ContactBriefingModal';
 import type {
   HealthStatus,
   Cadence,
@@ -159,6 +160,9 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
 
   // Avatar modal state
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+
+  // Briefing modal state
+  const [isBriefingModalOpen, setIsBriefingModalOpen] = useState(false);
 
   const handleVoiceNote = async (transcript: string) => {
     // First, get a preview with dryRun
@@ -505,6 +509,7 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
                 inputClassName="text-4xl md:text-6xl font-serif font-bold text-stone-800 tracking-tight w-full"
                 showEditIcon={false}
               />
+              <ContactBriefingButton onClick={() => setIsBriefingModalOpen(true)} />
             </div>
             <div className="flex flex-wrap items-center gap-4 text-stone-500">
               <EditableCadence
@@ -570,14 +575,6 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
             contactName={contact.name}
             onSuccess={handleQuickLogSuccess}
             onPreview={handleQuickLogPreview}
-          />
-        </section>
-
-        {/* AI-Powered Contact Briefing */}
-        <section className="mb-12">
-          <ContactBriefing
-            contactId={contact.id}
-            contactName={contact.name}
           />
         </section>
 
@@ -786,6 +783,14 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
         currentAvatarSource={contact.avatarSource}
         preferredAvatarSource={contact.preferredAvatarSource}
         socials={contact.socials}
+      />
+
+      {/* Contact Briefing Modal */}
+      <ContactBriefingModal
+        isOpen={isBriefingModalOpen}
+        onClose={() => setIsBriefingModalOpen(false)}
+        contactId={contact.id}
+        contactName={contact.name}
       />
 
       {/* Confirmation Toast */}

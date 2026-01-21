@@ -32,6 +32,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       },
     });
 
+    // Touch Contact.updatedAt to invalidate cached briefing
+    await prisma.contact.update({
+      where: { id: preference.contactId },
+      data: { updatedAt: new Date() },
+    });
+
     return NextResponse.json(preference);
   } catch (error) {
     console.error('Failed to update preference:', error);
@@ -50,8 +56,27 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
 
+    // Get the preference first to find the contactId
+    const preference = await prisma.preference.findUnique({
+      where: { id },
+      select: { contactId: true },
+    });
+
+    if (!preference) {
+      return NextResponse.json(
+        { error: 'Preference not found' },
+        { status: 404 }
+      );
+    }
+
     await prisma.preference.delete({
       where: { id },
+    });
+
+    // Touch Contact.updatedAt to invalidate cached briefing
+    await prisma.contact.update({
+      where: { id: preference.contactId },
+      data: { updatedAt: new Date() },
     });
 
     return NextResponse.json({ success: true });

@@ -22,6 +22,8 @@ model Contact {
   birthday  DateTime?
   cadence   String    @default("REGULARLY")
   socials   String?   // JSON string
+  cachedBriefing      String?   // JSON of ContactBriefing
+  briefingGeneratedAt DateTime? // For cache invalidation
 
   preferences   Preference[]
   interactions  Interaction[]
@@ -82,6 +84,7 @@ All related models use `onDelete: Cascade`, so deleting a Contact automatically 
 
 - JSON stored as strings - parse in application code
 - `socials` field: `JSON.stringify(socials)` on save, `JSON.parse()` on read
+- `cachedBriefing` field: same pattern for AI briefing cache
 - No native JSON queries - use application-level filtering
 
 ## Prisma Client Location
