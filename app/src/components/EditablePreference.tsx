@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Heart, Ban, Trash2, Check, X, Loader2 } from 'lucide-react';
 import type { Preference, Category } from '@/types';
+import { useToast } from '../contexts/ToastContext';
 
 interface EditablePreferenceProps {
   preference: Preference;
@@ -20,6 +21,7 @@ export default function EditablePreference({
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { showError } = useToast();
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -36,6 +38,8 @@ export default function EditablePreference({
       await onUpdate(preference.id, {
         category: isAlways ? 'NEVER' : 'ALWAYS',
       });
+    } catch {
+      showError('Failed to update preference. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -52,6 +56,8 @@ export default function EditablePreference({
     try {
       await onUpdate(preference.id, { content: trimmed });
       setIsEditing(false);
+    } catch {
+      showError('Failed to save preference. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -61,6 +67,8 @@ export default function EditablePreference({
     setIsDeleting(true);
     try {
       await onDelete(preference.id);
+    } catch {
+      showError('Failed to delete preference. Please try again.');
     } finally {
       setIsDeleting(false);
     }

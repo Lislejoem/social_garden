@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Sprout, Flower2, Trash2, Check, X, Loader2 } from 'lucide-react';
 import type { Seedling, SeedlingStatus } from '@/types';
+import { useToast } from '../contexts/ToastContext';
 
 interface EditableSeedlingProps {
   seedling: Seedling;
@@ -20,6 +21,7 @@ export default function EditableSeedling({
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { showError } = useToast();
 
   const isPlanted = seedling.status === 'PLANTED';
 
@@ -41,6 +43,8 @@ export default function EditableSeedling({
     try {
       await onUpdate(seedling.id, { content: trimmed });
       setIsEditing(false);
+    } catch {
+      showError('Failed to save seedling. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -50,6 +54,8 @@ export default function EditableSeedling({
     setIsSaving(true);
     try {
       await onUpdate(seedling.id, { status: 'PLANTED' });
+    } catch {
+      showError('Failed to mark seedling as planted. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -59,6 +65,8 @@ export default function EditableSeedling({
     setIsDeleting(true);
     try {
       await onDelete(seedling.id);
+    } catch {
+      showError('Failed to delete seedling. Please try again.');
     } finally {
       setIsDeleting(false);
     }

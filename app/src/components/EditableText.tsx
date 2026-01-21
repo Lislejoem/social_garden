@@ -7,6 +7,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Pencil, Check, X, Loader2 } from 'lucide-react';
+import { useToast } from '../contexts/ToastContext';
 
 /** Props for EditableText component */
 interface EditableTextProps {
@@ -34,6 +35,7 @@ export default function EditableText({
   const [editValue, setEditValue] = useState(value || '');
   const [isSaving, setIsSaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { showError } = useToast();
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -59,7 +61,7 @@ export default function EditableText({
       await onSave(trimmedValue);
       setIsEditing(false);
     } catch (error) {
-      console.error('Failed to save:', error);
+      showError('Failed to save. Please try again.');
     } finally {
       setIsSaving(false);
     }

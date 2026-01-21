@@ -47,8 +47,9 @@ import {
 import InteractionTimeline from '@/components/InteractionTimeline';
 import VoiceRecorder from '@/components/VoiceRecorder';
 import VoicePreviewModal from '@/components/VoicePreviewModal';
-import ConfirmationToast from '@/components/ConfirmationToast';
 import EditableText from '@/components/EditableText';
+import { useToast } from '@/contexts/ToastContext';
+import { celebrateInteraction } from '@/utils/celebrate';
 import EditableCadence from '@/components/EditableCadence';
 import EditablePreference from '@/components/EditablePreference';
 import EditableFamilyMember from '@/components/EditableFamilyMember';
@@ -143,6 +144,7 @@ const HEALTH_THEMES: Record<
 export default function ProfileClient({ contact }: ProfileClientProps) {
   const router = useRouter();
   const theme = HEALTH_THEMES[contact.health];
+  const { showToast } = useToast();
 
   // Preview modal state
   const [previewData, setPreviewData] = useState<{
@@ -151,9 +153,6 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
     isNewContact: boolean;
     rawInput: string;
   } | null>(null);
-
-  // Toast state
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Socials modal state
   const [isSocialsModalOpen, setIsSocialsModalOpen] = useState(false);
@@ -210,9 +209,10 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
 
     const result = await response.json();
 
-    // Close modal and show toast
+    // Close modal, celebrate, and show toast
     setPreviewData(null);
-    setToastMessage(result.summary);
+    celebrateInteraction();
+    showToast(result.summary);
 
     // Refresh data
     router.refresh();
@@ -423,7 +423,8 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
   };
 
   const handleQuickLogSuccess = () => {
-    setToastMessage(`Logged interaction with ${contact.name}`);
+    celebrateInteraction();
+    showToast(`Logged interaction with ${contact.name}`);
     router.refresh();
   };
 
@@ -792,14 +793,6 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
         contactId={contact.id}
         contactName={contact.name}
       />
-
-      {/* Confirmation Toast */}
-      {toastMessage && (
-        <ConfirmationToast
-          message={toastMessage}
-          onClose={() => setToastMessage(null)}
-        />
-      )}
     </div>
   );
 }

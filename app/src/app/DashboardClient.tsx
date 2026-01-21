@@ -8,7 +8,8 @@ import SearchBar from '@/components/SearchBar';
 import FilterPresets, { FilterType } from '@/components/FilterPresets';
 import VoiceRecorder from '@/components/VoiceRecorder';
 import VoicePreviewModal from '@/components/VoicePreviewModal';
-import ConfirmationToast from '@/components/ConfirmationToast';
+import { useToast } from '@/contexts/ToastContext';
+import { celebrateInteraction } from '@/utils/celebrate';
 import { hasUpcomingBirthday } from '@/lib/birthday';
 import type { HealthStatus, Cadence, Socials, AIExtraction, IngestPreviewResponse } from '@/types';
 
@@ -41,6 +42,7 @@ export default function DashboardClient({
   filterCounts,
 }: DashboardClientProps) {
   const router = useRouter();
+  const { showToast } = useToast();
   const [contacts] = useState(initialContacts);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
@@ -52,9 +54,6 @@ export default function DashboardClient({
     isNewContact: boolean;
     rawInput: string;
   } | null>(null);
-
-  // Toast state
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Filter contacts based on search query and active filter
   const filteredContacts = useMemo(() => {
@@ -146,9 +145,10 @@ export default function DashboardClient({
 
     const result = await response.json();
 
-    // Close modal and show toast
+    // Close modal, celebrate, and show toast
     setPreviewData(null);
-    setToastMessage(result.summary);
+    celebrateInteraction();
+    showToast(result.summary);
 
     // Refresh data
     router.refresh();
@@ -327,14 +327,6 @@ export default function DashboardClient({
           isNewContact={previewData.isNewContact}
           onConfirm={handleConfirmSave}
           onCancel={handleCancelPreview}
-        />
-      )}
-
-      {/* Confirmation Toast */}
-      {toastMessage && (
-        <ConfirmationToast
-          message={toastMessage}
-          onClose={() => setToastMessage(null)}
         />
       )}
     </div>

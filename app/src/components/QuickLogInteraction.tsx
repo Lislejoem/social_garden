@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Phone, MessageSquare, Users, Loader2, X, Send } from 'lucide-react';
 import type { InteractionType, MessagePlatform, AIExtraction } from '@/types';
+import { useToast } from '../contexts/ToastContext';
 
 // Instagram icon (custom SVG)
 const InstagramIcon = ({ className }: { className?: string }) => (
@@ -103,6 +104,7 @@ export default function QuickLogInteraction({
   const [selectedPlatform, setSelectedPlatform] = useState<MessagePlatform>('text');
   const [summary, setSummary] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const { showError } = useToast();
 
   const handleSelectType = (type: InteractionType) => {
     if (selectedType === type) {
@@ -158,8 +160,8 @@ export default function QuickLogInteraction({
         setSelectedType(null);
         setSummary('');
         setSelectedPlatform('text');
-      } catch (error) {
-        console.error('Failed to process interaction:', error);
+      } catch {
+        showError('Failed to process interaction. Please try again.');
       } finally {
         setIsSaving(false);
       }
@@ -189,8 +191,8 @@ export default function QuickLogInteraction({
       setSummary('');
       setSelectedPlatform('text');
       onSuccess();
-    } catch (error) {
-      console.error('Failed to log interaction:', error);
+    } catch {
+      showError('Failed to log interaction. Please try again.');
     } finally {
       setIsSaving(false);
     }

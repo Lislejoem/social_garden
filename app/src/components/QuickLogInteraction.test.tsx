@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import QuickLogInteraction from './QuickLogInteraction';
+import { ToastProvider } from '../contexts/ToastContext';
 import type { InteractionType, MessagePlatform } from '@/types';
 
 // Mock fetch globally
@@ -18,12 +19,14 @@ describe('QuickLogInteraction', () => {
 
   const renderComponent = () => {
     return render(
-      <QuickLogInteraction
-        contactId="contact-123"
-        contactName="Sarah"
-        onSuccess={mockOnSuccess}
-        onPreview={mockOnPreview}
-      />
+      <ToastProvider>
+        <QuickLogInteraction
+          contactId="contact-123"
+          contactName="Sarah"
+          onSuccess={mockOnSuccess}
+          onPreview={mockOnPreview}
+        />
+      </ToastProvider>
     );
   };
 
@@ -384,8 +387,6 @@ describe('QuickLogInteraction', () => {
 
   describe('error handling', () => {
     it('handles AI processing failure gracefully', async () => {
-      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
-
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 500,
@@ -403,14 +404,13 @@ describe('QuickLogInteraction', () => {
       // Click Save
       fireEvent.click(screen.getByRole('button', { name: /save/i }));
 
+      // Should show error toast
       await waitFor(() => {
-        expect(consoleError).toHaveBeenCalled();
+        expect(screen.getByText(/failed to process interaction/i)).toBeInTheDocument();
       });
 
       // Form should still be usable (not stuck in saving state)
       expect(screen.queryByText(/saving/i)).not.toBeInTheDocument();
-
-      consoleError.mockRestore();
     });
   });
 });

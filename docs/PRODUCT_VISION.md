@@ -23,6 +23,8 @@ A complete, polished product that handles the core use case: helping users maint
 9. Contact Briefing (AI-powered) - relationship summary, highlights, conversation starters
 10. Avatar Upload - manual URL input, Gravatar auto-fetch
 11. Interaction date handling - relative dates ("yesterday", "last week") and timezone-safe editing
+12. Error Feedback - Toast system with error/success variants, user-facing error messages
+13. Celebration Animation - Garden-themed confetti when logging interactions
 
 ---
 
@@ -54,10 +56,6 @@ A complete, polished product that handles the core use case: helping users maint
 - Needed: Semantic classification - let AI tag things as "topics" vs "preferences"
 - Or: Remove this section until properly implemented
 
-**Error Feedback**
-- Currently: Generic error handling, limited user-facing messages
-- Needed: Clear error states, retry options, "what went wrong" explanations
-
 **Offline Support**
 - Voice notes queue for processing when back online
 - Local-first data storage with sync
@@ -66,10 +64,9 @@ A complete, polished product that handles the core use case: helping users maint
 
 ## Recommended Next Steps
 
-1. **Error Feedback** - Improves UX across the entire app
-2. **Topics of Interest Classification** - Let AI tag topics vs preferences semantically
-3. **Smart Reminders** - High value but requires scoping discussion first
-4. **Offline Support** - Queue voice notes for processing when back online
+1. **Topics of Interest Classification** - Let AI tag topics vs preferences semantically
+2. **Smart Reminders** - High value but requires scoping discussion first
+3. **Offline Support** - Queue voice notes for processing when back online
 
 ---
 

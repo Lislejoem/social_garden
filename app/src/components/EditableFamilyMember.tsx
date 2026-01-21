@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Trash2, Check, X, Loader2 } from 'lucide-react';
 import type { FamilyMember } from '@/types';
+import { useToast } from '../contexts/ToastContext';
 
 interface EditableFamilyMemberProps {
   member: FamilyMember;
@@ -21,6 +22,7 @@ export default function EditableFamilyMember({
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const { showError } = useToast();
 
   useEffect(() => {
     if (isEditing && nameInputRef.current) {
@@ -45,6 +47,8 @@ export default function EditableFamilyMember({
         relation: trimmedRelation,
       });
       setIsEditing(false);
+    } catch {
+      showError('Failed to save family member. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -60,6 +64,8 @@ export default function EditableFamilyMember({
     setIsDeleting(true);
     try {
       await onDelete(member.id);
+    } catch {
+      showError('Failed to delete family member. Please try again.');
     } finally {
       setIsDeleting(false);
     }
