@@ -36,7 +36,7 @@ import {
   Trash2,
   Plus,
 } from 'lucide-react';
-import type { AIExtraction, Category, InteractionType, MessagePlatform } from '@/types';
+import type { AIExtraction, Category, InteractionType, MessagePlatform, PreferenceType } from '@/types';
 import { INTERACTION_TYPES, PLATFORMS, TYPE_LABELS, PLATFORM_LABELS } from '@/lib/interactions';
 
 /**
@@ -109,11 +109,26 @@ export default function VoicePreviewModal({
 
   const togglePreferenceCategory = (index: number) => {
     const prefs = [...(data.preferences || [])];
+    const newCategory = prefs[index].category === 'ALWAYS' ? 'NEVER' : 'ALWAYS';
     prefs[index] = {
       ...prefs[index],
-      category: prefs[index].category === 'ALWAYS' ? 'NEVER' : 'ALWAYS',
+      category: newCategory,
+      // NEVER preferences are always PREFERENCE type (can't have a "never" topic)
+      preferenceType: newCategory === 'NEVER' ? 'PREFERENCE' : prefs[index].preferenceType,
     };
     setData({ ...data, preferences: prefs });
+  };
+
+  const togglePreferenceType = (index: number) => {
+    const prefs = [...(data.preferences || [])];
+    // Only allow toggle for ALWAYS preferences
+    if (prefs[index].category === 'ALWAYS') {
+      prefs[index] = {
+        ...prefs[index],
+        preferenceType: prefs[index].preferenceType === 'TOPIC' ? 'PREFERENCE' : 'TOPIC',
+      };
+      setData({ ...data, preferences: prefs });
+    }
   };
 
   const removePreference = (index: number) => {
@@ -124,7 +139,7 @@ export default function VoicePreviewModal({
 
   const addPreference = (category: Category) => {
     const prefs = [...(data.preferences || [])];
-    prefs.push({ category, content: '' });
+    prefs.push({ category, content: '', preferenceType: 'PREFERENCE' as PreferenceType });
     setData({ ...data, preferences: prefs });
   };
 
@@ -334,6 +349,17 @@ export default function VoicePreviewModal({
                           className="flex-1 bg-transparent border-none focus:outline-none text-sm"
                           placeholder="Enter preference..."
                         />
+                        <button
+                          onClick={() => togglePreferenceType(index)}
+                          className={`px-2 py-0.5 text-xs rounded-full transition-colors ${
+                            pref.preferenceType === 'TOPIC'
+                              ? 'bg-amber-100 text-amber-700'
+                              : 'bg-stone-100 text-stone-500'
+                          }`}
+                          title={`Switch to ${pref.preferenceType === 'TOPIC' ? 'Preference' : 'Topic'}`}
+                        >
+                          {pref.preferenceType === 'TOPIC' ? 'Topic' : 'Pref'}
+                        </button>
                         <button
                           onClick={() => removePreference(index)}
                           className="p-1.5 text-stone-400 hover:text-red-500 hover:bg-red-50 rounded-lg"

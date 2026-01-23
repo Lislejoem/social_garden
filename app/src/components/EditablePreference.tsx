@@ -2,12 +2,12 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Heart, Ban, Trash2, Check, X, Loader2 } from 'lucide-react';
-import type { Preference, Category } from '@/types';
+import type { Preference, Category, PreferenceType } from '@/types';
 import { useToast } from '../contexts/ToastContext';
 
 interface EditablePreferenceProps {
   preference: Preference;
-  onUpdate: (id: string, data: { category?: Category; content?: string }) => Promise<void>;
+  onUpdate: (id: string, data: { category?: Category; content?: string; preferenceType?: PreferenceType }) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
 }
 
@@ -35,11 +35,28 @@ export default function EditablePreference({
   const handleToggleCategory = async () => {
     setIsSaving(true);
     try {
+      const newCategory = isAlways ? 'NEVER' : 'ALWAYS';
       await onUpdate(preference.id, {
-        category: isAlways ? 'NEVER' : 'ALWAYS',
+        category: newCategory,
+        // NEVER preferences are always PREFERENCE type (can't have a "never" topic)
+        ...(newCategory === 'NEVER' && preference.preferenceType === 'TOPIC' && { preferenceType: 'PREFERENCE' }),
       });
     } catch {
       showError('Failed to update preference. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleToggleType = async () => {
+    if (!isAlways) return; // Only ALWAYS preferences can be toggled
+    setIsSaving(true);
+    try {
+      await onUpdate(preference.id, {
+        preferenceType: preference.preferenceType === 'TOPIC' ? 'PREFERENCE' : 'TOPIC',
+      });
+    } catch {
+      showError('Failed to update preference type. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -144,6 +161,22 @@ export default function EditablePreference({
           className="flex-1 text-left text-sm font-medium text-stone-700"
         >
           {preference.content}
+        </button>
+      )}
+
+      {/* Type Toggle (only for ALWAYS preferences) */}
+      {!isEditing && isAlways && (
+        <button
+          onClick={handleToggleType}
+          disabled={isSaving}
+          className={`px-2 py-0.5 text-xs rounded-full transition-colors opacity-0 group-hover:opacity-100 ${
+            preference.preferenceType === 'TOPIC'
+              ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+              : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+          }`}
+          title={`Switch to ${preference.preferenceType === 'TOPIC' ? 'Preference' : 'Topic'}`}
+        >
+          {preference.preferenceType === 'TOPIC' ? 'Topic' : 'Pref'}
         </button>
       )}
 

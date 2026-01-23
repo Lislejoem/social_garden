@@ -15,20 +15,21 @@ interface RouteParams {
 
 /**
  * PUT /api/preferences/:id
- * @body { category?: 'ALWAYS' | 'NEVER', content?: string }
+ * @body { category?: 'ALWAYS' | 'NEVER', content?: string, preferenceType?: 'TOPIC' | 'PREFERENCE' }
  * @returns Updated Preference
  */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
     const body = await request.json();
-    const { category, content } = body;
+    const { category, content, preferenceType } = body;
 
     const preference = await prisma.preference.update({
       where: { id },
       data: {
         ...(category && { category }),
         ...(content !== undefined && { content }),
+        ...(preferenceType && { preferenceType }),
       },
     });
 

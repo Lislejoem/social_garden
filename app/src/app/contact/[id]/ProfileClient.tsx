@@ -71,6 +71,7 @@ import type {
   AIExtraction,
   IngestPreviewResponse,
   Category,
+  PreferenceType,
   SeedlingStatus,
   InteractionType,
   MessagePlatform,
@@ -305,7 +306,7 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
   // Preference handlers
   const handleUpdatePreference = async (
     id: string,
-    data: { category?: Category; content?: string }
+    data: { category?: Category; content?: string; preferenceType?: PreferenceType }
   ) => {
     const response = await fetch(`/api/preferences/${id}`, {
       method: 'PUT',
@@ -437,10 +438,9 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
     setPreviewData(data);
   };
 
-  // Extract topics from ALWAYS preferences (items that seem like interests)
+  // Extract topics from preferences with preferenceType === 'TOPIC'
   const topics = contact.preferences
-    .filter((p) => p.category === 'ALWAYS')
-    .filter((p) => p.content.length > 15) // Longer items are likely topics
+    .filter((p) => p.preferenceType === 'TOPIC')
     .slice(0, 5);
 
   const alwaysPrefs = contact.preferences.filter((p) => p.category === 'ALWAYS');

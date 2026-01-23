@@ -35,11 +35,12 @@ model Contact {
 }
 
 model Preference {
-  id        String  @id @default(cuid())
-  contactId String
-  category  String  // ALWAYS or NEVER
-  content   String
-  contact   Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  id             String  @id @default(cuid())
+  contactId      String
+  category       String  // ALWAYS or NEVER
+  preferenceType String  @default("PREFERENCE") // TOPIC or PREFERENCE
+  content        String
+  contact        Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
 }
 
 model Interaction {

@@ -31,8 +31,8 @@ Return ONLY valid JSON with this structure:
   "isNewContact": boolean (true if this seems to be about someone new, false if updating existing),
   "location": "string or null (city, state, or full address if mentioned)",
   "preferences": [
-    {"category": "ALWAYS", "content": "things they like or want"},
-    {"category": "NEVER", "content": "things to avoid - allergies, dislikes, etc."}
+    {"category": "ALWAYS", "content": "description", "preferenceType": "TOPIC or PREFERENCE"},
+    {"category": "NEVER", "content": "things to avoid", "preferenceType": "PREFERENCE"}
   ],
   "familyMembers": [
     {"name": "string", "relation": "string (e.g., 'Partner', 'Son (6 yrs)', 'Dog')"}
@@ -51,6 +51,12 @@ Guidelines:
 - Keep interactionSummary concise (1-2 sentences)
 - Be liberal in extracting useful information - it's better to capture something than miss it
 - For interactionDate: parse relative dates like "yesterday", "last week", "2 days ago" into actual dates. If no date is mentioned, omit this field.
+
+Preference Type Classification:
+- TOPIC: Broad interests, passions, or subjects they care about (e.g., "hiking", "sustainability", "AI technology", "photography", "cooking"). These are conversation topics you could discuss at length.
+- PREFERENCE: Specific likes/dislikes that inform how you interact (e.g., "allergic to shellfish", "loves Italian food", "hates small talk", "prefers morning calls"). These are actionable items to remember.
+- NEVER category items are always PREFERENCE (dislikes aren't "topics")
+- When in doubt, use PREFERENCE (safer default)
 ${generateTypeInferencePrompt()}`;
 
 /**

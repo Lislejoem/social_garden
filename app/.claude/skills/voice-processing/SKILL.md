@@ -35,7 +35,11 @@ POST /api/ingest
 interface AIExtraction {
   contactName: string;
   location?: string;
-  preferences: { category: 'ALWAYS' | 'NEVER'; content: string }[];
+  preferences: {
+    category: 'ALWAYS' | 'NEVER';
+    content: string;
+    preferenceType?: 'TOPIC' | 'PREFERENCE';  // Semantic classification
+  }[];
   familyMembers: { name: string; relation: string }[];
   seedlings: { content: string }[];
   interactionSummary?: string;
@@ -43,6 +47,22 @@ interface AIExtraction {
   messagePlatform?: 'text' | 'instagram' | 'telegram' | 'linkedin';
 }
 ```
+
+## Preference Type Classification
+
+AI classifies each preference as either:
+
+- **TOPIC**: Broad interests, passions, subjects they care about
+  - Examples: "hiking", "sustainability", "AI technology", "photography"
+  - These are conversation topics you could discuss at length
+  - Only ALWAYS preferences can be TOPIC
+
+- **PREFERENCE**: Specific likes/dislikes that inform how you interact
+  - Examples: "allergic to shellfish", "loves Italian food", "hates small talk"
+  - These are actionable items to remember
+  - NEVER category items are always PREFERENCE
+
+The "Topics They Care About" section on contact profiles filters by `preferenceType === 'TOPIC'`.
 
 ## Interaction Type Inference
 

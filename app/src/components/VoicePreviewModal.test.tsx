@@ -228,4 +228,81 @@ describe('VoicePreviewModal', () => {
       });
     });
   });
+
+  describe('preferenceType toggle', () => {
+    it('shows preferenceType toggle for ALWAYS preferences', () => {
+      renderModal({
+        ...baseExtraction,
+        preferences: [
+          { category: 'ALWAYS', content: 'hiking', preferenceType: 'TOPIC' },
+        ],
+      });
+
+      expect(screen.getByRole('button', { name: /topic/i })).toBeInTheDocument();
+    });
+
+    it('does not show preferenceType toggle for NEVER preferences', () => {
+      renderModal({
+        ...baseExtraction,
+        preferences: [
+          { category: 'NEVER', content: 'shellfish allergy', preferenceType: 'PREFERENCE' },
+        ],
+      });
+
+      // Should not have a Topic button for NEVER preferences
+      expect(screen.queryByRole('button', { name: /topic/i })).not.toBeInTheDocument();
+    });
+
+    it('allows toggling between TOPIC and PREFERENCE', async () => {
+      renderModal({
+        ...baseExtraction,
+        preferences: [
+          { category: 'ALWAYS', content: 'hiking', preferenceType: 'PREFERENCE' },
+        ],
+      });
+
+      // Find and click the Pref button to toggle to Topic
+      const prefButton = screen.getByRole('button', { name: /pref/i });
+      fireEvent.click(prefButton);
+
+      // Save and verify
+      const saveButton = screen.getByRole('button', { name: /save changes/i });
+      fireEvent.click(saveButton);
+
+      await waitFor(() => {
+        expect(mockOnConfirm).toHaveBeenCalledWith(
+          expect.objectContaining({
+            preferences: expect.arrayContaining([
+              expect.objectContaining({ preferenceType: 'TOPIC' })
+            ])
+          })
+        );
+      });
+    });
+
+    it('preserves preferenceType when saving without changes', async () => {
+      renderModal({
+        ...baseExtraction,
+        preferences: [
+          { category: 'ALWAYS', content: 'hiking', preferenceType: 'TOPIC' },
+          { category: 'ALWAYS', content: 'loves coffee', preferenceType: 'PREFERENCE' },
+        ],
+      });
+
+      // Save without changes
+      const saveButton = screen.getByRole('button', { name: /save changes/i });
+      fireEvent.click(saveButton);
+
+      await waitFor(() => {
+        expect(mockOnConfirm).toHaveBeenCalledWith(
+          expect.objectContaining({
+            preferences: [
+              expect.objectContaining({ content: 'hiking', preferenceType: 'TOPIC' }),
+              expect.objectContaining({ content: 'loves coffee', preferenceType: 'PREFERENCE' }),
+            ]
+          })
+        );
+      });
+    });
+  });
 });

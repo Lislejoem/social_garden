@@ -254,6 +254,118 @@ describe('extractFromNote', () => {
     expect(result.seedlings).toHaveLength(2);
     expect(result.seedlings).toContain('Ask about interview results');
   });
+
+  it('classifies broad interests as TOPIC preferenceType', async () => {
+    const mockResponse = {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            contactName: 'Sarah',
+            preferences: [
+              { category: 'ALWAYS', content: 'hiking and outdoor adventures', preferenceType: 'TOPIC' },
+              { category: 'ALWAYS', content: 'sustainability and environmental issues', preferenceType: 'TOPIC' },
+              { category: 'ALWAYS', content: 'AI and machine learning', preferenceType: 'TOPIC' },
+            ],
+            interactionType: 'MEET',
+          }),
+        },
+      ],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    const result = await extractFromNote('Sarah is really passionate about hiking, sustainability, and AI');
+
+    expect(result.preferences).toHaveLength(3);
+    result.preferences?.forEach((p) => {
+      expect(p.preferenceType).toBe('TOPIC');
+    });
+  });
+
+  it('classifies specific likes/dislikes as PREFERENCE preferenceType', async () => {
+    const mockResponse = {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            contactName: 'Mike',
+            preferences: [
+              { category: 'ALWAYS', content: 'Loves Italian food', preferenceType: 'PREFERENCE' },
+              { category: 'ALWAYS', content: 'Prefers window seats', preferenceType: 'PREFERENCE' },
+              { category: 'NEVER', content: 'Allergic to shellfish', preferenceType: 'PREFERENCE' },
+            ],
+            interactionType: 'MEET',
+          }),
+        },
+      ],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    const result = await extractFromNote('Mike loves Italian food and prefers window seats. He is allergic to shellfish.');
+
+    expect(result.preferences).toHaveLength(3);
+    result.preferences?.forEach((p) => {
+      expect(p.preferenceType).toBe('PREFERENCE');
+    });
+  });
+
+  it('classifies NEVER category items as PREFERENCE (never as TOPIC)', async () => {
+    const mockResponse = {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            contactName: 'Lisa',
+            preferences: [
+              { category: 'NEVER', content: 'Hates small talk', preferenceType: 'PREFERENCE' },
+              { category: 'NEVER', content: 'Dislikes seafood', preferenceType: 'PREFERENCE' },
+            ],
+            interactionType: 'CALL',
+          }),
+        },
+      ],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    const result = await extractFromNote('Lisa hates small talk and dislikes seafood');
+
+    expect(result.preferences).toHaveLength(2);
+    result.preferences?.forEach((p) => {
+      expect(p.category).toBe('NEVER');
+      expect(p.preferenceType).toBe('PREFERENCE');
+    });
+  });
+
+  it('extracts mixed TOPIC and PREFERENCE items correctly', async () => {
+    const mockResponse = {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            contactName: 'Emma',
+            preferences: [
+              { category: 'ALWAYS', content: 'photography', preferenceType: 'TOPIC' },
+              { category: 'ALWAYS', content: 'Loves Thai food', preferenceType: 'PREFERENCE' },
+              { category: 'NEVER', content: 'Allergic to peanuts', preferenceType: 'PREFERENCE' },
+            ],
+            interactionType: 'MEET',
+          }),
+        },
+      ],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    const result = await extractFromNote('Emma is into photography. She loves Thai food but is allergic to peanuts.');
+
+    expect(result.preferences).toHaveLength(3);
+    expect(result.preferences?.[0].preferenceType).toBe('TOPIC');
+    expect(result.preferences?.[1].preferenceType).toBe('PREFERENCE');
+    expect(result.preferences?.[2].preferenceType).toBe('PREFERENCE');
+  });
 });
 
 describe('generateBriefing', () => {
@@ -264,9 +376,9 @@ describe('generateBriefing', () => {
   const mockContactData = {
     name: 'Sarah Johnson',
     preferences: [
-      { id: '1', category: 'ALWAYS' as const, content: 'Loves hiking' },
-      { id: '2', category: 'ALWAYS' as const, content: 'Coffee enthusiast' },
-      { id: '3', category: 'NEVER' as const, content: 'Allergic to shellfish' },
+      { id: '1', category: 'ALWAYS' as const, preferenceType: 'TOPIC' as const, content: 'Loves hiking' },
+      { id: '2', category: 'ALWAYS' as const, preferenceType: 'PREFERENCE' as const, content: 'Coffee enthusiast' },
+      { id: '3', category: 'NEVER' as const, preferenceType: 'PREFERENCE' as const, content: 'Allergic to shellfish' },
     ] as Preference[],
     interactions: [
       {

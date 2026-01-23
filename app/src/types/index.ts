@@ -10,6 +10,9 @@ export type { HealthStatus, Cadence };
 /** Preference category: ALWAYS (likes) or NEVER (dislikes/avoid) */
 export type Category = 'ALWAYS' | 'NEVER';
 
+/** Preference semantic type: TOPIC (interest/passion) or PREFERENCE (specific like/dislike) */
+export type PreferenceType = 'TOPIC' | 'PREFERENCE';
+
 /** Type of interaction/contact with a person */
 import type { InteractionType, MessagePlatform } from '@/lib/interactions';
 export type { InteractionType, MessagePlatform };
@@ -33,6 +36,7 @@ export interface Socials {
 export interface Preference {
   id: string;
   category: Category;
+  preferenceType: PreferenceType;
   content: string;
 }
 
@@ -112,7 +116,7 @@ export interface AIExtraction {
   contactName: string;
   isNewContact?: boolean;
   location?: string;
-  preferences?: Array<{ category: Category; content: string }>;
+  preferences?: Array<{ category: Category; content: string; preferenceType?: PreferenceType }>;
   familyMembers?: Array<{ name: string; relation: string }>;
   seedlings?: string[];
   interactionSummary?: string;

@@ -157,6 +157,7 @@ export async function POST(request: NextRequest) {
             data: {
               contactId: contact.id,
               category: pref.category,
+              preferenceType: pref.preferenceType || 'PREFERENCE',
               content: pref.content,
             },
           });

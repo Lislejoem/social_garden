@@ -25,6 +25,7 @@ A complete, polished product that handles the core use case: helping users maint
 11. Interaction date handling - relative dates ("yesterday", "last week") and timezone-safe editing
 12. Error Feedback - Toast system with error/success variants, user-facing error messages
 13. Celebration Animation - Garden-themed confetti when logging interactions
+14. Topics of Interest Classification - AI semantically classifies preferences as TOPIC (interests/passions) vs PREFERENCE (specific likes/dislikes)
 
 ---
 
@@ -51,11 +52,6 @@ A complete, polished product that handles the core use case: helping users maint
 
 ### Polish
 
-**Topics of Interest Section**
-- Currently: Filters preferences by character length (>15 chars) as a heuristic
-- Needed: Semantic classification - let AI tag things as "topics" vs "preferences"
-- Or: Remove this section until properly implemented
-
 **Offline Support**
 - Voice notes queue for processing when back online
 - Local-first data storage with sync
@@ -64,9 +60,9 @@ A complete, polished product that handles the core use case: helping users maint
 
 ## Recommended Next Steps
 
-1. **Topics of Interest Classification** - Let AI tag topics vs preferences semantically
-2. **Smart Reminders** - High value but requires scoping discussion first
-3. **Offline Support** - Queue voice notes for processing when back online
+1. **Smart Reminders** - High value but requires scoping discussion first
+2. **Offline Support** - Queue voice notes for processing when back online
+3. **Quick Capture Widget** - Mobile widget for instant voice notes
 
 ---
 
