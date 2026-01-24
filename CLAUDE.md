@@ -47,7 +47,7 @@ Mocking Anthropic SDK requires `vi.hoisted()` for proper initialization order.
 
 # Social Garden
 
-Personal CRM app for nurturing relationships. Voice notes are transcribed and processed by Claude AI to extract contact information, preferences, family members, and follow-up items.
+Personal CRM app for nurturing relationships. Voice notes and photos are processed by Claude AI to extract contact information, preferences, family members, and follow-up items.
 
 ## Tech Stack
 
@@ -83,6 +83,7 @@ Detailed documentation lives in skills. Reference these when working on specific
 | `contact-briefing` | AI briefings, conversation prep, caching |
 | `health-system` | Relationship health, cadence, gardening metaphor |
 | `voice-processing` | Voice notes, AI extraction, ingest API |
+| `photo-capture` | Photo/screenshot capture, image processing, Claude vision |
 | `date-handling` | Dates, timezone-safe parsing, relative dates |
 | `toast-celebration` | User feedback (toasts), celebration animations |
 | `offline-support` | Offline queue, IndexedDB, online/offline detection |
@@ -104,7 +105,7 @@ Types: `app/src/types/index.ts`
 
 | Route | Methods | Description |
 |-------|---------|-------------|
-| `/api/ingest` | POST | Voice note AI processing (see `voice-processing` skill) |
+| `/api/ingest` | POST | Voice/photo AI processing (see `voice-processing`, `photo-capture` skills) |
 | `/api/contacts` | GET, POST | List/create contacts |
 | `/api/contacts/[id]` | GET, PUT, DELETE | Single contact CRUD |
 | `/api/contacts/[id]/briefing` | POST | AI briefing (see `contact-briefing` skill) |

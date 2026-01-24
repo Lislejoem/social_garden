@@ -1,17 +1,22 @@
 /**
- * @file Voice Note Ingestion API
- * @description Processes voice transcripts using Claude AI to extract and store
+ * @file Capture Ingestion API
+ * @description Processes voice transcripts or images using Claude AI to extract and store
  * contact information, preferences, family members, and follow-up items (seedlings).
  *
  * @flow
- * 1. Receives raw transcript (+ optional contactId for existing contacts)
+ * 1. Receives raw transcript OR image data (+ optional contactId for existing contacts)
  * 2. Calls Claude AI to extract structured data (AIExtraction)
  * 3. If dryRun=true, returns preview without saving (for user review)
  * 4. If dryRun=false, creates/updates contact and related records
  *
  * @endpoint POST /api/ingest
  * @body {
- *   rawInput: string        - Voice transcript text (required)
+ *   rawInput?: string       - Voice transcript text (required if no imageData)
+ *   imageData?: {           - Image data (required if no rawInput)
+ *     base64: string        - Base64-encoded image
+ *     mimeType: string      - Image MIME type (image/jpeg, image/png, etc.)
+ *   }
+ *   additionalContext?: string - Optional text context for image processing
  *   contactId?: string      - Existing contact ID (for updates)
  *   dryRun?: boolean        - If true, returns preview without saving
  *   overrides?: AIExtraction - User-edited data to save instead of AI extraction
@@ -20,24 +25,40 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { extractFromNote } from '@/lib/anthropic';
+import { extractFromNote, extractFromImage } from '@/lib/anthropic';
 import { parseDateFromInput, parseRelativeDate } from '@/lib/dates';
 import type { AIExtraction, IngestPreviewResponse } from '@/types';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { rawInput, contactId, dryRun, overrides } = body;
+    const { rawInput, imageData, additionalContext, contactId, dryRun, overrides } = body;
 
-    if (!rawInput) {
+    // Validate: either rawInput OR imageData is required
+    if (!rawInput && !imageData) {
       return NextResponse.json(
-        { error: 'rawInput is required' },
+        { error: 'Either rawInput or imageData is required' },
+        { status: 400 }
+      );
+    }
+
+    // Validate imageData structure if provided
+    if (imageData && (!imageData.base64 || !imageData.mimeType)) {
+      return NextResponse.json(
+        { error: 'imageData must include base64 and mimeType' },
         { status: 400 }
       );
     }
 
     // Extract structured data using Claude (or use overrides if provided)
-    const extraction: AIExtraction = overrides || await extractFromNote(rawInput);
+    let extraction: AIExtraction;
+    if (overrides) {
+      extraction = overrides;
+    } else if (imageData) {
+      extraction = await extractFromImage(imageData, additionalContext || rawInput);
+    } else {
+      extraction = await extractFromNote(rawInput);
+    }
 
     if (!extraction.contactName) {
       return NextResponse.json(
@@ -206,7 +227,10 @@ export async function POST(request: NextRequest) {
 
     // Add interaction
     if (extraction.interactionSummary) {
-      const interactionType = extraction.interactionType || 'VOICE';
+      // Default to MEET for images (photos usually capture in-person interactions)
+      // Default to VOICE for text input (voice notes)
+      const defaultType = imageData ? 'MEET' : 'VOICE';
+      const interactionType = extraction.interactionType || defaultType;
 
       // Determine interaction date:
       // 1. Use AI-extracted date if available (YYYY-MM-DD format)

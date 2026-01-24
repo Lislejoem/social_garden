@@ -23,7 +23,8 @@
       "Bash(npx vitest:*)",
       "Bash(npm run test:run:*)",
       "Bash(wc:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(tree:*)"
     ]
   }
 }

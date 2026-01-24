@@ -7,6 +7,7 @@ import ContactCard from '@/components/ContactCard';
 import SearchBar from '@/components/SearchBar';
 import FilterPresets, { FilterType } from '@/components/FilterPresets';
 import VoiceRecorder from '@/components/VoiceRecorder';
+import PhotoCapture from '@/components/PhotoCapture';
 import VoicePreviewModal from '@/components/VoicePreviewModal';
 import { useToast } from '@/contexts/ToastContext';
 import { useOfflineQueue } from '@/contexts/OfflineQueueContext';
@@ -57,6 +58,7 @@ export default function DashboardClient({
     existingContact: { id: string; name: string; location: string | null } | null;
     isNewContact: boolean;
     rawInput: string;
+    imageData?: { base64: string; mimeType: string }; // Track if this came from a photo
     queuedNoteId?: string; // Track if this came from the queue
   } | null>(null);
 
@@ -145,16 +147,76 @@ export default function DashboardClient({
     }
   };
 
+  const handlePhotoCapture = async (
+    imageData: { base64: string; mimeType: string },
+    context?: string
+  ) => {
+    // Photos require online connection (can't easily queue base64 data)
+    if (!isOnline) {
+      showError('Photo capture requires an internet connection.');
+      return;
+    }
+
+    // Get a preview with dryRun
+    try {
+      const response = await fetch('/api/ingest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageData,
+          additionalContext: context,
+          dryRun: true,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to process photo');
+      }
+
+      const preview: IngestPreviewResponse = await response.json();
+
+      // Show the preview modal
+      setPreviewData({
+        extraction: preview.extraction,
+        existingContact: preview.existingContact || null,
+        isNewContact: preview.isNewContact,
+        rawInput: context || '',
+        imageData, // Store for final save
+      });
+    } catch (e) {
+      showError(e instanceof Error ? e.message : 'Failed to process photo');
+    }
+  };
+
   const handleConfirmSave = async (editedData: AIExtraction) => {
     if (!previewData) return;
+
+    // Build request body - include imageData if this was a photo capture
+    const requestBody: {
+      rawInput?: string;
+      imageData?: { base64: string; mimeType: string };
+      additionalContext?: string;
+      overrides: AIExtraction;
+    } = {
+      overrides: editedData,
+    };
+
+    if (previewData.imageData) {
+      // Photo capture
+      requestBody.imageData = previewData.imageData;
+      if (previewData.rawInput) {
+        requestBody.additionalContext = previewData.rawInput;
+      }
+    } else {
+      // Voice note or text input
+      requestBody.rawInput = previewData.rawInput;
+    }
 
     const response = await fetch('/api/ingest', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        rawInput: previewData.rawInput,
-        overrides: editedData,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
@@ -390,6 +452,11 @@ export default function DashboardClient({
           </div>
         )}
       </main>
+
+      {/* Floating Photo Capture - positioned left of voice recorder */}
+      <div className="fixed bottom-10 right-36 z-50">
+        <PhotoCapture onCapture={handlePhotoCapture} />
+      </div>
 
       {/* Floating Voice Recorder */}
       <VoiceRecorder onTranscriptComplete={handleVoiceNote} />

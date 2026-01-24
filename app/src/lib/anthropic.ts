@@ -103,6 +103,140 @@ export async function extractFromNote(rawInput: string): Promise<AIExtraction> {
   }
 }
 
+/** Supported image MIME types for Claude vision API */
+type ImageMediaType = 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
+
+/** Image data for extractFromImage */
+export interface ImageData {
+  base64: string;
+  mimeType: ImageMediaType | string;
+}
+
+const IMAGE_SYSTEM_PROMPT = `You are a personal relationship assistant helping to maintain a "Social Garden" - a personal CRM for nurturing friendships and relationships.
+
+Analyze the provided image to extract relationship information. The image may be:
+1. A photo of a social situation (dinner, event, meeting, etc.)
+2. A screenshot of a text/messaging conversation
+3. A screenshot of social media content
+4. A photo of a place or activity associated with a person
+
+Today's date is ${new Date().toISOString().split('T')[0]}.
+
+Return ONLY valid JSON with this structure:
+{
+  "contactName": "string (required - the person's name, infer from context or conversation)",
+  "isNewContact": boolean (true if this seems to be about someone new, false if updating existing),
+  "location": "string or null (if identifiable from image or context)",
+  "preferences": [
+    {"category": "ALWAYS", "content": "description", "preferenceType": "TOPIC or PREFERENCE"},
+    {"category": "NEVER", "content": "things to avoid", "preferenceType": "PREFERENCE"}
+  ],
+  "familyMembers": [
+    {"name": "string", "relation": "string (e.g., 'Partner', 'Son (6 yrs)', 'Dog')"}
+  ],
+  "seedlings": ["string - future follow-up items, things to remember to ask about"],
+  "interactionSummary": "string - brief summary of what the image shows about the interaction",
+  "interactionType": "${INTERACTION_TYPES.join(' | ')}",
+  "interactionPlatform": "${PLATFORMS.join(' | ')}" (only include if interactionType is MESSAGE),
+  "interactionDate": "YYYY-MM-DD format - if date is visible or mentioned"
+}
+
+Image-specific guidelines:
+- For screenshots of conversations: identify who the conversation is with, summarize key points, extract any plans or follow-ups
+- For photos of events/meals: describe the context, note any preferences revealed (food, activities, locations)
+- For social media screenshots: extract the person's name, what they posted about, any relevant preferences
+- If you cannot identify a specific person from the image, use context clues or ask for clarification via interactionSummary
+- Only include fields that have actual data from the image
+
+Preference Type Classification:
+- TOPIC: Broad interests, passions, or subjects (e.g., "hiking", "photography", "cooking")
+- PREFERENCE: Specific likes/dislikes (e.g., "loves Italian food", "allergic to shellfish")
+- NEVER category items are always PREFERENCE
+${generateTypeInferencePrompt()}`;
+
+/**
+ * Extract structured contact information from an image.
+ * Uses Claude's vision capabilities to analyze photos and screenshots.
+ *
+ * @param imageData - Object with base64-encoded image and MIME type
+ * @param additionalContext - Optional text context to help with extraction
+ * @returns AIExtraction object with parsed contact data
+ * @throws Error if Claude returns no text or invalid JSON
+ *
+ * @example
+ * const extraction = await extractFromImage(
+ *   { base64: "...", mimeType: "image/jpeg" },
+ *   "Dinner with Sarah at her favorite restaurant"
+ * );
+ */
+export async function extractFromImage(
+  imageData: ImageData,
+  additionalContext?: string
+): Promise<AIExtraction> {
+  // Validate and cast mimeType to allowed values
+  const validTypes: ImageMediaType[] = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+  const mediaType = validTypes.includes(imageData.mimeType as ImageMediaType)
+    ? (imageData.mimeType as ImageMediaType)
+    : 'image/jpeg'; // Default to JPEG if unknown type
+
+  const contentBlocks: Array<
+    | { type: 'image'; source: { type: 'base64'; media_type: ImageMediaType; data: string } }
+    | { type: 'text'; text: string }
+  > = [
+    {
+      type: 'image',
+      source: {
+        type: 'base64',
+        media_type: mediaType,
+        data: imageData.base64,
+      },
+    },
+  ];
+
+  // Add text context if provided
+  if (additionalContext) {
+    contentBlocks.push({
+      type: 'text',
+      text: `Additional context from user: ${additionalContext}`,
+    });
+  } else {
+    contentBlocks.push({
+      type: 'text',
+      text: 'Analyze this image and extract relationship information.',
+    });
+  }
+
+  const message = await anthropic.messages.create({
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 1024,
+    messages: [
+      {
+        role: 'user',
+        content: contentBlocks,
+      },
+    ],
+    system: IMAGE_SYSTEM_PROMPT,
+  });
+
+  // Extract the text content from the response
+  const textContent = message.content.find((block) => block.type === 'text');
+  if (!textContent || textContent.type !== 'text') {
+    throw new Error('No text response from Claude');
+  }
+
+  // Parse the JSON response
+  try {
+    const jsonMatch = textContent.text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error('No JSON found in response');
+    }
+    return JSON.parse(jsonMatch[0]) as AIExtraction;
+  } catch (e) {
+    console.error('Failed to parse Claude image response:', textContent.text);
+    throw new Error('Failed to parse AI response as JSON');
+  }
+}
+
 const BRIEFING_SYSTEM_PROMPT = `You are a personal relationship assistant helping to prepare for conversations with contacts in a "Social Garden" - a personal CRM for nurturing friendships and relationships.
 
 Given information about a contact, generate a helpful briefing that prepares the user to have a meaningful conversation with them.

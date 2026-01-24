@@ -16,7 +16,7 @@ vi.mock('@anthropic-ai/sdk', () => {
 });
 
 // Import after mock is set up
-import { extractFromNote, generateBriefing } from './anthropic';
+import { extractFromNote, generateBriefing, extractFromImage } from './anthropic';
 
 describe('extractFromNote', () => {
   beforeEach(() => {
@@ -531,5 +531,156 @@ describe('generateBriefing', () => {
 
     expect(result.relationshipSummary).toBeDefined();
     expect(result.conversationStarters).toHaveLength(1);
+  });
+});
+
+describe('extractFromImage', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  const mockImageData = {
+    base64: 'base64encodedimagedata',
+    mimeType: 'image/jpeg',
+  };
+
+  it('extracts contact information from an image', async () => {
+    const mockResponse = {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            contactName: 'Sarah',
+            interactionSummary: 'Dinner at Italian restaurant',
+            interactionType: 'MEET',
+            preferences: [
+              { category: 'ALWAYS', content: 'Loves Italian food', preferenceType: 'PREFERENCE' },
+            ],
+          }),
+        },
+      ],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    const result = await extractFromImage(mockImageData);
+
+    expect(result.contactName).toBe('Sarah');
+    expect(result.interactionSummary).toBe('Dinner at Italian restaurant');
+    expect(result.interactionType).toBe('MEET');
+    expect(result.preferences).toHaveLength(1);
+  });
+
+  it('includes additional context in the prompt when provided', async () => {
+    const mockResponse = {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            contactName: 'Mike',
+            interactionSummary: 'Birthday party for his son',
+            interactionType: 'MEET',
+          }),
+        },
+      ],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    await extractFromImage(mockImageData, 'This is from Mike\'s son\'s birthday party');
+
+    expect(mockCreate).toHaveBeenCalledTimes(1);
+    const callArgs = mockCreate.mock.calls[0][0];
+    expect(callArgs.messages[0].content).toContainEqual(
+      expect.objectContaining({
+        type: 'text',
+        text: expect.stringContaining('birthday party'),
+      })
+    );
+  });
+
+  it('sends image as base64 content block', async () => {
+    const mockResponse = {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            contactName: 'Emma',
+            interactionSummary: 'Coffee meetup',
+            interactionType: 'MEET',
+          }),
+        },
+      ],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    await extractFromImage(mockImageData);
+
+    expect(mockCreate).toHaveBeenCalledTimes(1);
+    const callArgs = mockCreate.mock.calls[0][0];
+    expect(callArgs.messages[0].content).toContainEqual(
+      expect.objectContaining({
+        type: 'image',
+        source: {
+          type: 'base64',
+          media_type: 'image/jpeg',
+          data: 'base64encodedimagedata',
+        },
+      })
+    );
+  });
+
+  it('extracts conversation from screenshot', async () => {
+    const mockResponse = {
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify({
+            contactName: 'John',
+            interactionSummary: 'Text conversation about weekend plans',
+            interactionType: 'MESSAGE',
+            interactionPlatform: 'text',
+            seedlings: ['Follow up about hiking plans'],
+          }),
+        },
+      ],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    const result = await extractFromImage(
+      { base64: 'screenshotdata', mimeType: 'image/png' },
+      'Screenshot of our text conversation'
+    );
+
+    expect(result.contactName).toBe('John');
+    expect(result.interactionType).toBe('MESSAGE');
+    expect(result.seedlings).toContain('Follow up about hiking plans');
+  });
+
+  it('throws error when no text response from Claude', async () => {
+    const mockResponse = {
+      content: [],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    await expect(extractFromImage(mockImageData)).rejects.toThrow('No text response from Claude');
+  });
+
+  it('throws error when response is not valid JSON', async () => {
+    const mockResponse = {
+      content: [
+        {
+          type: 'text',
+          text: 'This is not JSON',
+        },
+      ],
+    };
+
+    mockCreate.mockResolvedValueOnce(mockResponse);
+
+    await expect(extractFromImage(mockImageData)).rejects.toThrow('Failed to parse AI response as JSON');
   });
 });

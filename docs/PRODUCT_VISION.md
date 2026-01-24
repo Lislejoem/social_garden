@@ -27,6 +27,7 @@ A complete, polished product that handles the core use case: helping users maint
 13. Celebration Animation - Garden-themed confetti when logging interactions
 14. Topics of Interest Classification - AI semantically classifies preferences as TOPIC (interests/passions) vs PREFERENCE (specific likes/dislikes)
 15. Offline Voice Note Queue - Voice notes queue locally when offline, auto-sync when back online
+16. Photo & Screenshot Capture - Upload photos/screenshots, Claude AI extracts context (who, what, preferences, follow-ups)
 
 ---
 
@@ -34,16 +35,11 @@ A complete, polished product that handles the core use case: helping users maint
 
 ### Features
 
-**Quick Capture Widget**
+**Quick Capture Widget** (deferred until native app)
 - Home screen widget (mobile) for instant voice notes
 - One tap → record → done
 - Process in background
-
-**Photo & Screenshot Capture**
-- Take a photo → AI extracts context
-- "Dinner at Sarah's house" → logs interaction, extracts what you ate together
-- Screenshots of text conversations → AI summarizes the exchange
-- Allow additional context via voice or typing alongside the photo/screenshot
+- Requires native mobile app for true home screen widget
 
 ### Polish
 
@@ -55,9 +51,8 @@ A complete, polished product that handles the core use case: helping users maint
 
 ## Recommended Next Steps
 
-1. **Quick Capture Widget** - Mobile widget for instant voice notes
-2. **Photo/Screenshot Capture** - AI extracts context from images
-3. **Smart Reminders** - Deferred until email service or mobile app is added (see FUTURE_FEATURES.md)
+1. **Smart Reminders** - Deferred until email service or mobile app is added (see FUTURE_FEATURES.md)
+2. **Quick Capture Widget** - Deferred until native mobile app development
 
 ---
 
