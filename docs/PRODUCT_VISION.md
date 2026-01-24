@@ -56,6 +56,57 @@ A complete, polished product that handles the core use case: helping users maint
 
 ---
 
+## Deployment
+
+Social Garden is deployed as a production web app.
+
+### Infrastructure
+
+| Component | Service | Tier |
+|-----------|---------|------|
+| Hosting | Vercel | Hobby (free) |
+| Database | Neon PostgreSQL | Free |
+| AI | Anthropic Claude API | Pay-as-you-go |
+
+### Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `ANTHROPIC_API_KEY` | Claude API key (set in Vercel dashboard, marked Sensitive) |
+| `DATABASE_URL` | PostgreSQL connection string (auto-set by Neon integration) |
+
+### Local Development
+
+Uses Neon PostgreSQL for both production and development (separate databases):
+- `social-garden-prod` - Production database
+- `social-garden-dev` - Local development database
+
+Copy `.env.example` to `.env.local` and add your Neon dev connection string.
+
+---
+
+## Scaling Roadmap
+
+### Current State (Phase 1)
+- Single-user personal deployment
+- No authentication (APIs are open)
+- Suitable for personal use
+
+### Phase 2: Multi-User Support (Future)
+- Add authentication (Clerk recommended)
+- Add User model with userId on all data
+- Filter all API routes by authenticated user
+- Add rate limiting
+
+### Phase 3: Mobile Apps (Future)
+- Option A: Progressive Web App (PWA)
+- Option B: React Native native apps
+- Option C: Capacitor wrapper
+
+See [FUTURE_FEATURES.md](./FUTURE_FEATURES.md) for detailed V2/V3 feature plans.
+
+---
+
 ## Beyond V1
 
 See [FUTURE_FEATURES.md](./FUTURE_FEATURES.md) for V2+ ideas including:

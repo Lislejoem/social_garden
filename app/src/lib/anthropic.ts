@@ -14,10 +14,24 @@ import Anthropic from '@anthropic-ai/sdk';
 import type { AIExtraction, ContactBriefing, Preference, Interaction, Seedling, FamilyMember, Cadence } from '@/types';
 import { generateTypeInferencePrompt, INTERACTION_TYPES, PLATFORMS } from './interactions';
 
-/** Anthropic client instance (uses ANTHROPIC_API_KEY from env) */
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+/** Lazy-initialized Anthropic client (created on first use) */
+let anthropicClient: Anthropic | null = null;
+
+function getAnthropicClient(): Anthropic {
+  if (!anthropicClient) {
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      throw new Error('ANTHROPIC_API_KEY environment variable is not set');
+    }
+    anthropicClient = new Anthropic({ apiKey });
+  }
+  return anthropicClient;
+}
+
+/** Reset the client (for testing only) */
+export function _resetClient(): void {
+  anthropicClient = null;
+}
 
 const SYSTEM_PROMPT = `You are a personal relationship assistant helping to maintain a "Social Garden" - a personal CRM for nurturing friendships and relationships.
 
@@ -71,7 +85,7 @@ ${generateTypeInferencePrompt()}`;
  * // Returns: { contactName: "Sarah", preferences: [...], familyMembers: [...], ... }
  */
 export async function extractFromNote(rawInput: string): Promise<AIExtraction> {
-  const message = await anthropic.messages.create({
+  const message = await getAnthropicClient().messages.create({
     model: 'claude-sonnet-4-20250514',
     max_tokens: 1024,
     messages: [
@@ -206,7 +220,7 @@ export async function extractFromImage(
     });
   }
 
-  const message = await anthropic.messages.create({
+  const message = await getAnthropicClient().messages.create({
     model: 'claude-sonnet-4-20250514',
     max_tokens: 1024,
     messages: [
@@ -282,7 +296,7 @@ export async function generateBriefing(contactData: BriefingInput): Promise<Cont
   // Format the contact data for the prompt
   const formattedData = formatContactDataForBriefing(contactData);
 
-  const message = await anthropic.messages.create({
+  const message = await getAnthropicClient().messages.create({
     model: 'claude-sonnet-4-20250514',
     max_tokens: 1024,
     messages: [

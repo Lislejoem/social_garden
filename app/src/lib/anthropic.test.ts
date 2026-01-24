@@ -16,11 +16,13 @@ vi.mock('@anthropic-ai/sdk', () => {
 });
 
 // Import after mock is set up
-import { extractFromNote, generateBriefing, extractFromImage } from './anthropic';
+import { extractFromNote, generateBriefing, extractFromImage, _resetClient } from './anthropic';
 
 describe('extractFromNote', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubEnv('ANTHROPIC_API_KEY', 'test-api-key');
+    _resetClient();
   });
 
   it('extracts contact name and basic fields', async () => {
@@ -371,6 +373,8 @@ describe('extractFromNote', () => {
 describe('generateBriefing', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubEnv('ANTHROPIC_API_KEY', 'test-api-key');
+    _resetClient();
   });
 
   const mockContactData = {
@@ -537,6 +541,8 @@ describe('generateBriefing', () => {
 describe('extractFromImage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubEnv('ANTHROPIC_API_KEY', 'test-api-key');
+    _resetClient();
   });
 
   const mockImageData = {

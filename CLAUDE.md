@@ -24,7 +24,10 @@ npm test             # Watch mode
 npm run test:run     # Single run
 ```
 
-Mocking Anthropic SDK requires `vi.hoisted()` for proper initialization order.
+**Mocking Anthropic SDK:**
+- Use `vi.hoisted()` for the mock create function
+- Use `vi.stubEnv('ANTHROPIC_API_KEY', 'test-api-key')` in `beforeEach`
+- Call `_resetClient()` to clear the singleton between tests
 
 ## Writing Code
 
@@ -53,7 +56,8 @@ Personal CRM app for nurturing relationships. Voice notes and photos are process
 
 - **Framework:** Next.js 14.2 with App Router
 - **Language:** TypeScript 5 (strict mode)
-- **Database:** SQLite with Prisma 5.22
+- **Database:** PostgreSQL (Neon) with Prisma 5.22
+- **Hosting:** Vercel
 - **Styling:** Tailwind CSS 3.4
 - **AI:** Anthropic Claude API (@anthropic-ai/sdk)
 - **Icons:** lucide-react
@@ -115,9 +119,27 @@ Types: `app/src/types/index.ts`
 | `/api/seedlings/[id]` | PUT, DELETE | Update/delete seedling |
 | `/api/family-members/[id]` | PUT, DELETE | Update/delete family member |
 
+## Deployment
+
+**Infrastructure:** Vercel (hosting) + Neon PostgreSQL (database)
+
+**Environment Variables:**
+- `ANTHROPIC_API_KEY` - Claude API key (required)
+- `DATABASE_URL` - PostgreSQL connection string from Neon
+
+**Local Development:**
+1. Copy `.env.example` to `.env.local`
+2. Add your Neon dev database connection string
+3. Run `npx prisma db push` to sync schema
+
+**Production:**
+- Vercel auto-deploys from GitHub
+- Database migrations: run `npx prisma db push` in Vercel dashboard
+
 ## Gotchas
 
-- `socials` and `cachedBriefing` stored as JSON strings in SQLite
+- `socials` and `cachedBriefing` stored as JSON strings in PostgreSQL
 - Next.js 14 async params: `const { id } = await params` (not destructure directly)
 - Web Speech API only works in Chrome/Edge
 - ANTHROPIC_API_KEY required in `.env.local`
+- Anthropic client uses lazy initialization (validates API key on first use, not module load)
