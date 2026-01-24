@@ -12,7 +12,6 @@ interface SeedlingBedProps {
 
 export default function SeedlingBed({
   seedlings,
-  contactId: _contactId,
   onAddSeedling,
 }: SeedlingBedProps) {
   const [isAdding, setIsAdding] = useState(false);

@@ -27,7 +27,6 @@ export default function EditAvatarModal({
   onSave,
   currentAvatarUrl,
   currentAvatarSource,
-  preferredAvatarSource: _preferredAvatarSource,
   socials,
 }: EditAvatarModalProps) {
   const [isSaving, setIsSaving] = useState(false);
