@@ -58,6 +58,7 @@ Personal CRM app for nurturing relationships. Voice notes are transcribed and pr
 - **AI:** Anthropic Claude API (@anthropic-ai/sdk)
 - **Icons:** lucide-react
 - **Animations:** canvas-confetti (celebration effects)
+- **Offline Storage:** idb (IndexedDB wrapper)
 
 ## Commands
 
@@ -84,6 +85,7 @@ Detailed documentation lives in skills. Reference these when working on specific
 | `voice-processing` | Voice notes, AI extraction, ingest API |
 | `date-handling` | Dates, timezone-safe parsing, relative dates |
 | `toast-celebration` | User feedback (toasts), celebration animations |
+| `offline-support` | Offline queue, IndexedDB, online/offline detection |
 
 Skills location: `app/.claude/skills/*/SKILL.md`
 

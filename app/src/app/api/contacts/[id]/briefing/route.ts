@@ -79,6 +79,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       preferences: contact.preferences.map((p) => ({
         id: p.id,
         category: p.category as 'ALWAYS' | 'NEVER',
+        preferenceType: p.preferenceType as 'TOPIC' | 'PREFERENCE',
         content: p.content,
       })),
       interactions: contact.interactions.map((i) => ({

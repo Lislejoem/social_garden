@@ -2,7 +2,12 @@
 
 import { ReactNode } from 'react';
 import { ToastProvider } from '../contexts/ToastContext';
+import { OfflineQueueProvider } from '../contexts/OfflineQueueContext';
 
 export default function Providers({ children }: { children: ReactNode }) {
-  return <ToastProvider>{children}</ToastProvider>;
+  return (
+    <ToastProvider>
+      <OfflineQueueProvider>{children}</OfflineQueueProvider>
+    </ToastProvider>
+  );
 }

@@ -21,7 +21,9 @@
       "Bash(ls -la \"C:\\\\Users\\\\lisle\\\\Personal Projects\\\\social_garden\\\\app\\\\src\\\\app\\\\contact\"\" 2>/dev/null || echo \"Path check failed \")",
       "Bash(sqlite3:*)",
       "Bash(npx vitest:*)",
-      "Bash(npm run test:run:*)"
+      "Bash(npm run test:run:*)",
+      "Bash(wc:*)",
+      "Bash(dir:*)"
     ]
   }
 }

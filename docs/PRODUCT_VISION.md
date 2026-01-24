@@ -26,6 +26,7 @@ A complete, polished product that handles the core use case: helping users maint
 12. Error Feedback - Toast system with error/success variants, user-facing error messages
 13. Celebration Animation - Garden-themed confetti when logging interactions
 14. Topics of Interest Classification - AI semantically classifies preferences as TOPIC (interests/passions) vs PREFERENCE (specific likes/dislikes)
+15. Offline Voice Note Queue - Voice notes queue locally when offline, auto-sync when back online
 
 ---
 
@@ -46,16 +47,16 @@ A complete, polished product that handles the core use case: helping users maint
 
 ### Polish
 
-**Offline Support**
-- Voice notes queue for processing when back online
-- Local-first data storage with sync
+**Local-First Data Storage** (optional enhancement)
+- Currently: voice notes queue offline, rest requires online
+- Future: Full offline-first with sync for all data
 
 ---
 
 ## Recommended Next Steps
 
-1. **Offline Support** - Queue voice notes for processing when back online
-2. **Quick Capture Widget** - Mobile widget for instant voice notes
+1. **Quick Capture Widget** - Mobile widget for instant voice notes
+2. **Photo/Screenshot Capture** - AI extracts context from images
 3. **Smart Reminders** - Deferred until email service or mobile app is added (see FUTURE_FEATURES.md)
 
 ---

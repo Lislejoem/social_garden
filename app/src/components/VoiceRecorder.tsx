@@ -17,6 +17,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Mic, MicOff, X, Send, Loader2 } from 'lucide-react';
+import QueueIndicator from './QueueIndicator';
 
 // Web Speech API type declarations
 interface SpeechRecognitionEvent extends Event {
@@ -177,13 +178,16 @@ export default function VoiceRecorder({
   if (!isExpanded) {
     return (
       <div className="fixed bottom-10 right-10 z-50">
-        <button
-          onClick={startRecording}
-          className="w-20 h-20 bg-emerald-900 text-white rounded-4xl shadow-2xl flex items-center justify-center hover:scale-110 hover:-rotate-6 active:scale-95 transition-all"
-          title="Record a voice note"
-        >
-          <Mic className="w-10 h-10" />
-        </button>
+        <div className="relative">
+          <button
+            onClick={startRecording}
+            className="w-20 h-20 bg-emerald-900 text-white rounded-4xl shadow-2xl flex items-center justify-center hover:scale-110 hover:-rotate-6 active:scale-95 transition-all"
+            title="Record a voice note"
+          >
+            <Mic className="w-10 h-10" />
+          </button>
+          <QueueIndicator />
+        </div>
       </div>
     );
   }

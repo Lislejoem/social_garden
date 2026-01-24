@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Gift, Droplets } from 'lucide-react';
 import ContactCard from '@/components/ContactCard';
@@ -9,9 +9,11 @@ import FilterPresets, { FilterType } from '@/components/FilterPresets';
 import VoiceRecorder from '@/components/VoiceRecorder';
 import VoicePreviewModal from '@/components/VoicePreviewModal';
 import { useToast } from '@/contexts/ToastContext';
+import { useOfflineQueue } from '@/contexts/OfflineQueueContext';
 import { celebrateInteraction } from '@/utils/celebrate';
 import { hasUpcomingBirthday } from '@/lib/birthday';
 import type { HealthStatus, Cadence, Socials, AIExtraction, IngestPreviewResponse } from '@/types';
+import type { QueuedVoiceNote } from '@/lib/offline-queue';
 
 interface ContactData {
   id: string;
@@ -42,10 +44,12 @@ export default function DashboardClient({
   filterCounts,
 }: DashboardClientProps) {
   const router = useRouter();
-  const { showToast } = useToast();
+  const { showToast, showError } = useToast();
+  const { isOnline, addToQueue, queueCount, getQueuedNotes, removeFromQueue } = useOfflineQueue();
   const [contacts] = useState(initialContacts);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+  const isProcessingQueueRef = useRef(false);
 
   // Preview modal state
   const [previewData, setPreviewData] = useState<{
@@ -53,6 +57,7 @@ export default function DashboardClient({
     existingContact: { id: string; name: string; location: string | null } | null;
     isNewContact: boolean;
     rawInput: string;
+    queuedNoteId?: string; // Track if this came from the queue
   } | null>(null);
 
   // Filter contacts based on search query and active filter
@@ -105,26 +110,39 @@ export default function DashboardClient({
   };
 
   const handleVoiceNote = async (transcript: string) => {
-    // First, get a preview with dryRun
-    const response = await fetch('/api/ingest', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ rawInput: transcript, dryRun: true }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to process voice note');
+    // If offline, queue the transcript for later processing
+    if (!isOnline) {
+      await addToQueue(transcript);
+      showToast('Saved offline. Will sync when you reconnect.');
+      return;
     }
 
-    const preview: IngestPreviewResponse = await response.json();
+    // First, get a preview with dryRun
+    try {
+      const response = await fetch('/api/ingest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rawInput: transcript, dryRun: true }),
+      });
 
-    // Show the preview modal
-    setPreviewData({
-      extraction: preview.extraction,
-      existingContact: preview.existingContact || null,
-      isNewContact: preview.isNewContact,
-      rawInput: transcript,
-    });
+      if (!response.ok) {
+        throw new Error('Failed to process voice note');
+      }
+
+      const preview: IngestPreviewResponse = await response.json();
+
+      // Show the preview modal
+      setPreviewData({
+        extraction: preview.extraction,
+        existingContact: preview.existingContact || null,
+        isNewContact: preview.isNewContact,
+        rawInput: transcript,
+      });
+    } catch {
+      // If fetch fails (e.g., network error), queue the transcript
+      await addToQueue(transcript);
+      showToast('Saved offline. Will sync when you reconnect.');
+    }
   };
 
   const handleConfirmSave = async (editedData: AIExtraction) => {
@@ -145,6 +163,11 @@ export default function DashboardClient({
 
     const result = await response.json();
 
+    // If this was from the queue, remove it
+    if (previewData.queuedNoteId) {
+      await removeFromQueue(previewData.queuedNoteId);
+    }
+
     // Close modal, celebrate, and show toast
     setPreviewData(null);
     celebrateInteraction();
@@ -152,11 +175,63 @@ export default function DashboardClient({
 
     // Refresh data
     router.refresh();
+
+    // Process next queued item if any
+    processNextQueuedNote();
   };
 
   const handleCancelPreview = () => {
     setPreviewData(null);
+    // If there are more queued notes, process the next one
+    processNextQueuedNote();
   };
+
+  // Process the next queued note by showing its preview modal
+  const processNextQueuedNote = useCallback(async () => {
+    if (isProcessingQueueRef.current || !isOnline) return;
+
+    const notes = await getQueuedNotes();
+    const pendingNotes = notes.filter(n => n.status === 'pending');
+
+    if (pendingNotes.length === 0) return;
+
+    isProcessingQueueRef.current = true;
+    const note = pendingNotes[0];
+
+    try {
+      const response = await fetch('/api/ingest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rawInput: note.transcript, dryRun: true }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to process queued note');
+      }
+
+      const preview: IngestPreviewResponse = await response.json();
+
+      // Show the preview modal with queue note ID
+      setPreviewData({
+        extraction: preview.extraction,
+        existingContact: preview.existingContact || null,
+        isNewContact: preview.isNewContact,
+        rawInput: note.transcript,
+        queuedNoteId: note.id,
+      });
+    } catch {
+      showError('Failed to process queued note. Will retry later.');
+    } finally {
+      isProcessingQueueRef.current = false;
+    }
+  }, [isOnline, getQueuedNotes, showError]);
+
+  // Auto-process queue when coming back online
+  useEffect(() => {
+    if (isOnline && queueCount > 0 && !previewData) {
+      processNextQueuedNote();
+    }
+  }, [isOnline, queueCount, previewData, processNextQueuedNote]);
 
   // Calculate stats
   const parchedCount = contacts.filter((c) => c.health === 'parched').length;
