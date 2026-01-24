@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Contact {
+  id                    String    @id @default(cuid())
+  name                  String
+  avatarUrl             String?
+  avatarSource          String?   // 'manual' | 'gravatar' | 'linkedin' | 'instagram'
+  preferredAvatarSource String?   // User's preferred source when multiple available
+  location              String?
+  birthday      DateTime? // Full birthday with year (optional)
+  birthdayMonth Int?      // Month 1-12 for birthday without year
+  birthdayDay   Int?      // Day 1-31 for birthday without year
+  cadence       String    @default("REGULARLY") // OFTEN, REGULARLY, SELDOMLY, RARELY
+  socials       String?   // JSON string: {instagram, linkedin, email, phone, address}
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  cachedBriefing      String?   // JSON of ContactBriefing
+  briefingGeneratedAt DateTime? // When briefing was last generated
+
+  preferences   Preference[]
+  interactions  Interaction[]
+  seedlings     Seedling[]
+  familyMembers FamilyMember[]
+}
+
+model Preference {
+  id             String  @id @default(cuid())
+  contactId      String
+  category       String  // ALWAYS or NEVER
+  preferenceType String  @default("PREFERENCE") // TOPIC or PREFERENCE
+  content        String
+  contact        Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+}
+
+model Interaction {
+  id        String   @id @default(cuid())
+  contactId String
+  date      DateTime @default(now())
+  type      String   // CALL, MESSAGE, MEET, VOICE
+  platform  String?  // For MESSAGE type: text, instagram, telegram, linkedin
+  summary   String
+  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+}
+
+model Seedling {
+  id        String   @id @default(cuid())
+  contactId String
+  content   String
+  status    String   @default("ACTIVE") // ACTIVE or PLANTED
+  createdAt DateTime @default(now())
+  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+}
+
+model FamilyMember {
+  id        String  @id @default(cuid())
+  contactId String
+  name      String
+  relation  String
+  contact   Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+}

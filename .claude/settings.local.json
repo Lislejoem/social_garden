@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npx prisma:*)",
+      "Bash(npm run build:*)",
+      "WebSearch",
+      "WebFetch(domain:www.anthropic.com)",
+      "WebFetch(domain:www.builder.io)",
+      "WebFetch(domain:www.humanlayer.dev)",
+      "WebFetch(domain:arize.com)",
+      "WebFetch(domain:dometrain.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:alexop.dev)",
+      "WebFetch(domain:dotclaude.com)",
+      "Bash(npm run lint)",
+      "Bash(npx tsc:*)",
+      "Bash(del \"\\\\?\\\\C:\\\\Users\\\\lisle\\\\Personal Projects\\\\social_garden\\\\nul\")",
+      "Bash(cmd.exe /c \"del \\\\?\\\\C:\\\\Users\\\\lisle\\\\Personal Projects\\\\social_garden\\\\nul\")",
+      "Bash(cd:*)",
+      "Bash(ls -la \"C:\\\\Users\\\\lisle\\\\Personal Projects\\\\social_garden\\\\app\\\\src\\\\app\\\\contact\"\" 2>/dev/null || echo \"Path check failed \")",
+      "Bash(sqlite3:*)",
+      "Bash(npx vitest:*)",
+      "Bash(npm run test:run:*)",
+      "Bash(wc:*)",
+      "Bash(dir:*)",
+      "Bash(tree:*)"
+    ]
+  }
+}
