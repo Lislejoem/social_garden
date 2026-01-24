@@ -33,12 +33,6 @@ A complete, polished product that handles the core use case: helping users maint
 
 ### Features
 
-**Smart Reminders**
-- Daily/weekly digest: "3 contacts need attention"
-- Birthday reminders: "Sarah's birthday is in 3 days"
-- Follow-up reminders based on seedlings: "You said you'd check in about Mike's job search"
-- Implementation note: Scope carefully - ask about notification frequency, channels, timing preferences
-
 **Quick Capture Widget**
 - Home screen widget (mobile) for instant voice notes
 - One tap → record → done
@@ -60,9 +54,9 @@ A complete, polished product that handles the core use case: helping users maint
 
 ## Recommended Next Steps
 
-1. **Smart Reminders** - High value but requires scoping discussion first
-2. **Offline Support** - Queue voice notes for processing when back online
-3. **Quick Capture Widget** - Mobile widget for instant voice notes
+1. **Offline Support** - Queue voice notes for processing when back online
+2. **Quick Capture Widget** - Mobile widget for instant voice notes
+3. **Smart Reminders** - Deferred until email service or mobile app is added (see FUTURE_FEATURES.md)
 
 ---
 

@@ -4,6 +4,30 @@ Ideas for evolving Social Garden beyond V1.
 
 ---
 
+## Deferred V1 Features
+
+Features designed for V1 but requiring infrastructure not yet in place.
+
+### Smart Reminders / Daily Notifications
+
+**Requires**: Email service (Resend, SendGrid) OR mobile app with push notifications
+
+**Core idea**: Proactively notify users about contacts needing attention:
+- Daily/weekly digest: "3 contacts need watering"
+- Birthday reminders: "Sarah's birthday is in 3 days"
+- Follow-up reminders based on seedlings: "You said you'd check in about Mike's job search"
+
+**Design approach** (documented for future implementation):
+- Compute reminders on-demand from Contact data (not pre-generated)
+- Store only dismissal/snooze records in database
+- Auto-resolve when user logs interaction (health improves, reminder disappears)
+- Snooze options: 1 day, 1 week
+- Severity levels: urgent (parched, birthday ≤7 days), warning (thirsty, birthday 8-30 days)
+
+**Why deferred**: Requires a way to reach users when they're not in the app. Current web app has no email service or push notification infrastructure.
+
+---
+
 ## V2 Features - Differentiation
 
 Deep integrations, organization, and advanced capture.
