@@ -161,7 +161,7 @@ export default function VoiceRecorder({
       await onTranscriptComplete(transcript.trim());
       setTranscript('');
       setIsExpanded(false);
-    } catch (e) {
+    } catch {
       setError('Failed to process note. Please try again.');
     } finally {
       setIsProcessing(false);

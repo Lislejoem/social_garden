@@ -5,7 +5,7 @@ import {
   formatLastContact,
 } from '@/lib/health';
 import { hasUpcomingBirthday } from '@/lib/birthday';
-import type { Cadence, Socials, HealthStatus } from '@/types';
+import type { Cadence, Socials } from '@/types';
 import DashboardClient from './DashboardClient';
 
 async function getContacts() {

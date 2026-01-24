@@ -48,7 +48,7 @@ export async function initOfflineDb(): Promise<IDBPDatabase<OfflineDbSchema>> {
   if (dbInstance) {
     try {
       // Attempt a simple operation to verify the connection
-      dbInstance.objectStoreNames;
+      void dbInstance.objectStoreNames;
       return dbInstance;
     } catch {
       // Connection is stale, clear the cache

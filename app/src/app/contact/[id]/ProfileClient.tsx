@@ -447,13 +447,6 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
   const neverPrefs = contact.preferences.filter((p) => p.category === 'NEVER');
   const activeSeedlings = contact.seedlings.filter((s) => s.status === 'ACTIVE');
 
-  const hasSocials = contact.socials && (
-    contact.socials.instagram ||
-    contact.socials.linkedin ||
-    contact.socials.email ||
-    contact.socials.phone
-  );
-
   return (
     <div className="min-h-screen pb-24">
       {/* Top Navigation Bar */}

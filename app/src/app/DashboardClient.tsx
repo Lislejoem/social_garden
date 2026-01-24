@@ -14,7 +14,6 @@ import { useOfflineQueue } from '@/contexts/OfflineQueueContext';
 import { celebrateInteraction } from '@/utils/celebrate';
 import { hasUpcomingBirthday } from '@/lib/birthday';
 import type { HealthStatus, Cadence, Socials, AIExtraction, IngestPreviewResponse } from '@/types';
-import type { QueuedVoiceNote } from '@/lib/offline-queue';
 
 interface ContactData {
   id: string;
