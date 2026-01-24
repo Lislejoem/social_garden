@@ -91,6 +91,7 @@ Detailed documentation lives in skills. Reference these when working on specific
 | `date-handling` | Dates, timezone-safe parsing, relative dates |
 | `toast-celebration` | User feedback (toasts), celebration animations |
 | `offline-support` | Offline queue, IndexedDB, online/offline detection |
+| `deployment` | Vercel CLI, Neon CLI, production deploys, env vars |
 
 Skills location: `app/.claude/skills/*/SKILL.md`
 
@@ -123,18 +124,35 @@ Types: `app/src/types/index.ts`
 
 **Infrastructure:** Vercel (hosting) + Neon PostgreSQL (database)
 
-**Environment Variables:**
-- `ANTHROPIC_API_KEY` - Claude API key (required)
+**Production URL:** https://app-five-zeta-92.vercel.app
+
+**Environment Variables (in Vercel):**
+- `ANTHROPIC_API_KEY` - Claude API key
 - `DATABASE_URL` - PostgreSQL connection string from Neon
+
+**CLI Tools (for Claude's autonomous deployment):**
+```bash
+# Vercel CLI (requires --token for Claude to use)
+vercel deploy --prod --token $VERCEL_TOKEN    # Deploy to production
+vercel env ls --token $VERCEL_TOKEN           # List env vars
+vercel env add VAR production --token $TOKEN  # Add env var (pipe value)
+
+# Neon CLI (authenticated via neonctl auth)
+neonctl connection-string                     # Get DATABASE_URL
+neonctl branches list                         # List database branches
+neonctl projects list                         # List projects
+```
 
 **Local Development:**
 1. Copy `.env.example` to `.env.local`
 2. Add your Neon dev database connection string
 3. Run `npx prisma db push` to sync schema
 
-**Production:**
-- Vercel auto-deploys from GitHub
-- Database migrations: run `npx prisma db push` in Vercel dashboard
+**Database Migrations:**
+```bash
+# Get connection string and run migration
+DATABASE_URL=$(neonctl connection-string) npx prisma db push
+```
 
 ## Gotchas
 

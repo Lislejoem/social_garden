@@ -60,6 +60,8 @@ A complete, polished product that handles the core use case: helping users maint
 
 Social Garden is deployed as a production web app.
 
+**Production URL:** https://app-five-zeta-92.vercel.app
+
 ### Infrastructure
 
 | Component | Service | Tier |
@@ -73,7 +75,15 @@ Social Garden is deployed as a production web app.
 | Variable | Description |
 |----------|-------------|
 | `ANTHROPIC_API_KEY` | Claude API key (set in Vercel dashboard, marked Sensitive) |
-| `DATABASE_URL` | PostgreSQL connection string (auto-set by Neon integration) |
+| `DATABASE_URL` | PostgreSQL connection string from Neon |
+
+### CLI Management
+
+Claude can autonomously manage deployments via:
+- **Vercel CLI** - Deploy, manage env vars, view logs
+- **Neon CLI** - Get connection strings, manage database branches
+
+See `deployment` skill for full CLI reference.
 
 ### Local Development
 
