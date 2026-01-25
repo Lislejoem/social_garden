@@ -7,6 +7,9 @@ import {
 import type { Cadence, Socials, AvatarSource } from '@/types';
 import ProfileClient from './ProfileClient';
 
+// Force dynamic rendering - always fetch fresh data from database
+export const dynamic = 'force-dynamic';
+
 interface PageProps {
   params: Promise<{ id: string }>;
 }

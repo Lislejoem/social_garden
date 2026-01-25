@@ -8,6 +8,9 @@ import { hasUpcomingBirthday } from '@/lib/birthday';
 import type { Cadence, Socials } from '@/types';
 import DashboardClient from './DashboardClient';
 
+// Force dynamic rendering - always fetch fresh data from database
+export const dynamic = 'force-dynamic';
+
 async function getContacts() {
   const contacts = await prisma.contact.findMany({
     include: {
