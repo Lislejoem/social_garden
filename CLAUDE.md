@@ -18,7 +18,6 @@
 
 - Update `CLAUDE.md` if needed
 - Update relevant skills (or create new ones)
-- Update `docs/PRODUCT_VISION.md`
 
 ---
 
@@ -70,6 +69,15 @@ Skills location: `app/.claude/skills/*/SKILL.md`
 | Expert | `ux-mobile`, `privacy-security`, `ai-llm`, `performance`, `content`, `behavioral-psych`, `agent-first` |
 | Persona | `persona-busy-parent`, `persona-connector`, `persona-infrequent` |
 | Critical | `edge-cases`, `devils-advocate` |
+
+## Product Principles
+
+- **Friction-free capture**: Minimize effort to log interactions (voice, photos, future integrations)
+- **Agent-first**: AI agents and human users are equals - same data access, same capabilities via API
+- **Mobile-primary**: 75% mobile, 25% desktop
+- **Proactive**: App actively reminds users to nurture relationships
+- **Privacy + Security**: All-in on integrations, but security is first-class
+- **Gardening metaphor**: Core to brand, extend don't replace
 
 ## Gotchas
 
