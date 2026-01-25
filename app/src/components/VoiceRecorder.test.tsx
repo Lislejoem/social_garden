@@ -34,6 +34,7 @@ class MockSpeechRecognition {
   abort = vi.fn();
 
   constructor() {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     mockRecognitionInstance = this;
   }
 }
