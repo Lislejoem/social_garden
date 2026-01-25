@@ -176,6 +176,62 @@ describe('VoiceRecorder', () => {
       expect(screen.getByText('Hello there how are you')).toBeInTheDocument();
     });
 
+    it('handles Android cumulative results correctly', () => {
+      // Android sends all-final results where each new result contains
+      // the complete transcript up to that point (cumulative)
+      renderWithProviders(<VoiceRecorder onTranscriptComplete={mockOnTranscriptComplete} />);
+      startRecording();
+
+      // Android event 1: "I'm"
+      act(() => {
+        mockRecognitionInstance?.onresult?.(
+          createMockResultEvent(
+            [
+              { transcript: '', isFinal: true },
+              { transcript: '', isFinal: true },
+              { transcript: "I'm", isFinal: true },
+            ],
+            2
+          )
+        );
+      });
+
+      // Android event 2: "I'm at" (cumulative - contains previous)
+      act(() => {
+        mockRecognitionInstance?.onresult?.(
+          createMockResultEvent(
+            [
+              { transcript: '', isFinal: true },
+              { transcript: '', isFinal: true },
+              { transcript: "I'm", isFinal: true },
+              { transcript: "I'm at", isFinal: true },
+            ],
+            3
+          )
+        );
+      });
+
+      // Android event 3: "I'm at my aunt" (cumulative)
+      act(() => {
+        mockRecognitionInstance?.onresult?.(
+          createMockResultEvent(
+            [
+              { transcript: '', isFinal: true },
+              { transcript: '', isFinal: true },
+              { transcript: "I'm", isFinal: true },
+              { transcript: "I'm at", isFinal: true },
+              { transcript: "I'm at my aunt", isFinal: true },
+            ],
+            4
+          )
+        );
+      });
+
+      // Should show "I'm at my aunt", NOT "I'm I'm at I'm at my aunt"
+      const transcriptArea = screen.getByText(/I'm at my aunt/);
+      expect(transcriptArea.textContent).toBe("I'm at my aunt");
+    });
+
     it('shows only current interim result, not concatenated interims', () => {
       renderWithProviders(<VoiceRecorder onTranscriptComplete={mockOnTranscriptComplete} />);
       startRecording();
