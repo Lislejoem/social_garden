@@ -3,7 +3,7 @@
  * @description TDD tests for IndexedDB-based voice note queue
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import 'fake-indexeddb/auto';
 import { deleteDB } from 'idb';
 import {
@@ -15,7 +15,6 @@ import {
   removeFromQueue,
   clearQueue,
   closeOfflineDb,
-  type QueuedVoiceNote,
 } from './offline-queue';
 
 const DB_NAME = 'social-garden-offline';
@@ -107,7 +106,7 @@ describe('offline-queue', () => {
 
   describe('getPendingNotes', () => {
     it('returns only notes with pending status', async () => {
-      const note1 = await addToQueue('Pending 1');
+      await addToQueue('Pending 1');
       await addToQueue('Pending 2');
       const note3 = await addToQueue('Will be processing');
 
@@ -120,7 +119,7 @@ describe('offline-queue', () => {
     });
 
     it('excludes failed notes', async () => {
-      const note1 = await addToQueue('Pending');
+      await addToQueue('Pending');
       const note2 = await addToQueue('Failed');
 
       await updateNoteStatus(note2.id, 'failed', 'Some error');
@@ -171,7 +170,7 @@ describe('offline-queue', () => {
 
   describe('removeFromQueue', () => {
     it('removes a note by ID', async () => {
-      const note1 = await addToQueue('To keep');
+      await addToQueue('To keep');
       const note2 = await addToQueue('To remove');
 
       await removeFromQueue(note2.id);

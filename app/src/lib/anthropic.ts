@@ -111,7 +111,7 @@ export async function extractFromNote(rawInput: string): Promise<AIExtraction> {
       throw new Error('No JSON found in response');
     }
     return JSON.parse(jsonMatch[0]) as AIExtraction;
-  } catch (e) {
+  } catch {
     console.error('Failed to parse Claude response:', textContent.text);
     throw new Error('Failed to parse AI response as JSON');
   }
@@ -245,7 +245,7 @@ export async function extractFromImage(
       throw new Error('No JSON found in response');
     }
     return JSON.parse(jsonMatch[0]) as AIExtraction;
-  } catch (e) {
+  } catch {
     console.error('Failed to parse Claude image response:', textContent.text);
     throw new Error('Failed to parse AI response as JSON');
   }
@@ -321,7 +321,7 @@ export async function generateBriefing(contactData: BriefingInput): Promise<Cont
       throw new Error('No JSON found in response');
     }
     return JSON.parse(jsonMatch[0]) as ContactBriefing;
-  } catch (e) {
+  } catch {
     console.error('Failed to parse Claude briefing response:', textContent.text);
     throw new Error('Failed to parse AI response as JSON');
   }

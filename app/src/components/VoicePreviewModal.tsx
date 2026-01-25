@@ -36,7 +36,7 @@ import {
   Trash2,
   Plus,
 } from 'lucide-react';
-import type { AIExtraction, Category, InteractionType, MessagePlatform, PreferenceType } from '@/types';
+import type { AIExtraction, Category, MessagePlatform, PreferenceType } from '@/types';
 import { INTERACTION_TYPES, PLATFORMS, TYPE_LABELS, PLATFORM_LABELS } from '@/lib/interactions';
 
 /**

@@ -60,7 +60,7 @@ export default function EditableText({
     try {
       await onSave(trimmedValue);
       setIsEditing(false);
-    } catch (error) {
+    } catch {
       showError('Failed to save. Please try again.');
     } finally {
       setIsSaving(false);

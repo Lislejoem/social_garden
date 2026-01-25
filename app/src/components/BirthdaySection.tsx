@@ -7,8 +7,6 @@ import {
   daysUntilBirthday,
   getZodiacSign,
   formatBirthday,
-  formatBirthdayForInput,
-  parseBirthdayFromInput,
 } from '@/lib/birthday';
 
 const MONTHS = [

@@ -2,7 +2,7 @@
  * @file Image utilities tests
  * @description Tests for image processing utilities: base64 conversion, compression, validation
  */
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { fileToBase64, compressImage, validateImageFile, SUPPORTED_TYPES, MAX_FILE_SIZE } from './image-utils';
 
 // Helper to create a mock File

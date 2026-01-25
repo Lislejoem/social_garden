@@ -1,11 +1,10 @@
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import {
   calculateHealth,
   getLastInteractionDate,
 } from '@/lib/health';
-import type { Cadence, Socials, Preference, Interaction, Seedling, FamilyMember, AvatarSource } from '@/types';
+import type { Cadence, Socials, AvatarSource } from '@/types';
 import ProfileClient from './ProfileClient';
 
 interface PageProps {

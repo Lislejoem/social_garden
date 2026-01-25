@@ -7,11 +7,8 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { ReactNode } from 'react';
 import 'fake-indexeddb/auto';
-import { deleteDB } from 'idb';
 import { OfflineQueueProvider, useOfflineQueue } from './OfflineQueueContext';
-import { closeOfflineDb, clearQueue } from '../lib/offline-queue';
-
-const DB_NAME = 'social-garden-offline';
+import { clearQueue } from '../lib/offline-queue';
 
 // Wrapper component for testing hooks
 const wrapper = ({ children }: { children: ReactNode }) => (

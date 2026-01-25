@@ -105,7 +105,7 @@ export default function PhotoCapture({ onCapture }: PhotoCaptureProps) {
 
       // Close modal on success
       handleClose();
-    } catch (e) {
+    } catch {
       setError('Failed to process image. Please try again.');
     } finally {
       setIsProcessing(false);

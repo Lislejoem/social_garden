@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import QuickLogInteraction from './QuickLogInteraction';
 import { ToastProvider } from '../contexts/ToastContext';
-import type { InteractionType, MessagePlatform } from '@/types';
+import type { InteractionType } from '@/types';
 
 // Mock fetch globally
 const mockFetch = vi.fn();

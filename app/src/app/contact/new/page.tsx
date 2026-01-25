@@ -50,7 +50,7 @@ export default function NewContactPage() {
 
       const contact = await response.json();
       router.push(`/contact/${contact.id}`);
-    } catch (err) {
+    } catch {
       setError('Failed to create contact. Please try again.');
     } finally {
       setIsSubmitting(false);
