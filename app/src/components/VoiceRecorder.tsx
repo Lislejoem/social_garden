@@ -85,6 +85,7 @@ export default function VoiceRecorder({
   const [error, setError] = useState<string | null>(null);
 
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const finalizedTextRef = useRef<string>('');
 
   useEffect(() => {
     // Check for browser support
@@ -104,19 +105,22 @@ export default function VoiceRecorder({
     recognition.lang = 'en-US';
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
-      let finalTranscript = '';
-      let interimTranscript = '';
-
-      for (let i = 0; i < event.results.length; i++) {
+      // Process only NEW results (starting from resultIndex)
+      for (let i = event.resultIndex; i < event.results.length; i++) {
         const result = event.results[i];
         if (result.isFinal) {
-          finalTranscript += result[0].transcript + ' ';
-        } else {
-          interimTranscript += result[0].transcript;
+          finalizedTextRef.current += result[0].transcript + ' ';
         }
       }
 
-      setTranscript(finalTranscript + interimTranscript);
+      // Show current interim (last non-final result only)
+      let currentInterim = '';
+      const lastResult = event.results[event.results.length - 1];
+      if (lastResult && !lastResult.isFinal) {
+        currentInterim = lastResult[0].transcript;
+      }
+
+      setTranscript(finalizedTextRef.current + currentInterim);
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
@@ -141,6 +145,7 @@ export default function VoiceRecorder({
 
     setError(null);
     setTranscript('');
+    finalizedTextRef.current = '';
     setIsExpanded(true);
     setIsRecording(true);
     recognitionRef.current.start();

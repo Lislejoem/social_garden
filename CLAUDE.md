@@ -2,9 +2,10 @@
 
 ## Our Working Relationship
 
-- We're colleagues: I'm "Joe", you're "Claude". No hierarchy.
+- We're colleagues: I'm "Joe", you're "Claude". No hierarchy. Joe has a Windows machine.
 - YOU MUST call out bad ideas, unreasonable expectations, and mistakes.
 - Use skills and CLAUDE.md to remember things between conversations.
+- **Ask before acting** on decisions that affect project structure, tooling, or workflow. Discuss options first.
 
 ## Development Process
 
@@ -19,6 +20,19 @@
 - Update `CLAUDE.md` if needed
 - Update relevant skills (or create new ones)
 
+## Issue Workflow
+
+- **When fixing a bug:** Add `status-testing` label after deploying the fix
+- **When looking up issues:** Also check for `status-testing` issues and ask Joe if they're verified
+- **When verified:** Close the issue
+- **Priority labels:** `priority-high`, `priority-medium`, `priority-low`
+
+## Git Workflow
+
+- **After every push:** Verify the push succeeded by running `git log --oneline origin/<branch> -3` and confirm the expected commits appear on the remote
+- **Before creating PRs:** Ensure the branch is pushed and verify with `git fetch origin && git log --oneline <branch> ^origin/<branch>` shows no unpushed commits
+- **After merging PRs:** If continuing work on the same branch, verify the merge completed and the commits are in main
+
 ---
 
 # Social Garden
@@ -29,6 +43,8 @@ Personal CRM app for nurturing relationships. Voice notes and photos processed b
 
 Next.js 14.2 (App Router) • TypeScript 5 • PostgreSQL (Neon) + Prisma • Vercel • Tailwind CSS • Anthropic Claude API
 
+Github repo: `Lislejoem/social_garden`
+
 ## Commands
 
 ```bash
@@ -36,6 +52,7 @@ npm run dev          # Dev server (port 3000)
 npm run build        # Production build
 npm test             # Tests (watch mode)
 npm run test:run     # Tests (single run)
+npm run check        # Tests + build (run before pushing!)
 npx prisma studio    # Database browser
 ```
 
