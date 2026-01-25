@@ -120,29 +120,86 @@ export default function VoiceRecorder({
     recognition.onresult = (event: SpeechRecognitionEvent) => {
       // Collect all results for debugging
       const debugResults: Array<{ transcript: string; isFinal: boolean }> = [];
+      let allFinal = true;
       for (let i = 0; i < event.results.length; i++) {
         debugResults.push({
           transcript: event.results[i][0].transcript,
           isFinal: event.results[i].isFinal,
         });
-      }
-
-      // Process only NEW results (starting from resultIndex)
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const result = event.results[i];
-        if (result.isFinal) {
-          finalizedTextRef.current += result[0].transcript + ' ';
+        if (!event.results[i].isFinal) {
+          allFinal = false;
         }
       }
 
-      // Show current interim (last non-final result only)
-      let currentInterim = '';
-      const lastResult = event.results[event.results.length - 1];
-      if (lastResult && !lastResult.isFinal) {
-        currentInterim = lastResult[0].transcript;
+      // Detect Android cumulative mode: all results final AND each result
+      // contains the previous (e.g., "I'm" -> "I'm at" -> "I'm at my")
+      let isCumulative = false;
+      if (allFinal && event.results.length >= 2) {
+        // Find the last two non-empty results and check if cumulative
+        let last = '';
+        let secondToLast = '';
+        for (let i = event.results.length - 1; i >= 0; i--) {
+          const t = event.results[i][0].transcript.trim();
+          if (t) {
+            if (!last) {
+              last = t;
+            } else {
+              secondToLast = t;
+              break;
+            }
+          }
+        }
+        // If the last result starts with the second-to-last, it's cumulative
+        if (last && secondToLast && last.startsWith(secondToLast)) {
+          isCumulative = true;
+        }
       }
 
-      const newTranscript = finalizedTextRef.current + currentInterim;
+      let newTranscript: string;
+
+      if (isCumulative) {
+        // Android behavior: all results are final and cumulative
+        // Just use the last non-empty result as the complete transcript
+        let lastNonEmpty = '';
+        for (let i = event.results.length - 1; i >= 0; i--) {
+          const transcript = event.results[i][0].transcript.trim();
+          if (transcript) {
+            lastNonEmpty = transcript;
+            break;
+          }
+        }
+        newTranscript = lastNonEmpty;
+        // Keep finalizedTextRef in sync for when recording stops
+        finalizedTextRef.current = lastNonEmpty ? lastNonEmpty + ' ' : '';
+      } else if (allFinal) {
+        // Desktop with all-final results but NOT cumulative (segmented)
+        // Accumulate all segments
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const result = event.results[i];
+          if (result.isFinal) {
+            finalizedTextRef.current += result[0].transcript + ' ';
+          }
+        }
+        newTranscript = finalizedTextRef.current.trim();
+      } else {
+        // Desktop behavior: mix of final and interim results
+        // Accumulate finalized segments, show current interim
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const result = event.results[i];
+          if (result.isFinal) {
+            finalizedTextRef.current += result[0].transcript + ' ';
+          }
+        }
+
+        let currentInterim = '';
+        const lastResult = event.results[event.results.length - 1];
+        if (lastResult && !lastResult.isFinal) {
+          currentInterim = lastResult[0].transcript;
+        }
+
+        newTranscript = finalizedTextRef.current + currentInterim;
+      }
+
       setTranscript(newTranscript);
 
       // Add debug log entry
