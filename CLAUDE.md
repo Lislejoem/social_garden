@@ -14,6 +14,7 @@
 - **No Duplication:** Work hard to reduce code duplication.
 - **Fix Bugs Immediately:** Don't ask permission.
 - **Clear Names:** Names tell what code does, not how or its history.
+- **Stay in Scope:** When fixing a bug or implementing a feature, don't expand into related features. If you discover something useful to add, create a GitHub issue instead of implementing it. Err on the side of asking.
 
 ## At End of Each Plan
 

@@ -75,17 +75,6 @@ interface VoiceRecorderProps {
   onTranscriptComplete: (transcript: string) => Promise<void>;
 }
 
-// Debug mode - set to true to show on-screen debug panel
-const DEBUG_MODE = true;
-
-interface DebugLogEntry {
-  time: string;
-  resultIndex: number;
-  results: Array<{ transcript: string; isFinal: boolean }>;
-  finalizedText: string;
-  outputTranscript: string;
-}
-
 export default function VoiceRecorder({
   onTranscriptComplete,
 }: VoiceRecorderProps) {
@@ -94,8 +83,6 @@ export default function VoiceRecorder({
   const [transcript, setTranscript] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [debugLogs, setDebugLogs] = useState<DebugLogEntry[]>([]);
-  const [showDebug, setShowDebug] = useState(false);
 
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const finalizedTextRef = useRef<string>('');
@@ -118,16 +105,12 @@ export default function VoiceRecorder({
     recognition.lang = 'en-US';
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
-      // Collect all results for debugging
-      const debugResults: Array<{ transcript: string; isFinal: boolean }> = [];
+      // Check if all results are final (needed for Android detection)
       let allFinal = true;
       for (let i = 0; i < event.results.length; i++) {
-        debugResults.push({
-          transcript: event.results[i][0].transcript,
-          isFinal: event.results[i].isFinal,
-        });
         if (!event.results[i].isFinal) {
           allFinal = false;
+          break;
         }
       }
 
@@ -201,18 +184,6 @@ export default function VoiceRecorder({
       }
 
       setTranscript(newTranscript);
-
-      // Add debug log entry
-      if (DEBUG_MODE) {
-        const logEntry: DebugLogEntry = {
-          time: new Date().toISOString().split('T')[1].slice(0, 12),
-          resultIndex: event.resultIndex,
-          results: debugResults,
-          finalizedText: finalizedTextRef.current,
-          outputTranscript: newTranscript,
-        };
-        setDebugLogs((prev) => [...prev.slice(-19), logEntry]);
-      }
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
@@ -238,7 +209,6 @@ export default function VoiceRecorder({
     setError(null);
     setTranscript('');
     finalizedTextRef.current = '';
-    setDebugLogs([]);
     setIsExpanded(true);
     setIsRecording(true);
     recognitionRef.current.start();
@@ -350,38 +320,6 @@ export default function VoiceRecorder({
               </p>
             )}
           </div>
-
-          {/* Debug Panel */}
-          {DEBUG_MODE && (
-            <div className="mt-4 border-t border-stone-200 pt-4">
-              <button
-                onClick={() => setShowDebug(!showDebug)}
-                className="text-xs text-stone-500 underline mb-2"
-              >
-                {showDebug ? 'Hide' : 'Show'} Debug Logs ({debugLogs.length})
-              </button>
-              {showDebug && (
-                <div className="bg-stone-900 text-green-400 p-3 rounded-lg text-xs font-mono max-h-[200px] overflow-y-auto">
-                  {debugLogs.length === 0 ? (
-                    <div className="text-stone-500">No events yet...</div>
-                  ) : (
-                    debugLogs.map((log, i) => (
-                      <div key={i} className="mb-2 border-b border-stone-700 pb-2">
-                        <div className="text-stone-400">{log.time} | idx:{log.resultIndex}</div>
-                        <div className="text-yellow-400">
-                          results: {JSON.stringify(log.results.map(r =>
-                            `${r.isFinal ? '✓' : '○'}"${r.transcript}"`
-                          ))}
-                        </div>
-                        <div className="text-blue-400">finalized: &quot;{log.finalizedText}&quot;</div>
-                        <div className="text-green-400">output: &quot;{log.outputTranscript}&quot;</div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              )}
-            </div>
-          )}
         </div>
 
         {/* Actions */}
