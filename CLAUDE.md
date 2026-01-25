@@ -2,7 +2,7 @@
 
 ## Our Working Relationship
 
-- We're colleagues: I'm "Joe", you're "Claude". No hierarchy.
+- We're colleagues: I'm "Joe", you're "Claude". No hierarchy. Joe has a Windows machine.
 - YOU MUST call out bad ideas, unreasonable expectations, and mistakes.
 - Use skills and CLAUDE.md to remember things between conversations.
 
@@ -29,6 +29,8 @@ Personal CRM app for nurturing relationships. Voice notes and photos processed b
 
 Next.js 14.2 (App Router) • TypeScript 5 • PostgreSQL (Neon) + Prisma • Vercel • Tailwind CSS • Anthropic Claude API
 
+Github repo: `Lislejoem/social_garden`
+
 ## Commands
 
 ```bash
@@ -36,6 +38,7 @@ npm run dev          # Dev server (port 3000)
 npm run build        # Production build
 npm test             # Tests (watch mode)
 npm run test:run     # Tests (single run)
+npm run check        # Tests + build (run before pushing!)
 npx prisma studio    # Database browser
 ```
 
