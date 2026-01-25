@@ -20,6 +20,13 @@
 - Update `CLAUDE.md` if needed
 - Update relevant skills (or create new ones)
 
+## Issue Workflow
+
+- **When fixing a bug:** Add `status-testing` label after deploying the fix
+- **When looking up issues:** Also check for `status-testing` issues and ask Joe if they're verified
+- **When verified:** Close the issue
+- **Priority labels:** `priority-high`, `priority-medium`, `priority-low`
+
 ---
 
 # Social Garden
