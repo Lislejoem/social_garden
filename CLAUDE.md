@@ -27,6 +27,12 @@
 - **When verified:** Close the issue
 - **Priority labels:** `priority-high`, `priority-medium`, `priority-low`
 
+## Git Workflow
+
+- **After every push:** Verify the push succeeded by running `git log --oneline origin/<branch> -3` and confirm the expected commits appear on the remote
+- **Before creating PRs:** Ensure the branch is pushed and verify with `git fetch origin && git log --oneline <branch> ^origin/<branch>` shows no unpushed commits
+- **After merging PRs:** If continuing work on the same branch, verify the merge completed and the commits are in main
+
 ---
 
 # Social Garden
