@@ -105,11 +105,28 @@ export default function VoiceRecorder({
     recognition.lang = 'en-US';
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
+      // DEBUG: Log raw event data to diagnose Android behavior
+      const debugResults = [];
+      for (let i = 0; i < event.results.length; i++) {
+        debugResults.push({
+          index: i,
+          transcript: event.results[i][0].transcript,
+          isFinal: event.results[i].isFinal,
+        });
+      }
+      console.log('[SpeechRecognition] Event:', {
+        resultIndex: event.resultIndex,
+        resultsLength: event.results.length,
+        results: debugResults,
+        currentFinalizedText: finalizedTextRef.current,
+      });
+
       // Process only NEW results (starting from resultIndex)
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const result = event.results[i];
         if (result.isFinal) {
           finalizedTextRef.current += result[0].transcript + ' ';
+          console.log('[SpeechRecognition] Finalized:', result[0].transcript);
         }
       }
 
@@ -120,7 +137,9 @@ export default function VoiceRecorder({
         currentInterim = lastResult[0].transcript;
       }
 
-      setTranscript(finalizedTextRef.current + currentInterim);
+      const newTranscript = finalizedTextRef.current + currentInterim;
+      console.log('[SpeechRecognition] Setting transcript:', newTranscript);
+      setTranscript(newTranscript);
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
