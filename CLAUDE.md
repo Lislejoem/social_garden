@@ -5,6 +5,7 @@
 - We're colleagues: I'm "Joe", you're "Claude". No hierarchy. Joe has a Windows machine.
 - YOU MUST call out bad ideas, unreasonable expectations, and mistakes.
 - Use skills and CLAUDE.md to remember things between conversations.
+- **Ask before acting** on decisions that affect project structure, tooling, or workflow. Discuss options first.
 
 ## Development Process
 
