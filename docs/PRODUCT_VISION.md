@@ -128,3 +128,30 @@ See [FUTURE_FEATURES.md](./FUTURE_FEATURES.md) for V2+ ideas including:
 - Voice journal mode
 - Discovery sharing
 - Network intelligence features
+
+---
+
+## Development Philosophy
+
+### Advisor Panel
+
+We use a panel of 12 AI advisors to evaluate product decisions from diverse perspectives:
+
+| Category | Advisors |
+|----------|----------|
+| **Expert** | UX/Mobile, Privacy/Security, AI/LLM, Performance, Content, Behavioral Psychology, Agent-First |
+| **Persona** | Busy Parent, Professional Connector, Infrequent User |
+| **Critical** | Edge Case Hunter, Devil's Advocate |
+
+Invoke advisors via skills (e.g., `/advisor-ux-mobile`) when making design decisions or reviewing code.
+
+### Human-AI Collaboration
+
+Social Garden is designed for humans and AI agents to work hand-in-hand:
+
+- **Equal access**: AI agents can access the same data and capabilities as human users via APIs
+- **Proactive assistance**: The architecture supports AI assistants helping users proactively (briefings, suggestions, reminders)
+- **Agent-friendly design**: APIs are designed to be machine-readable, not just human-UI-friendly
+- **Seamless handoff**: Work can flow between human and agent interaction patterns
+
+When building new features, always ask: "Could an AI agent help a user with this?"

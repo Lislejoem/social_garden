@@ -95,6 +95,31 @@ Detailed documentation lives in skills. Reference these when working on specific
 
 Skills location: `app/.claude/skills/*/SKILL.md`
 
+## Advisor Panel
+
+A panel of 12 AI advisors provides diverse perspectives on product decisions. Invoke them as skills when you want a specific viewpoint.
+
+### How to Use Advisors
+
+1. **Single advisor**: Run `/advisor-ux-mobile` to get mobile UX perspective
+2. **Quick consultation**: Ask "What would the behavioral psych advisor say about this?"
+3. **Panel review**: For major features, consult multiple advisors sequentially
+
+### Advisor Categories
+
+| Category | Advisors | Use When |
+|----------|----------|----------|
+| Expert | `ux-mobile`, `privacy-security`, `ai-llm`, `performance`, `content`, `behavioral-psych`, `agent-first` | Need specialized expertise |
+| Persona | `persona-busy-parent`, `persona-connector`, `persona-infrequent` | Need user perspective |
+| Critical | `edge-cases`, `devils-advocate` | Need to stress-test ideas |
+
+### Human-AI Collaboration Principle
+
+Social Garden treats AI agents as first-class participants. When designing features, always consider:
+- Can an AI agent access this capability via API?
+- Is the data structured for both human and agent consumption?
+- Could an AI assistant help users with this feature proactively?
+
 ## Data Models
 
 Five core models in `app/prisma/schema.prisma`:
