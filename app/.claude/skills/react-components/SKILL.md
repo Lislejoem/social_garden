@@ -56,6 +56,8 @@ Common state patterns:
 
 ## API Integration Pattern
 
+For single-item edits (profile page), use `router.refresh()`:
+
 ```typescript
 const handleUpdate = async (field: string, value: string) => {
   const response = await fetch(`/api/contacts/${id}`, {
@@ -71,6 +73,63 @@ const handleUpdate = async (field: string, value: string) => {
   router.refresh(); // Refetch server data
 };
 ```
+
+For list mutations (dashboard), use optimistic updates instead (see below).
+
+## Optimistic Updates Pattern
+
+For instant UI feedback when mutating list data (hide, delete, restore):
+
+### Pattern
+1. Child component calls API
+2. On success, calls parent callback (e.g., `onHidden`, `onDeleted`)
+3. Parent updates local state with functional updates
+4. Wrap list items in `React.memo` to prevent sibling re-renders
+5. Derive counts from state using `useMemo`
+
+### Example (ContactCard → DashboardClient)
+
+**Child component (ContactCard.tsx):**
+```typescript
+interface ContactCardProps {
+  id: string;
+  onHidden?: (id: string) => void;
+  onDeleted?: (id: string) => void;
+}
+
+const ContactCard = React.memo(function ContactCard({ id, onHidden, onDeleted }) {
+  const handleHide = async () => {
+    const response = await fetch(`/api/contacts/${id}`, { method: 'PUT', ... });
+    if (response.ok) onHidden?.(id);  // Notify parent on success
+  };
+});
+```
+
+**Parent component (DashboardClient.tsx):**
+```typescript
+const [contacts, setContacts] = useState(initialContacts);
+
+const handleContactHidden = useCallback((id: string) => {
+  setContacts(prev => prev.filter(c => c.id !== id));  // Functional update
+}, []);
+
+// Derive counts from state
+const filterCounts = useMemo(() => ({
+  needsWater: contacts.filter(c => c.health === 'thirsty').length,
+}), [contacts]);
+
+return contacts.map(c => (
+  <ContactCard key={c.id} {...c} onHidden={handleContactHidden} />
+));
+```
+
+### When to Use
+- Dashboard/list mutations (hide, delete, restore)
+- Any action where instant feedback improves UX
+
+### When NOT to Use
+- Profile page edits (single item, `router.refresh()` is fine)
+- Actions that need server-computed data in response
 
 ## Icon Library
 
