@@ -146,8 +146,9 @@ const ContactCard = React.memo(function ContactCard({
   };
 
   return (
-    <div
-      className={`relative group p-6 rounded-5xl transition-all duration-500 border-2 border-transparent ${theme.border} hover:shadow-2xl hover:shadow-emerald-900/5 ${theme.color}`}
+    <Link
+      href={`/contact/${id}`}
+      className={`block relative group p-6 rounded-5xl transition-all duration-500 border-2 border-transparent cursor-pointer active:scale-[0.99] ${theme.border} hover:shadow-2xl hover:shadow-emerald-900/5 ${theme.color}`}
     >
       <div className="flex justify-between items-start mb-6">
         <div className="flex items-center gap-4">
@@ -199,7 +200,8 @@ const ContactCard = React.memo(function ContactCard({
             href={socials.instagram}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-2.5 bg-white rounded-2xl text-stone-400 hover:text-emerald-700 hover:shadow-md transition-all"
+            onClick={(e) => e.stopPropagation()}
+            className="p-3 bg-white rounded-2xl text-stone-400 hover:text-emerald-700 hover:shadow-md transition-all"
           >
             <Instagram className="w-4 h-4" />
           </a>
@@ -209,7 +211,8 @@ const ContactCard = React.memo(function ContactCard({
             href={socials.linkedin}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-2.5 bg-white rounded-2xl text-stone-400 hover:text-emerald-700 hover:shadow-md transition-all"
+            onClick={(e) => e.stopPropagation()}
+            className="p-3 bg-white rounded-2xl text-stone-400 hover:text-emerald-700 hover:shadow-md transition-all"
           >
             <Linkedin className="w-4 h-4" />
           </a>
@@ -217,7 +220,8 @@ const ContactCard = React.memo(function ContactCard({
         {socials?.phone && (
           <a
             href={`tel:${socials.phone}`}
-            className="p-2.5 bg-white rounded-2xl text-stone-400 hover:text-emerald-700 hover:shadow-md transition-all"
+            onClick={(e) => e.stopPropagation()}
+            className="p-3 bg-white rounded-2xl text-stone-400 hover:text-emerald-700 hover:shadow-md transition-all"
           >
             <MessageCircle className="w-4 h-4" />
           </a>
@@ -225,7 +229,8 @@ const ContactCard = React.memo(function ContactCard({
         {socials?.email && (
           <a
             href={`mailto:${socials.email}`}
-            className="p-2.5 bg-white rounded-2xl text-stone-400 hover:text-emerald-700 hover:shadow-md transition-all"
+            onClick={(e) => e.stopPropagation()}
+            className="p-3 bg-white rounded-2xl text-stone-400 hover:text-emerald-700 hover:shadow-md transition-all"
           >
             <Mail className="w-4 h-4" />
           </a>
@@ -246,7 +251,7 @@ const ContactCard = React.memo(function ContactCard({
         </div>
       )}
 
-      <div className="mt-auto flex items-center justify-between text-[11px] text-stone-400 border-t border-stone-200/40 pt-4">
+      <div className="mt-auto flex items-center text-[11px] text-stone-400 border-t border-stone-200/40 pt-4">
         <span className="flex items-center gap-1.5">
           <div
             className={`w-1.5 h-1.5 rounded-full ${
@@ -257,14 +262,8 @@ const ContactCard = React.memo(function ContactCard({
           />
           Last seen {lastContactFormatted}
         </span>
-        <Link
-          href={`/contact/${id}`}
-          className="font-bold text-stone-600 hover:text-emerald-800 transition-all uppercase tracking-tighter"
-        >
-          Open Profile
-        </Link>
       </div>
-    </div>
+    </Link>
   );
 });
 

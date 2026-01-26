@@ -141,6 +141,22 @@ describe('ContactCard', () => {
     });
   });
 
+  describe('clickable card navigation', () => {
+    it('renders as a link to the contact profile', () => {
+      render(<ContactCard {...defaultProps} />);
+
+      // The card should be wrapped in a link
+      const cardLink = screen.getByRole('link', { name: /john doe/i });
+      expect(cardLink).toHaveAttribute('href', '/contact/contact-1');
+    });
+
+    it('does not include "Open Profile" text', () => {
+      render(<ContactCard {...defaultProps} />);
+
+      expect(screen.queryByText('Open Profile')).not.toBeInTheDocument();
+    });
+  });
+
   describe('delete action with callback', () => {
     it('calls onDeleted callback after successful delete API call', async () => {
       const onDeleted = vi.fn();
