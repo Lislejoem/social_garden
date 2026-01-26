@@ -5,8 +5,8 @@
  */
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import {
   Flower2,
   Sprout,
@@ -34,6 +34,12 @@ interface ContactCardProps {
   socials: Socials | null;
   preferencesPreview: string[];
   isHidden?: boolean;
+  /** Called after contact is successfully hidden */
+  onHidden?: (id: string) => void;
+  /** Called after contact is successfully restored */
+  onRestored?: (id: string) => void;
+  /** Called after contact is successfully deleted */
+  onDeleted?: (id: string) => void;
 }
 
 const CADENCE_LABELS: Record<Cadence, string> = {
@@ -78,7 +84,7 @@ const HEALTH_THEMES: Record<
   },
 };
 
-export default function ContactCard({
+const ContactCard = React.memo(function ContactCard({
   id,
   name,
   avatarUrl,
@@ -89,8 +95,10 @@ export default function ContactCard({
   socials,
   preferencesPreview,
   isHidden = false,
+  onHidden,
+  onRestored,
+  onDeleted,
 }: ContactCardProps) {
-  const router = useRouter();
   const { showToast, showError } = useToast();
   const theme = HEALTH_THEMES[health];
 
@@ -103,7 +111,7 @@ export default function ContactCard({
       });
       if (!response.ok) throw new Error('Failed to hide contact');
       showToast(`${name} hidden from your garden`);
-      router.refresh();
+      onHidden?.(id);
     } catch {
       showError('Failed to hide contact. Please try again.');
     }
@@ -118,7 +126,7 @@ export default function ContactCard({
       });
       if (!response.ok) throw new Error('Failed to restore contact');
       showToast(`${name} restored to your garden`);
-      router.refresh();
+      onRestored?.(id);
     } catch {
       showError('Failed to restore contact. Please try again.');
     }
@@ -131,7 +139,7 @@ export default function ContactCard({
       });
       if (!response.ok) throw new Error('Failed to delete contact');
       showToast(`${name} removed permanently`);
-      router.refresh();
+      onDeleted?.(id);
     } catch {
       showError('Failed to delete contact. Please try again.');
     }
@@ -258,4 +266,6 @@ export default function ContactCard({
       </div>
     </div>
   );
-}
+});
+
+export default ContactCard;

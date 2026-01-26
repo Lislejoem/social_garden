@@ -47,7 +47,7 @@ export default function DashboardClient({
   const router = useRouter();
   const { showToast, showError } = useToast();
   const { isOnline, addToQueue, queueCount, getQueuedNotes, removeFromQueue } = useOfflineQueue();
-  const [contacts] = useState(initialContacts);
+  const [contacts, setContacts] = useState(initialContacts);
   const [hiddenContacts, setHiddenContacts] = useState<ContactData[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
@@ -63,6 +63,46 @@ export default function DashboardClient({
     imageData?: { base64: string; mimeType: string }; // Track if this came from a photo
     queuedNoteId?: string; // Track if this came from the queue
   } | null>(null);
+
+  // Callback handlers for contact mutations (optimistic updates)
+  const handleContactHidden = useCallback((contactId: string) => {
+    // Find the contact being hidden
+    const contact = contacts.find(c => c.id === contactId);
+    if (contact) {
+      // Remove from visible contacts
+      setContacts(prev => prev.filter(c => c.id !== contactId));
+      // Add to hidden contacts (so it shows if user switches to hidden filter)
+      setHiddenContacts(prev => [...prev, contact]);
+    }
+  }, [contacts]);
+
+  const handleContactRestored = useCallback((contactId: string) => {
+    // Find the contact being restored
+    const contact = hiddenContacts.find(c => c.id === contactId);
+    if (contact) {
+      // Remove from hidden contacts
+      setHiddenContacts(prev => prev.filter(c => c.id !== contactId));
+      // Add back to visible contacts
+      setContacts(prev => [...prev, contact]);
+    }
+  }, [hiddenContacts]);
+
+  const handleContactDeleted = useCallback((contactId: string) => {
+    // Remove from both lists
+    setContacts(prev => prev.filter(c => c.id !== contactId));
+    setHiddenContacts(prev => prev.filter(c => c.id !== contactId));
+  }, []);
+
+  // Calculate filter counts locally from state
+  const localFilterCounts = useMemo(() => ({
+    needsWater: contacts.filter(c => c.health === 'thirsty' || c.health === 'parched').length,
+    upcomingBirthdays: contacts.filter(c => {
+      if (c.birthday) return hasUpcomingBirthday(c.birthday, 30);
+      if (c.birthdayMonth && c.birthdayDay) return hasUpcomingBirthday(c.birthdayMonth, c.birthdayDay, 30);
+      return false;
+    }).length,
+    hidden: hiddenContacts.length > 0 ? hiddenContacts.length : filterCounts.hidden,
+  }), [contacts, hiddenContacts, filterCounts.hidden]);
 
   // Filter contacts based on search query and active filter
   const filteredContacts = useMemo(() => {
@@ -447,7 +487,7 @@ export default function DashboardClient({
             <FilterPresets
               activeFilter={activeFilter}
               onFilterChange={handleFilterChange}
-              counts={filterCounts}
+              counts={localFilterCounts}
             />
           </div>
         )}
@@ -456,7 +496,14 @@ export default function DashboardClient({
         {filteredContacts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {filteredContacts.map((contact) => (
-              <ContactCard key={contact.id} {...contact} isHidden={activeFilter === 'hidden'} />
+              <ContactCard
+                key={contact.id}
+                {...contact}
+                isHidden={activeFilter === 'hidden'}
+                onHidden={handleContactHidden}
+                onRestored={handleContactRestored}
+                onDeleted={handleContactDeleted}
+              />
             ))}
 
             {/* Add new contact card - only show when not filtering */}
