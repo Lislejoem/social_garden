@@ -11,11 +11,18 @@ import { prisma } from '@/lib/prisma';
 
 /**
  * GET /api/contacts
+ * @query hiddenOnly - If true, returns only hidden contacts
  * @returns Contact[] with preferences and most recent interaction
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const hiddenOnly = searchParams.get('hiddenOnly') === 'true';
+
     const contacts = await prisma.contact.findMany({
+      where: hiddenOnly
+        ? { hiddenAt: { not: null } }
+        : { hiddenAt: null },
       include: {
         preferences: true,
         interactions: {

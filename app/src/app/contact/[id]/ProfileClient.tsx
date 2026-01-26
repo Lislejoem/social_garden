@@ -27,7 +27,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   ChevronLeft,
-  MoreHorizontal,
   Flower2,
   Sprout,
   Leaf,
@@ -60,6 +59,7 @@ import EditSocialsModal from '@/components/EditSocialsModal';
 import EditAvatarModal from '@/components/EditAvatarModal';
 import ContactBriefingButton from '@/components/ContactBriefingButton';
 import ContactBriefingModal from '@/components/ContactBriefingModal';
+import ContactMenu from '@/components/ContactMenu';
 import type {
   HealthStatus,
   Cadence,
@@ -163,6 +163,34 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
 
   // Briefing modal state
   const [isBriefingModalOpen, setIsBriefingModalOpen] = useState(false);
+
+  const handleHideContact = async () => {
+    try {
+      const response = await fetch(`/api/contacts/${contact.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hiddenAt: new Date().toISOString() }),
+      });
+      if (!response.ok) throw new Error('Failed to hide contact');
+      showToast(`${contact.name} hidden from your garden`);
+      router.push('/');
+    } catch {
+      showToast(`Failed to hide contact. Please try again.`);
+    }
+  };
+
+  const handleDeleteContact = async () => {
+    try {
+      const response = await fetch(`/api/contacts/${contact.id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete contact');
+      showToast(`${contact.name} removed permanently`);
+      router.push('/');
+    } catch {
+      showToast(`Failed to delete contact. Please try again.`);
+    }
+  };
 
   const handleVoiceNote = async (transcript: string) => {
     // First, get a preview with dryRun
@@ -459,9 +487,12 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
             <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
             <span>Back to Garden</span>
           </Link>
-          <button className="p-2.5 text-stone-400 hover:text-stone-600">
-            <MoreHorizontal />
-          </button>
+          <ContactMenu
+            contactName={contact.name}
+            onHide={handleHideContact}
+            onDelete={handleDeleteContact}
+            triggerClassName="p-2.5"
+          />
         </div>
       </nav>
 

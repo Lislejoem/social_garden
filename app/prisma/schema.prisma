@@ -24,6 +24,7 @@ model Contact {
   socials       String?   // JSON string: {instagram, linkedin, email, phone, address}
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  hiddenAt      DateTime? // When contact was hidden (soft delete)
 
   cachedBriefing      String?   // JSON of ContactBriefing
   briefingGeneratedAt DateTime? // When briefing was last generated

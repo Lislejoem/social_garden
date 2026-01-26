@@ -36,6 +36,7 @@ interface DashboardClientProps {
   filterCounts: {
     needsWater: number;
     upcomingBirthdays: number;
+    hidden: number;
   };
 }
 
@@ -47,9 +48,11 @@ export default function DashboardClient({
   const { showToast, showError } = useToast();
   const { isOnline, addToQueue, queueCount, getQueuedNotes, removeFromQueue } = useOfflineQueue();
   const [contacts] = useState(initialContacts);
+  const [hiddenContacts, setHiddenContacts] = useState<ContactData[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const isProcessingQueueRef = useRef(false);
+  const [isLoadingHidden, setIsLoadingHidden] = useState(false);
 
   // Preview modal state
   const [previewData, setPreviewData] = useState<{
@@ -63,6 +66,20 @@ export default function DashboardClient({
 
   // Filter contacts based on search query and active filter
   const filteredContacts = useMemo(() => {
+    // For hidden filter, use hidden contacts
+    if (activeFilter === 'hidden') {
+      let result = hiddenContacts;
+      if (searchQuery.trim()) {
+        const lowerQuery = searchQuery.toLowerCase();
+        result = result.filter(
+          (contact) =>
+            contact.name.toLowerCase().includes(lowerQuery) ||
+            contact.location?.toLowerCase().includes(lowerQuery)
+        );
+      }
+      return result;
+    }
+
     let result = contacts;
 
     // Apply search filter
@@ -100,14 +117,63 @@ export default function DashboardClient({
     }
 
     return result;
-  }, [contacts, searchQuery, activeFilter]);
+  }, [contacts, hiddenContacts, searchQuery, activeFilter]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };
 
-  const handleFilterChange = (filter: FilterType) => {
+  const handleFilterChange = async (filter: FilterType) => {
     setActiveFilter(filter);
+
+    // Fetch hidden contacts when hidden filter is selected
+    if (filter === 'hidden' && hiddenContacts.length === 0) {
+      setIsLoadingHidden(true);
+      try {
+        const response = await fetch('/api/contacts?hiddenOnly=true');
+        if (response.ok) {
+          const data = await response.json();
+          // Transform API response to match ContactData format
+          const transformedContacts: ContactData[] = data.map((contact: {
+            id: string;
+            name: string;
+            avatarUrl: string | null;
+            location: string | null;
+            birthday: string | null;
+            birthdayMonth: number | null;
+            birthdayDay: number | null;
+            cadence: Cadence;
+            socials: string | null;
+            preferences: { category: string; content: string }[];
+            interactions: { date: string; summary: string }[];
+          }) => ({
+            id: contact.id,
+            name: contact.name,
+            avatarUrl: contact.avatarUrl,
+            location: contact.location,
+            birthday: contact.birthday ? new Date(contact.birthday) : null,
+            birthdayMonth: contact.birthdayMonth,
+            birthdayDay: contact.birthdayDay,
+            cadence: contact.cadence,
+            health: 'growing' as HealthStatus, // Hidden contacts don't need health status
+            lastContactFormatted: 'Hidden',
+            socials: contact.socials ? JSON.parse(contact.socials) : null,
+            preferencesPreview: contact.preferences
+              .filter((p: { category: string }) => p.category === 'ALWAYS')
+              .slice(0, 3)
+              .map((p: { content: string }) => p.content),
+            interactionSummaries: contact.interactions
+              .slice(0, 20)
+              .map((i: { summary: string }) => i.summary),
+          }));
+          setHiddenContacts(transformedContacts);
+        }
+      } catch (error) {
+        console.error('Failed to fetch hidden contacts:', error);
+      } finally {
+        setIsLoadingHidden(false);
+      }
+    }
   };
 
   const handleVoiceNote = async (transcript: string) => {
@@ -390,7 +456,7 @@ export default function DashboardClient({
         {filteredContacts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {filteredContacts.map((contact) => (
-              <ContactCard key={contact.id} {...contact} />
+              <ContactCard key={contact.id} {...contact} isHidden={activeFilter === 'hidden'} />
             ))}
 
             {/* Add new contact card - only show when not filtering */}
@@ -435,18 +501,26 @@ export default function DashboardClient({
         ) : (
           // No search/filter results
           <div className="text-center py-20">
-            <p className="text-stone-500">
-              {activeFilter !== 'all'
-                ? `No contacts match the "${activeFilter === 'needsWater' ? 'Needs Water' : 'Upcoming Birthdays'}" filter.`
-                : 'No contacts match your search. Try a different query.'}
-            </p>
-            {activeFilter !== 'all' && (
-              <button
-                onClick={() => setActiveFilter('all')}
-                className="mt-4 text-emerald-700 font-medium hover:underline"
-              >
-                Clear filter
-              </button>
+            {activeFilter === 'hidden' && isLoadingHidden ? (
+              <p className="text-stone-500">Loading hidden contacts...</p>
+            ) : (
+              <>
+                <p className="text-stone-500">
+                  {activeFilter === 'hidden'
+                    ? 'No hidden contacts. Contacts you hide will appear here.'
+                    : activeFilter !== 'all'
+                    ? `No contacts match the "${activeFilter === 'needsWater' ? 'Needs Water' : 'Upcoming Birthdays'}" filter.`
+                    : 'No contacts match your search. Try a different query.'}
+                </p>
+                {activeFilter !== 'all' && (
+                  <button
+                    onClick={() => setActiveFilter('all')}
+                    className="mt-4 text-emerald-700 font-medium hover:underline"
+                  >
+                    Clear filter
+                  </button>
+                )}
+              </>
             )}
           </div>
         )}

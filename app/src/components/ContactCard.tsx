@@ -6,6 +6,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Flower2,
   Sprout,
@@ -16,9 +17,10 @@ import {
   Linkedin,
   Mail,
   MessageCircle,
-  MoreHorizontal,
 } from 'lucide-react';
 import type { HealthStatus, Cadence, Socials } from '@/types';
+import { useToast } from '@/contexts/ToastContext';
+import ContactMenu from './ContactMenu';
 
 /** Props for ContactCard component */
 interface ContactCardProps {
@@ -31,6 +33,7 @@ interface ContactCardProps {
   lastContactFormatted: string;
   socials: Socials | null;
   preferencesPreview: string[];
+  isHidden?: boolean;
 }
 
 const CADENCE_LABELS: Record<Cadence, string> = {
@@ -85,8 +88,54 @@ export default function ContactCard({
   lastContactFormatted,
   socials,
   preferencesPreview,
+  isHidden = false,
 }: ContactCardProps) {
+  const router = useRouter();
+  const { showToast, showError } = useToast();
   const theme = HEALTH_THEMES[health];
+
+  const handleHide = async () => {
+    try {
+      const response = await fetch(`/api/contacts/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hiddenAt: new Date().toISOString() }),
+      });
+      if (!response.ok) throw new Error('Failed to hide contact');
+      showToast(`${name} hidden from your garden`);
+      router.refresh();
+    } catch {
+      showError('Failed to hide contact. Please try again.');
+    }
+  };
+
+  const handleRestore = async () => {
+    try {
+      const response = await fetch(`/api/contacts/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hiddenAt: null }),
+      });
+      if (!response.ok) throw new Error('Failed to restore contact');
+      showToast(`${name} restored to your garden`);
+      router.refresh();
+    } catch {
+      showError('Failed to restore contact. Please try again.');
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`/api/contacts/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete contact');
+      showToast(`${name} removed permanently`);
+      router.refresh();
+    } catch {
+      showError('Failed to delete contact. Please try again.');
+    }
+  };
 
   return (
     <div
@@ -126,9 +175,13 @@ export default function ContactCard({
             </div>
           </div>
         </div>
-        <button className="text-stone-300 hover:text-stone-600 transition-colors p-1">
-          <MoreHorizontal className="w-5 h-5" />
-        </button>
+        <ContactMenu
+          contactName={name}
+          isHidden={isHidden}
+          onHide={handleHide}
+          onRestore={handleRestore}
+          onDelete={handleDelete}
+        />
       </div>
 
       {/* Social & Contact Actions */}
