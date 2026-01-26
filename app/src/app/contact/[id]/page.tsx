@@ -64,6 +64,7 @@ async function getContact(id: string) {
     cadence: contact.cadence as Cadence,
     socials,
     health,
+    hiddenAt: contact.hiddenAt,
     preferences: contact.preferences.map((p) => ({
       id: p.id,
       category: p.category as 'ALWAYS' | 'NEVER',

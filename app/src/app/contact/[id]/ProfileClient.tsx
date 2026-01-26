@@ -91,6 +91,7 @@ interface ContactData {
   cadence: Cadence;
   socials: Socials | null;
   health: HealthStatus;
+  hiddenAt: Date | null;
   preferences: Preference[];
   interactions: Interaction[];
   seedlings: Seedling[];
@@ -176,6 +177,21 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
       router.push('/');
     } catch {
       showToast(`Failed to hide contact. Please try again.`);
+    }
+  };
+
+  const handleRestoreContact = async () => {
+    try {
+      const response = await fetch(`/api/contacts/${contact.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hiddenAt: null }),
+      });
+      if (!response.ok) throw new Error('Failed to restore contact');
+      showToast(`${contact.name} restored to your garden`);
+      router.push('/');
+    } catch {
+      showToast(`Failed to restore contact. Please try again.`);
     }
   };
 
@@ -489,7 +505,9 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
           </Link>
           <ContactMenu
             contactName={contact.name}
+            isHidden={!!contact.hiddenAt}
             onHide={handleHideContact}
+            onRestore={handleRestoreContact}
             onDelete={handleDeleteContact}
             triggerClassName="p-2.5"
           />
