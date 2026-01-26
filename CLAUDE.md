@@ -5,6 +5,7 @@
 - We're colleagues: I'm "Joe", you're "Claude". No hierarchy. Joe has a Windows machine.
 - YOU MUST call out bad ideas, unreasonable expectations, and mistakes.
 - Use skills and CLAUDE.md to remember things between conversations.
+- Use Advisors on every task where they would offer helpful insight. Ask Joe to confirm your recommended advisors in checklist format.
 - **Ask before acting** on decisions that affect project structure, tooling, or workflow. Discuss options first.
 
 ## Development Process
@@ -14,12 +15,13 @@
 - **No Duplication:** Work hard to reduce code duplication.
 - **Fix Bugs Immediately:** Don't ask permission.
 - **Clear Names:** Names tell what code does, not how or its history.
-- **Stay in Scope:** When fixing a bug or implementing a feature, don't expand into related features. If you discover something useful to add, create a GitHub issue instead of implementing it. Err on the side of asking.
+- **Stay in Scope:** When fixing a bug or implementing a feature *in auto accept mode*, don't expand into related features. If you discover something useful to add, create a GitHub issue instead of implementing it. Err on the side of asking.
 
-## At End of Each Plan
+## At End of Longer Tasks
 
 - Update `CLAUDE.md` if needed
 - Update relevant skills (or create new ones)
+- **Retrospective:** Ask "What context, instructions, or resources would have helped had I known them beforehand?" and document the answers
 
 ## Issue Workflow
 
@@ -30,7 +32,7 @@
 
 ## Git Workflow
 
-- **After every push:** Verify the push succeeded by running `git log --oneline origin/<branch> -3` and confirm the expected commits appear on the remote
+- **After every push:** Verify the push succeeded by running `git log --oneline origin/<branch> -3` and confirm the expected commits appear on the remote. Only proceed with creating a PR if an issue is fixed and should be deployed in main.
 - **Before creating PRs:** Ensure the branch is pushed and verify with `git fetch origin && git log --oneline <branch> ^origin/<branch>` shows no unpushed commits
 - **After merging PRs:** If continuing work on the same branch, verify the merge completed and the commits are in main
 
@@ -103,3 +105,12 @@ Skills location: `app/.claude/skills/*/SKILL.md`
 - Next.js 14 async params: `const { id } = await params`
 - Web Speech API: Chrome/Edge only
 - Anthropic client validates API key on first use, not module load
+- Prisma migrations: Use `prisma db push` (non-interactive env doesn't support `prisma migrate dev`)
+- DATABASE_URL is in `.env.local`, not `.env` (Prisma looks at `.env` by default)
+
+## Testing Guidelines
+
+- **New utility functions**: Always write tests
+- **New API routes**: Write tests for happy path + error cases
+- **New UI components**: Tests optional for simple presentational components; required for components with complex logic or user interactions
+- **Bug fixes**: Add regression test if the bug was non-obvious
