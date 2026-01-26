@@ -7,9 +7,9 @@
 - Use skills and CLAUDE.md to remember things between conversations.
 - **Ask before acting** on decisions that affect project structure, tooling, or workflow. Discuss options first.
 
-## Development Workflow
+## Workflow
 
-Follow steps in this order:
+Follow steps in this order. You **MUST** do these whenever you adjust any code outside of documentation and you **MUST** do these without Joe requesting it. If Joe has to prompt you, you are failing in your role.
 1. **Advisors:** Select the advisors whose opinions you'd like on the task and confirm the list with Joe.
 2. **TDD Required:** Write failing test → Run to confirm failure → Write minimal code to pass → Confirm → Refactor
 3. **Retrospective:** Ask "What context, instructions, resources, or perspective would have helped had I known them beforehand?".

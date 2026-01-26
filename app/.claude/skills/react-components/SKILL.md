@@ -131,6 +131,23 @@ return contacts.map(c => (
 - Profile page edits (single item, `router.refresh()` is fine)
 - Actions that need server-computed data in response
 
+## Clickable Card Pattern
+
+When making a card fully clickable while preserving nested interactive elements:
+
+1. Wrap card in `<Link>` (not onClick) for proper semantics
+2. Add `stopPropagation()` to nested `<a>` tags
+3. ContactMenu already handles this internally
+
+```tsx
+<Link href={`/contact/${id}`} className="block cursor-pointer active:scale-[0.99]">
+  {/* Card content */}
+  <a href={url} onClick={(e) => e.stopPropagation()}>External Link</a>
+</Link>
+```
+
+See: `ContactCard.tsx`
+
 ## Icon Library
 
 Using lucide-react for icons:
@@ -147,6 +164,10 @@ Tailwind CSS with custom design system:
 - Colors: emerald (primary), stone (neutral), amber, rose
 - Border radius: `rounded-xl`, `rounded-2xl`, `rounded-4xl`, `rounded-5xl`, `rounded-6xl`
 - Shadows: `shadow-sm`, `shadow-xl`, `shadow-2xl`
+
+### Touch Targets (Mobile)
+- Minimum 44x44px for accessibility (advisor-ux-mobile guideline)
+- Use `p-3` with `w-4 h-4` icons (not `p-2.5` which is ~36x36px)
 
 ## TypeScript
 
