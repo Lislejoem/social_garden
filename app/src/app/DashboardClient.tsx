@@ -2,7 +2,8 @@
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Gift, Droplets } from 'lucide-react';
+import { Plus, Gift, Droplets, Settings } from 'lucide-react';
+import Link from 'next/link';
 import ContactCard from '@/components/ContactCard';
 import SearchBar from '@/components/SearchBar';
 import FilterPresets, { FilterType } from '@/components/FilterPresets';
@@ -418,6 +419,13 @@ export default function DashboardClient({
           </p>
         </div>
         <div className="flex items-center gap-3 w-full md:w-auto">
+          <Link
+            href="/settings"
+            className="p-3 text-stone-400 hover:text-emerald-800 hover:bg-emerald-50 rounded-2xl transition-all"
+            title="Settings"
+          >
+            <Settings className="w-5 h-5" />
+          </Link>
           <a
             href="/contact/new"
             className="flex-1 md:flex-none flex items-center justify-center gap-2 px-8 py-4 bg-emerald-900 text-white rounded-3xl font-bold shadow-xl shadow-emerald-900/20 hover:bg-emerald-800 hover:-translate-y-0.5 transition-all"

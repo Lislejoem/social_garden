@@ -70,3 +70,10 @@ model FamilyMember {
   relation  String
   contact   Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
 }
+
+model UserSettings {
+  id        String   @id @default("default") // Single user, always "default"
+  userName  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

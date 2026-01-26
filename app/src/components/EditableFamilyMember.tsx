@@ -1,9 +1,15 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { Trash2, Check, X, Loader2 } from 'lucide-react';
 import type { FamilyMember } from '@/types';
 import { useToast } from '../contexts/ToastContext';
+import { useUserSettings } from '../contexts/UserSettingsContext';
+
+/** Normalize a name for comparison (trim, lowercase, unicode normalize) */
+function normalizeForMatch(name: string): string {
+  return name.trim().toLowerCase().normalize('NFC');
+}
 
 interface EditableFamilyMemberProps {
   member: FamilyMember;
@@ -23,6 +29,16 @@ export default function EditableFamilyMember({
   const [isDeleting, setIsDeleting] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const { showError } = useToast();
+  const { settings, isLoading: isLoadingSettings } = useUserSettings();
+
+  // Determine if this family member's name matches the user's name
+  const isUserMatch = useMemo(() => {
+    // Don't match while settings are loading or if userName is not set
+    if (isLoadingSettings || !settings.userName) {
+      return false;
+    }
+    return normalizeForMatch(settings.userName) === normalizeForMatch(member.name);
+  }, [isLoadingSettings, settings.userName, member.name]);
 
   useEffect(() => {
     if (isEditing && nameInputRef.current) {
@@ -137,10 +153,18 @@ export default function EditableFamilyMember({
         {member.name[0]?.toUpperCase()}
       </div>
       <div className="flex-1">
-        <p className="font-bold text-stone-800">{member.name}</p>
-        <p className="text-xs text-stone-400 uppercase tracking-widest">
-          {member.relation}
-        </p>
+        {isUserMatch ? (
+          <p className="font-bold text-stone-800">
+            Your {member.relation.toLowerCase()}
+          </p>
+        ) : (
+          <>
+            <p className="font-bold text-stone-800">{member.name}</p>
+            <p className="text-xs text-stone-400 uppercase tracking-widest">
+              {member.relation}
+            </p>
+          </>
+        )}
       </div>
       <button
         onClick={(e) => {
