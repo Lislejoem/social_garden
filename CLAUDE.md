@@ -7,6 +7,13 @@
 - Use skills and CLAUDE.md to remember things between conversations.
 - **Ask before acting** on decisions that affect project structure, tooling, or workflow. Discuss options first.
 
+## Joe's Environment
+
+- **Testing**: Joe tests exclusively on Vercel preview deployments, never localhost
+- **Bug reports**: When Joe reports a bug, it's on a deployed Vercel preview
+- **Database**: Always Neon PostgreSQL in the cloud (no local database)
+- **Debugging approach**: Check Vercel deployment status and build output first
+
 ## Workflow
 
 Follow steps in this order. You **MUST** do these whenever you adjust any code outside of documentation and you **MUST** do these without Joe requesting it. If Joe has to prompt you, you are failing in your role.
@@ -76,7 +83,7 @@ Load skills for detailed guidance on specific areas:
 |-------|-------------|
 | `testing` | Writing tests, mocking Anthropic SDK |
 | `prisma-patterns` | Database queries, schema, migrations |
-| `nextjs-app-router` | Pages, layouts, API routes |
+| `nextjs-app-router` | Pages, layouts, API routes, static vs dynamic rendering issues |
 | `react-components` | Components, state management, optimistic updates, dashboard mutations |
 | `deployment` | Vercel, Neon, production deploys |
 | `github-workflow` | Issues, PRs, CI/CD, project board |
@@ -116,3 +123,4 @@ Skills location: `app/.claude/skills/*/SKILL.md`
 - Anthropic client validates API key on first use, not module load
 - Prisma migrations: Use `prisma db push` (non-interactive env doesn't support `prisma migrate dev`)
 - DATABASE_URL is in `.env.local`, not `.env` (Prisma looks at `.env` by default)
+- Windows NUL files: Bash commands with Windows syntax (e.g., `2>NUL`) can create junk files named "NUL". Delete them if found.

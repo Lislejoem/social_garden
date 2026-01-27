@@ -52,6 +52,22 @@ export async function POST(request: NextRequest) {
 }
 ```
 
+## Static vs Dynamic API Routes
+
+Next.js may statically render API routes that don't access dynamic data (like cookies, headers, or search params). **Static routes only support GET** - other methods return 405 Method Not Allowed.
+
+**Signs your route is static:**
+- Build output shows `○` instead of `ƒ` for the route
+- Works locally but PUT/POST/DELETE return 405 on Vercel
+
+**Fix: Force dynamic rendering:**
+```typescript
+// Add at top of route.ts (after imports)
+export const dynamic = 'force-dynamic';
+```
+
+Use this for any route that handles PUT, POST, DELETE, or PATCH.
+
 ## Dynamic Route Parameters (Next.js 14)
 
 Parameters are now async - destructure with `await`:
