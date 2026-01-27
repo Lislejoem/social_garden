@@ -9,6 +9,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// Force dynamic rendering to support PUT method
+export const dynamic = 'force-dynamic';
+
 const DEFAULT_SETTINGS_ID = 'default';
 const MAX_USERNAME_LENGTH = 100;
 
