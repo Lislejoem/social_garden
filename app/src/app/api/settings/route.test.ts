@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { NextRequest } from 'next/server';
 import { GET, PUT } from './route';
 import { prisma } from '@/lib/prisma';
 
@@ -80,7 +81,7 @@ describe('PUT /api/settings', () => {
       body: JSON.stringify({ userName: 'Joe' }),
     });
 
-    const response = await PUT(request as any);
+    const response = await PUT(request as NextRequest);
     const data = await response.json();
 
     expect(response.status).toBe(200);
@@ -107,7 +108,7 @@ describe('PUT /api/settings', () => {
       body: JSON.stringify({ userName: '  Joe  ' }),
     });
 
-    await PUT(request as any);
+    await PUT(request as NextRequest);
 
     expect(prisma.userSettings.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -125,7 +126,7 @@ describe('PUT /api/settings', () => {
       body: JSON.stringify({ userName: longName }),
     });
 
-    const response = await PUT(request as any);
+    const response = await PUT(request as NextRequest);
     const data = await response.json();
 
     expect(response.status).toBe(400);
@@ -148,7 +149,7 @@ describe('PUT /api/settings', () => {
       body: JSON.stringify({ userName: '' }),
     });
 
-    await PUT(request as any);
+    await PUT(request as NextRequest);
 
     expect(prisma.userSettings.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -172,7 +173,7 @@ describe('PUT /api/settings', () => {
       body: JSON.stringify({ userName: '   ' }),
     });
 
-    await PUT(request as any);
+    await PUT(request as NextRequest);
 
     expect(prisma.userSettings.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -190,7 +191,7 @@ describe('PUT /api/settings', () => {
       body: JSON.stringify({ userName: 'Joe' }),
     });
 
-    const response = await PUT(request as any);
+    const response = await PUT(request as NextRequest);
     const data = await response.json();
 
     expect(response.status).toBe(500);
