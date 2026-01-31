@@ -31,13 +31,17 @@ export default function EditableFamilyMember({
   const { showError } = useToast();
   const { settings, isLoading: isLoadingSettings } = useUserSettings();
 
-  // Determine if this family member's name matches the user's name
+  // Determine if this family member represents the current user
   const isUserMatch = useMemo(() => {
-    // Don't match while settings are loading or if userName is not set
-    if (isLoadingSettings || !settings.userName) {
-      return false;
+    // Always match "User" (the AI placeholder for the person recording)
+    if (normalizeForMatch(member.name) === 'user') {
+      return true;
     }
-    return normalizeForMatch(settings.userName) === normalizeForMatch(member.name);
+    // Also match if the name equals the userName from settings
+    if (!isLoadingSettings && settings.userName) {
+      return normalizeForMatch(settings.userName) === normalizeForMatch(member.name);
+    }
+    return false;
   }, [isLoadingSettings, settings.userName, member.name]);
 
   useEffect(() => {
@@ -144,17 +148,25 @@ export default function EditableFamilyMember({
     );
   }
 
+  // Display name: use settings.userName if stored name is "User", otherwise use stored name
+  const displayName = useMemo(() => {
+    if (normalizeForMatch(member.name) === 'user' && settings.userName) {
+      return settings.userName;
+    }
+    return member.name;
+  }, [member.name, settings.userName]);
+
   return (
     <div
       className="flex items-center gap-4 p-4 rounded-2xl bg-stone-50/50 hover:bg-stone-50 transition-colors border border-transparent hover:border-stone-100 group cursor-pointer"
       onClick={() => setIsEditing(true)}
     >
       <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-stone-400 font-bold shrink-0">
-        {member.name[0]?.toUpperCase()}
+        {displayName[0]?.toUpperCase()}
       </div>
       <div className="flex-1">
         <p className="font-bold text-stone-800">
-          {member.name}
+          {displayName}
           {isUserMatch && <span className="text-stone-400 font-normal"> (You)</span>}
         </p>
         <p className="text-xs text-stone-400 uppercase tracking-widest">

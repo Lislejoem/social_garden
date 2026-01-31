@@ -124,4 +124,46 @@ describe('EditableFamilyMember with user settings', () => {
     expect(screen.getByText('(You)')).toBeInTheDocument();
     expect(screen.getByText('SISTER')).toBeInTheDocument();
   });
+
+  it('shows userName when stored name is "User" (AI placeholder)', () => {
+    mockUserSettings.settings.userName = 'Joe';
+    const propsWithUserPlaceholder = {
+      ...defaultProps,
+      member: { id: 'fm-4', name: 'User', relation: 'son' },
+    };
+
+    render(<EditableFamilyMember {...propsWithUserPlaceholder} />);
+
+    // Should show "Joe (You)" not "User (You)"
+    expect(screen.getByText('Joe')).toBeInTheDocument();
+    expect(screen.getByText('(You)')).toBeInTheDocument();
+    expect(screen.queryByText('User')).not.toBeInTheDocument();
+  });
+
+  it('shows "(You)" for "User" even when userName is not set', () => {
+    mockUserSettings.settings.userName = null;
+    const propsWithUserPlaceholder = {
+      ...defaultProps,
+      member: { id: 'fm-5', name: 'User', relation: 'brother' },
+    };
+
+    render(<EditableFamilyMember {...propsWithUserPlaceholder} />);
+
+    // Should still show (You) but with "User" as the name
+    expect(screen.getByText('User')).toBeInTheDocument();
+    expect(screen.getByText('(You)')).toBeInTheDocument();
+  });
+
+  it('matches "User" case-insensitively', () => {
+    mockUserSettings.settings.userName = 'Joe';
+    const propsWithLowerUser = {
+      ...defaultProps,
+      member: { id: 'fm-6', name: 'user', relation: 'father' },
+    };
+
+    render(<EditableFamilyMember {...propsWithLowerUser} />);
+
+    expect(screen.getByText('Joe')).toBeInTheDocument();
+    expect(screen.getByText('(You)')).toBeInTheDocument();
+  });
 });
