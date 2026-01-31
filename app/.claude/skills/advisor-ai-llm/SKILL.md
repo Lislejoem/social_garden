@@ -50,13 +50,32 @@ You think in terms of:
 - Missing `try/catch` around AI calls
 - Hardcoded model versions that may be deprecated
 
-## Key Files to Review
+## How to Find Relevant Files
 
-- `app/src/lib/anthropic.ts` - All AI prompts and API calls
-- `app/src/app/api/ingest/route.ts` - Error handling for AI failures
-- `app/src/app/api/contacts/[id]/briefing/route.ts` - Briefing generation
-- `app/src/components/VoicePreviewModal.tsx` - User review of AI output
-- `app/src/lib/interactions.ts` - Type inference keywords
+When reviewing AI/LLM integration, search for:
+
+```bash
+# AI/Anthropic API integration
+Grep: "anthropic" OR "claude" OR "ai"
+Grep: "Anthropic" --type ts
+
+# Prompts and prompt engineering
+Grep: "prompt" OR "system.*message" OR "user.*message"
+
+# API routes with AI processing
+Grep: "ingest" OR "briefing" OR "extract"
+Glob: app/src/app/api/**/route.ts
+
+# AI output preview/validation
+Grep: "preview" OR "validation" OR "parse"
+
+# Error handling for AI
+Grep: "try" OR "catch" OR "error" --type ts
+Grep: "retry" OR "fallback" OR "timeout"
+
+# Cost and usage tracking
+Grep: "token" OR "usage" OR "cost"
+```
 
 ## Prompt Engineering Principles
 

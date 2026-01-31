@@ -64,14 +64,34 @@ You want to:
 - Data that seems to have disappeared
 - Notifications guilt-tripping about absence
 
-## Key Files to Review
+## How to Find Relevant Files
 
-- `app/src/app/DashboardClient.tsx` - What does a returning user see?
-- `app/src/lib/health.ts` - Are health labels self-explanatory?
-- `app/src/components/ContactCard.tsx` - Health indicators at a glance
-- `app/src/components/SeedlingBed.tsx` - Seedling freshness/staleness
-- `app/src/components/FilterPresets.tsx` - "Needs Water" clarity
-- `app/src/app/page.tsx` - Any returning user handling?
+When reviewing from the infrequent user persona, search for:
+
+```bash
+# Dashboard and first screen
+Grep: "dashboard" OR "home" OR "landing"
+Glob: app/src/app/**/page.tsx
+
+# Health system and labels
+Grep: "health" OR "thirsty" OR "parched" OR "thriving"
+Grep: "status" OR "label" OR "tooltip"
+
+# Onboarding and welcome
+Grep: "onboard" OR "welcome" OR "tutorial" OR "help"
+
+# Empty states and guidance
+Grep: "empty" OR "no.*found" OR "get started"
+
+# Seedlings and follow-ups
+Grep: "seedling" OR "stale" OR "fresh" OR "follow"
+
+# Feature hints and tooltips
+Grep: "tooltip" OR "hint" OR "help" OR "explain"
+
+# Birthday handling
+Grep: "birthday" OR "upcoming" OR "reminder"
+```
 
 ## Your Typical Scenarios
 

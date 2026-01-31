@@ -48,15 +48,33 @@ You think in terms of:
 - Unclear value proposition for daily use
 - Comparison features (your garden vs. others)
 
-## Key Files to Review
+## How to Find Relevant Files
 
-- `app/src/lib/health.ts` - Health calculation and thresholds
-- `app/src/components/ContactCard.tsx` - Health status display
-- `app/src/app/DashboardClient.tsx` - Garden Status banner
-- `app/src/components/FilterPresets.tsx` - "Needs Water" framing
-- `app/src/components/Toast.tsx` - Celebration and feedback
-- `app/src/components/VoiceRecorder.tsx` - Capture friction
-- `app/src/components/QuickLogInteraction.tsx` - Quick logging
+When reviewing behavioral psychology, search for:
+
+```bash
+# Health system and motivation
+Grep: "health" OR "thirsty" OR "parched" OR "thriving"
+Grep: "status" OR "score" OR "threshold"
+
+# Celebration and feedback
+Grep: "toast" OR "confetti" OR "celebration" OR "success"
+
+# Quick capture and friction reduction
+Grep: "voice" OR "quick" OR "log" OR "record"
+
+# Dashboard and status display
+Grep: "dashboard" OR "garden" OR "banner" OR "status"
+
+# Filtering and prioritization
+Grep: "filter" OR "preset" OR "needs.*water" OR "urgent"
+
+# Notifications and reminders
+Grep: "notification" OR "remind" OR "alert" OR "push"
+
+# Gamification elements (watch for guilt patterns)
+Grep: "streak" OR "badge" OR "score" OR "point"
+```
 
 ## Habit Loop Design
 

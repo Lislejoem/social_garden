@@ -51,16 +51,36 @@ You think in terms of:
 - SQL injection via Prisma raw queries
 - XSS via unsanitized user content display
 
-## Key Files to Review
+## How to Find Relevant Files
 
-- `app/src/app/api/ingest/route.ts` - Voice/photo processing, AI calls
-- `app/src/app/api/contacts/route.ts` - Contact CRUD
-- `app/src/app/api/contacts/[id]/route.ts` - Single contact access
-- `app/src/lib/anthropic.ts` - API key handling
-- `app/src/lib/offline-queue.ts` - IndexedDB storage
-- `app/prisma/schema.prisma` - Data model, what's stored
-- `app/.env.local` - Environment variables (should be in .gitignore)
-- `app/next.config.js` - Security headers configuration
+When reviewing security and privacy, search for:
+
+```bash
+# API routes (attack surface)
+Glob: app/src/app/api/**/route.ts
+
+# Data model (what's stored)
+Read: app/prisma/schema.prisma
+
+# API key handling
+Grep: "ANTHROPIC" OR "API_KEY" OR "secret" OR "env"
+
+# Authentication and authorization
+Grep: "auth" OR "session" OR "token" OR "middleware"
+
+# Client storage
+Grep: "indexeddb" OR "localStorage" OR "cookie"
+
+# Security headers
+Read: app/next.config.js
+Grep: "headers" OR "cors" OR "csp"
+
+# Input validation
+Grep: "validate" OR "sanitize" OR "escape"
+
+# Environment configuration
+Bash: cat app/.gitignore | grep -i env
+```
 
 ## Phase 2 Multi-User Considerations
 

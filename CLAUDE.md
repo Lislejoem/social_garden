@@ -99,13 +99,13 @@ Skills location: `app/.claude/skills/*/SKILL.md`
 
 ## Advisors
 
-12 AI advisors provide perspectives on product decisions. Invoke as skills (e.g., `/advisor-ux-mobile`).
+16 AI advisors provide perspectives on product decisions. Invoke as skills (e.g., `/advisor-ux-mobile`).
 
 | Category | Advisors |
 |----------|----------|
-| Expert | `ux-mobile`, `privacy-security`, `ai-llm`, `performance`, `content`, `behavioral-psych`, `agent-first` |
-| Persona | `persona-busy-parent`, `persona-connector`, `persona-infrequent` |
-| Critical | `edge-cases`, `devils-advocate` |
+| Expert | `ux-mobile`, `privacy-security`, `security-pentest`, `ai-llm`, `performance`, `content`, `behavioral-psych`, `agent-first`, `growth-marketer` |
+| Persona | `persona-busy-parent`, `persona-connector`, `persona-infrequent`, `persona-early-adopter` |
+| Critical | `edge-cases`, `devils-advocate`, `startup-ceo` |
 
 ## Product Principles
 

@@ -151,7 +151,7 @@ gh api repos/owner/repo/contents/SKILL.md -q .content | base64 -d > /tmp/externa
 **For Domain Skills:**
 - Add "When to Use" section
 - Add "Commands" with project-specific examples
-- Add "Key Files" pointing to Social Garden files
+- Add "How to Find Relevant Files" with search patterns (see Evergreen File References below)
 - Add "Common Issues" if applicable
 
 **For Advisor Skills:**
@@ -159,12 +159,51 @@ gh api repos/owner/repo/contents/SKILL.md -q .content | base64 -d > /tmp/externa
 - Add "Key Questions You Ask" (5-8 questions)
 - Add "Evaluation Criteria"
 - Add "Red Flags"
-- Add "Key Files to Review"
+- Add "How to Find Relevant Files" with search patterns (see Evergreen File References below)
 
 **For Workflow Skills:**
 - Adapt commands to our environment
 - Reference CLAUDE.md conventions
 - Add integration with existing skills
+
+### Evergreen File References
+
+**CRITICAL**: Skills must remain useful as the codebase evolves. Avoid hardcoded file paths that will become stale.
+
+**DO reference (stable):**
+- `CLAUDE.md` - Project configuration, always exists
+- `app/.claude/skills/` - Skills directory structure
+- `app/prisma/schema.prisma` - Database schema (stable location)
+- `app/docs/ARCHITECTURE.md` - Architecture documentation
+
+**DON'T hardcode (will become stale):**
+- Specific component files (e.g., `app/src/components/VoiceRecorder.tsx`)
+- Specific page files (e.g., `app/src/app/dashboard/page.tsx`)
+- Files that may be renamed, moved, or deleted
+
+**Instead, provide search patterns:**
+```markdown
+## How to Find Relevant Files
+
+When reviewing [domain], search for these patterns:
+
+### [Category 1]
+```bash
+# Description of what you're looking for
+Grep: "keyword1" OR "keyword2"
+Glob: app/src/**/*pattern*.tsx
+```
+
+### [Category 2]
+```bash
+Grep: "another-pattern"
+```
+```
+
+This approach:
+- Survives file renames and reorganization
+- Finds NEW files that match the pattern
+- Teaches Claude HOW to find relevant code, not just WHERE it was
 
 ## Security Considerations
 

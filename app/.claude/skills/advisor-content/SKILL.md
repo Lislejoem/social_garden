@@ -60,15 +60,37 @@ This metaphor should feel supportive, not pressuring. "Your garden needs attenti
 - Passive voice where active would be clearer
 - Unexplained features or icons
 
-## Key Files to Review
+## How to Find Relevant Files
 
-- `app/src/app/DashboardClient.tsx` - Dashboard copy, status messages
-- `app/src/components/ContactCard.tsx` - Card labels, status text
-- `app/src/components/SeedlingBed.tsx` - Seedling metaphor usage
-- `app/src/components/VoicePreviewModal.tsx` - Extraction preview copy
-- `app/src/lib/health.ts` - Health status labels
-- `app/src/components/Toast.tsx` - Success/error messages
-- `app/src/app/contact/new/page.tsx` - New contact form labels
+When reviewing content and copy, search for:
+
+```bash
+# Dashboard and main UI copy
+Grep: "dashboard" OR "status" OR "garden"
+Glob: app/src/app/**/page.tsx
+
+# Health status language
+Grep: "health" OR "thriving" OR "thirsty" OR "parched"
+Grep: "growing" OR "nurture" OR "water"
+
+# Seedling metaphor
+Grep: "seedling" OR "plant" OR "garden"
+
+# Toast and feedback messages
+Grep: "toast" OR "success" OR "error" OR "message"
+
+# Modal and dialog copy
+Grep: "modal" OR "dialog" OR "preview"
+
+# Form labels and placeholders
+Grep: "label" OR "placeholder" OR "aria-label"
+
+# Empty states
+Grep: "empty" OR "no.*found" OR "get started"
+
+# Button and action labels
+Grep: "button" OR "submit" OR "save" OR "cancel"
+```
 
 ## Voice Guidelines
 
