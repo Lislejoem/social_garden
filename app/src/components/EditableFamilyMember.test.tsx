@@ -47,13 +47,14 @@ describe('EditableFamilyMember with user settings', () => {
     expect(screen.getByText('sister')).toBeInTheDocument();
   });
 
-  it('shows "Your [relation]" when name matches userName exactly', () => {
+  it('shows name with "(You)" when name matches userName exactly', () => {
     mockUserSettings.settings.userName = 'Sarah';
 
     render(<EditableFamilyMember {...defaultProps} />);
 
-    expect(screen.getByText('Your sister')).toBeInTheDocument();
-    expect(screen.queryByText('Sarah')).not.toBeInTheDocument();
+    expect(screen.getByText('Sarah')).toBeInTheDocument();
+    expect(screen.getByText('(You)')).toBeInTheDocument();
+    expect(screen.getByText('sister')).toBeInTheDocument();
   });
 
   it('matches case-insensitively ("Joe" = "joe")', () => {
@@ -61,7 +62,8 @@ describe('EditableFamilyMember with user settings', () => {
 
     render(<EditableFamilyMember {...defaultProps} />);
 
-    expect(screen.getByText('Your sister')).toBeInTheDocument();
+    expect(screen.getByText('Sarah')).toBeInTheDocument();
+    expect(screen.getByText('(You)')).toBeInTheDocument();
   });
 
   it('does not partial match ("Joe" ≠ "Joseph")', () => {
@@ -71,7 +73,7 @@ describe('EditableFamilyMember with user settings', () => {
 
     expect(screen.getByText('Sarah')).toBeInTheDocument();
     expect(screen.getByText('sister')).toBeInTheDocument();
-    expect(screen.queryByText('Your sister')).not.toBeInTheDocument();
+    expect(screen.queryByText('(You)')).not.toBeInTheDocument();
   });
 
   it('shows original format while settings are loading', () => {
@@ -94,7 +96,9 @@ describe('EditableFamilyMember with user settings', () => {
 
     render(<EditableFamilyMember {...propsWithSpecialChar} />);
 
-    expect(screen.getByText('Your uncle')).toBeInTheDocument();
+    expect(screen.getByText("O'Brien")).toBeInTheDocument();
+    expect(screen.getByText('(You)')).toBeInTheDocument();
+    expect(screen.getByText('uncle')).toBeInTheDocument();
   });
 
   it('handles whitespace differences', () => {
@@ -103,10 +107,11 @@ describe('EditableFamilyMember with user settings', () => {
     render(<EditableFamilyMember {...defaultProps} />);
 
     // Should still match after trimming
-    expect(screen.getByText('Your sister')).toBeInTheDocument();
+    expect(screen.getByText('Sarah')).toBeInTheDocument();
+    expect(screen.getByText('(You)')).toBeInTheDocument();
   });
 
-  it('capitalizes relation in "Your [relation]" display', () => {
+  it('shows relation in original case', () => {
     mockUserSettings.settings.userName = 'Sarah';
     const propsWithUpperRelation = {
       ...defaultProps,
@@ -115,7 +120,8 @@ describe('EditableFamilyMember with user settings', () => {
 
     render(<EditableFamilyMember {...propsWithUpperRelation} />);
 
-    // Should normalize to lowercase
-    expect(screen.getByText('Your sister')).toBeInTheDocument();
+    expect(screen.getByText('Sarah')).toBeInTheDocument();
+    expect(screen.getByText('(You)')).toBeInTheDocument();
+    expect(screen.getByText('SISTER')).toBeInTheDocument();
   });
 });

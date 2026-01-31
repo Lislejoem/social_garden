@@ -153,18 +153,13 @@ export default function EditableFamilyMember({
         {member.name[0]?.toUpperCase()}
       </div>
       <div className="flex-1">
-        {isUserMatch ? (
-          <p className="font-bold text-stone-800">
-            Your {member.relation.toLowerCase()}
-          </p>
-        ) : (
-          <>
-            <p className="font-bold text-stone-800">{member.name}</p>
-            <p className="text-xs text-stone-400 uppercase tracking-widest">
-              {member.relation}
-            </p>
-          </>
-        )}
+        <p className="font-bold text-stone-800">
+          {member.name}
+          {isUserMatch && <span className="text-stone-400 font-normal"> (You)</span>}
+        </p>
+        <p className="text-xs text-stone-400 uppercase tracking-widest">
+          {member.relation}
+        </p>
       </div>
       <button
         onClick={(e) => {
