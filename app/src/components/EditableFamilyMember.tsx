@@ -44,6 +44,14 @@ export default function EditableFamilyMember({
     return false;
   }, [isLoadingSettings, settings.userName, member.name]);
 
+  // Display name: use settings.userName if stored name is "User", otherwise use stored name
+  const displayName = useMemo(() => {
+    if (normalizeForMatch(member.name) === 'user' && settings.userName) {
+      return settings.userName;
+    }
+    return member.name;
+  }, [member.name, settings.userName]);
+
   useEffect(() => {
     if (isEditing && nameInputRef.current) {
       nameInputRef.current.focus();
@@ -147,14 +155,6 @@ export default function EditableFamilyMember({
       </div>
     );
   }
-
-  // Display name: use settings.userName if stored name is "User", otherwise use stored name
-  const displayName = useMemo(() => {
-    if (normalizeForMatch(member.name) === 'user' && settings.userName) {
-      return settings.userName;
-    }
-    return member.name;
-  }, [member.name, settings.userName]);
 
   return (
     <div
