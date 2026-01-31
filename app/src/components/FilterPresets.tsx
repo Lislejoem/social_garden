@@ -1,8 +1,8 @@
 'use client';
 
-import { Droplets, Cake } from 'lucide-react';
+import { Droplets, Cake, EyeOff } from 'lucide-react';
 
-export type FilterType = 'all' | 'needsWater' | 'upcomingBirthdays';
+export type FilterType = 'all' | 'needsWater' | 'upcomingBirthdays' | 'hidden';
 
 interface FilterPresetsProps {
   activeFilter: FilterType;
@@ -10,6 +10,7 @@ interface FilterPresetsProps {
   counts: {
     needsWater: number;
     upcomingBirthdays: number;
+    hidden: number;
   };
 }
 
@@ -36,6 +37,12 @@ export default function FilterPresets({
       label: 'Birthdays',
       icon: Cake,
       count: counts.upcomingBirthdays,
+    },
+    {
+      type: 'hidden',
+      label: 'Hidden',
+      icon: EyeOff,
+      count: counts.hidden,
     },
   ];
 
@@ -69,6 +76,8 @@ export default function FilterPresets({
                     ? 'text-white'
                     : type === 'needsWater'
                     ? 'text-blue-500'
+                    : type === 'hidden'
+                    ? 'text-stone-500'
                     : 'text-amber-500'
                 }`}
               />

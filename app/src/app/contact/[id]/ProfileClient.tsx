@@ -27,7 +27,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   ChevronLeft,
-  MoreHorizontal,
   Flower2,
   Sprout,
   Leaf,
@@ -47,6 +46,8 @@ import {
 import InteractionTimeline from '@/components/InteractionTimeline';
 import VoiceRecorder from '@/components/VoiceRecorder';
 import VoicePreviewModal from '@/components/VoicePreviewModal';
+import PhotoCapture from '@/components/PhotoCapture';
+import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import EditableText from '@/components/EditableText';
 import { useToast } from '@/contexts/ToastContext';
 import { celebrateInteraction } from '@/utils/celebrate';
@@ -60,6 +61,7 @@ import EditSocialsModal from '@/components/EditSocialsModal';
 import EditAvatarModal from '@/components/EditAvatarModal';
 import ContactBriefingButton from '@/components/ContactBriefingButton';
 import ContactBriefingModal from '@/components/ContactBriefingModal';
+import ContactMenu from '@/components/ContactMenu';
 import type {
   HealthStatus,
   Cadence,
@@ -91,6 +93,7 @@ interface ContactData {
   cadence: Cadence;
   socials: Socials | null;
   health: HealthStatus;
+  hiddenAt: Date | null;
   preferences: Preference[];
   interactions: Interaction[];
   seedlings: Seedling[];
@@ -153,7 +156,11 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
     existingContact: { id: string; name: string; location: string | null } | null;
     isNewContact: boolean;
     rawInput: string;
+    imageData?: { base64: string; mimeType: string };
   } | null>(null);
+
+  // Online status for photo capture
+  const isOnline = useOnlineStatus();
 
   // Socials modal state
   const [isSocialsModalOpen, setIsSocialsModalOpen] = useState(false);
@@ -163,6 +170,49 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
 
   // Briefing modal state
   const [isBriefingModalOpen, setIsBriefingModalOpen] = useState(false);
+
+  const handleHideContact = async () => {
+    try {
+      const response = await fetch(`/api/contacts/${contact.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hiddenAt: new Date().toISOString() }),
+      });
+      if (!response.ok) throw new Error('Failed to hide contact');
+      showToast(`${contact.name} hidden from your garden`);
+      router.push('/');
+    } catch {
+      showToast(`Failed to hide contact. Please try again.`);
+    }
+  };
+
+  const handleRestoreContact = async () => {
+    try {
+      const response = await fetch(`/api/contacts/${contact.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hiddenAt: null }),
+      });
+      if (!response.ok) throw new Error('Failed to restore contact');
+      showToast(`${contact.name} restored to your garden`);
+      router.push('/');
+    } catch {
+      showToast(`Failed to restore contact. Please try again.`);
+    }
+  };
+
+  const handleDeleteContact = async () => {
+    try {
+      const response = await fetch(`/api/contacts/${contact.id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete contact');
+      showToast(`${contact.name} removed permanently`);
+      router.push('/');
+    } catch {
+      showToast(`Failed to delete contact. Please try again.`);
+    }
+  };
 
   const handleVoiceNote = async (transcript: string) => {
     // First, get a preview with dryRun
@@ -191,17 +241,74 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
     });
   };
 
+  const handlePhotoCapture = async (
+    imageData: { base64: string; mimeType: string },
+    context?: string
+  ) => {
+    // Photos require online connection
+    if (!isOnline) {
+      showToast('Photo capture requires an internet connection.');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/ingest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageData,
+          additionalContext: context,
+          contactId: contact.id,
+          dryRun: true,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to process photo');
+      }
+
+      const preview: IngestPreviewResponse = await response.json();
+
+      // Show the preview modal
+      setPreviewData({
+        extraction: preview.extraction,
+        existingContact: preview.existingContact || null,
+        isNewContact: preview.isNewContact,
+        rawInput: context || '',
+        imageData,
+      });
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : 'Failed to process photo');
+    }
+  };
+
   const handleConfirmSave = async (editedData: AIExtraction) => {
     if (!previewData) return;
+
+    // Build request body - include imageData if this was a photo capture
+    const requestBody: {
+      rawInput?: string;
+      imageData?: { base64: string; mimeType: string };
+      additionalContext?: string;
+      contactId: string;
+      overrides: AIExtraction;
+    } = {
+      contactId: contact.id,
+      overrides: editedData,
+    };
+
+    if (previewData.imageData) {
+      requestBody.imageData = previewData.imageData;
+      requestBody.additionalContext = previewData.rawInput;
+    } else {
+      requestBody.rawInput = previewData.rawInput;
+    }
 
     const response = await fetch('/api/ingest', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        rawInput: previewData.rawInput,
-        contactId: contact.id,
-        overrides: editedData,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
@@ -459,9 +566,14 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
             <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
             <span>Back to Garden</span>
           </Link>
-          <button className="p-2.5 text-stone-400 hover:text-stone-600">
-            <MoreHorizontal />
-          </button>
+          <ContactMenu
+            contactName={contact.name}
+            isHidden={!!contact.hiddenAt}
+            onHide={handleHideContact}
+            onRestore={handleRestoreContact}
+            onDelete={handleDeleteContact}
+            triggerClassName="p-2.5"
+          />
         </div>
       </nav>
 
@@ -745,6 +857,11 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
           </div>
         </div>
       </main>
+
+      {/* Floating Photo Capture - positioned left of voice recorder */}
+      <div className="fixed bottom-10 right-36 z-50">
+        <PhotoCapture onCapture={handlePhotoCapture} />
+      </div>
 
       {/* Floating Voice Recorder */}
       <VoiceRecorder onTranscriptComplete={handleVoiceNote} />

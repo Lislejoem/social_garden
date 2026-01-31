@@ -1,9 +1,15 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { Trash2, Check, X, Loader2 } from 'lucide-react';
 import type { FamilyMember } from '@/types';
 import { useToast } from '../contexts/ToastContext';
+import { useUserSettings } from '../contexts/UserSettingsContext';
+
+/** Normalize a name for comparison (trim, lowercase, unicode normalize) */
+function normalizeForMatch(name: string): string {
+  return name.trim().toLowerCase().normalize('NFC');
+}
 
 interface EditableFamilyMemberProps {
   member: FamilyMember;
@@ -23,6 +29,28 @@ export default function EditableFamilyMember({
   const [isDeleting, setIsDeleting] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const { showError } = useToast();
+  const { settings, isLoading: isLoadingSettings } = useUserSettings();
+
+  // Determine if this family member represents the current user
+  const isUserMatch = useMemo(() => {
+    // Always match "User" (the AI placeholder for the person recording)
+    if (normalizeForMatch(member.name) === 'user') {
+      return true;
+    }
+    // Also match if the name equals the userName from settings
+    if (!isLoadingSettings && settings.userName) {
+      return normalizeForMatch(settings.userName) === normalizeForMatch(member.name);
+    }
+    return false;
+  }, [isLoadingSettings, settings.userName, member.name]);
+
+  // Display name: use settings.userName if stored name is "User", otherwise use stored name
+  const displayName = useMemo(() => {
+    if (normalizeForMatch(member.name) === 'user' && settings.userName) {
+      return settings.userName;
+    }
+    return member.name;
+  }, [member.name, settings.userName]);
 
   useEffect(() => {
     if (isEditing && nameInputRef.current) {
@@ -134,10 +162,13 @@ export default function EditableFamilyMember({
       onClick={() => setIsEditing(true)}
     >
       <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-stone-400 font-bold shrink-0">
-        {member.name[0]?.toUpperCase()}
+        {displayName[0]?.toUpperCase()}
       </div>
       <div className="flex-1">
-        <p className="font-bold text-stone-800">{member.name}</p>
+        <p className="font-bold text-stone-800">
+          {displayName}
+          {isUserMatch && <span className="text-stone-400 font-normal"> (You)</span>}
+        </p>
         <p className="text-xs text-stone-400 uppercase tracking-widest">
           {member.relation}
         </p>

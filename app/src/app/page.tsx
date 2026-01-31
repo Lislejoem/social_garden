@@ -13,6 +13,7 @@ export const dynamic = 'force-dynamic';
 
 async function getContacts() {
   const contacts = await prisma.contact.findMany({
+    where: { hiddenAt: null },
     include: {
       preferences: true,
       interactions: {
@@ -89,9 +90,21 @@ function calculateFilterCounts(contacts: Awaited<ReturnType<typeof getContacts>>
   return { needsWater, upcomingBirthdays };
 }
 
+async function getHiddenCount() {
+  return prisma.contact.count({
+    where: { hiddenAt: { not: null } },
+  });
+}
+
 export default async function Home() {
-  const contacts = await getContacts();
-  const filterCounts = calculateFilterCounts(contacts);
+  const [contacts, hiddenCount] = await Promise.all([
+    getContacts(),
+    getHiddenCount(),
+  ]);
+  const filterCounts = {
+    ...calculateFilterCounts(contacts),
+    hidden: hiddenCount,
+  };
 
   return <DashboardClient initialContacts={contacts} filterCounts={filterCounts} />;
 }

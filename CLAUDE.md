@@ -7,19 +7,22 @@
 - Use skills and CLAUDE.md to remember things between conversations.
 - **Ask before acting** on decisions that affect project structure, tooling, or workflow. Discuss options first.
 
-## Development Process
+## Joe's Environment
 
-- **TDD Required:** Write failing test → Run to confirm failure → Write minimal code to pass → Confirm → Refactor
-- **Smallest Changes:** Make the smallest reasonable changes to achieve the outcome.
-- **No Duplication:** Work hard to reduce code duplication.
-- **Fix Bugs Immediately:** Don't ask permission.
-- **Clear Names:** Names tell what code does, not how or its history.
-- **Stay in Scope:** When fixing a bug or implementing a feature, don't expand into related features. If you discover something useful to add, create a GitHub issue instead of implementing it. Err on the side of asking.
+- **Testing**: Joe tests exclusively on Vercel preview deployments, never localhost
+- **Bug reports**: When Joe reports a bug, it's on a deployed Vercel preview
+- **Database**: Always Neon PostgreSQL in the cloud (no local database)
+- **Debugging approach**: Check Vercel deployment status and build output first
 
-## At End of Each Plan
+## Workflow
 
-- Update `CLAUDE.md` if needed
-- Update relevant skills (or create new ones)
+Follow steps in this order. You **MUST** do these whenever you adjust any code outside of documentation and you **MUST** do these without Joe requesting it. If Joe has to prompt you, you are failing in your role.
+1. **Advisors:** Select the advisors whose opinions you'd like on the task and confirm the list with Joe.
+2. **TDD Required:** Write failing test → Run to confirm failure → Write minimal code to pass → Confirm → Refactor
+3. **Retrospective:** Ask "What context, instructions, resources, or perspective would have helped had I known them beforehand?".
+4. **Future Claude:** Ask "What did I learn in this session that I should document for future Claude?".
+5. **Confirm with Joe:** Confirm proposed documentation updates with Joe
+6. **Update Documentation:** Update `CLAUDE.md` and relevant skills or create new ones
 
 ## Issue Workflow
 
@@ -30,9 +33,24 @@
 
 ## Git Workflow
 
-- **After every push:** Verify the push succeeded by running `git log --oneline origin/<branch> -3` and confirm the expected commits appear on the remote
+- **After every push:** Verify the push succeeded by running `git log --oneline origin/<branch> -3` and confirm the expected commits appear on the remote. Only proceed with creating a PR if an issue is fixed and should be deployed in main.
 - **Before creating PRs:** Ensure the branch is pushed and verify with `git fetch origin && git log --oneline <branch> ^origin/<branch>` shows no unpushed commits
 - **After merging PRs:** If continuing work on the same branch, verify the merge completed and the commits are in main
+
+## Development Practices
+
+- **Smallest Changes:** Make the smallest reasonable changes to achieve the outcome.
+- **No Duplication:** Work hard to reduce code duplication.
+- **Fix Bugs Immediately:** Don't ask permission.
+- **Clear Names:** Names tell what code does, not how or its history.
+- **Stay in Scope:** When fixing a bug or implementing a feature *in auto accept mode*, don't expand into related features. If you discover something useful to add, create a GitHub issue instead of implementing it. Err on the side of asking.
+
+## Testing Guidelines
+
+- **New utility functions**: Always write tests
+- **New API routes**: Write tests for happy path + error cases
+- **New UI components**: Tests optional for simple presentational components; required for components with complex logic or user interactions
+- **Bug fixes**: Add regression test if the bug was non-obvious
 
 ---
 
@@ -65,8 +83,8 @@ Load skills for detailed guidance on specific areas:
 |-------|-------------|
 | `testing` | Writing tests, mocking Anthropic SDK |
 | `prisma-patterns` | Database queries, schema, migrations |
-| `nextjs-app-router` | Pages, layouts, API routes |
-| `react-components` | Components, editable pattern |
+| `nextjs-app-router` | Pages, layouts, API routes, static vs dynamic rendering issues |
+| `react-components` | Components, state management, optimistic updates, dashboard mutations |
 | `deployment` | Vercel, Neon, production deploys |
 | `github-workflow` | Issues, PRs, CI/CD, project board |
 | `voice-processing` | Voice notes, AI extraction |
@@ -103,3 +121,6 @@ Skills location: `app/.claude/skills/*/SKILL.md`
 - Next.js 14 async params: `const { id } = await params`
 - Web Speech API: Chrome/Edge only
 - Anthropic client validates API key on first use, not module load
+- Prisma migrations: Use `prisma db push` (non-interactive env doesn't support `prisma migrate dev`)
+- DATABASE_URL is in `.env.local`, not `.env` (Prisma looks at `.env` by default)
+- Windows NUL files: Bash commands with Windows syntax (e.g., `2>NUL`) can create junk files named "NUL". Delete them if found.

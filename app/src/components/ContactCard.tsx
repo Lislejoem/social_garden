@@ -5,6 +5,7 @@
  */
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
 import {
   Flower2,
@@ -16,9 +17,10 @@ import {
   Linkedin,
   Mail,
   MessageCircle,
-  MoreHorizontal,
 } from 'lucide-react';
 import type { HealthStatus, Cadence, Socials } from '@/types';
+import { useToast } from '@/contexts/ToastContext';
+import ContactMenu from './ContactMenu';
 
 /** Props for ContactCard component */
 interface ContactCardProps {
@@ -31,6 +33,13 @@ interface ContactCardProps {
   lastContactFormatted: string;
   socials: Socials | null;
   preferencesPreview: string[];
+  isHidden?: boolean;
+  /** Called after contact is successfully hidden */
+  onHidden?: (id: string) => void;
+  /** Called after contact is successfully restored */
+  onRestored?: (id: string) => void;
+  /** Called after contact is successfully deleted */
+  onDeleted?: (id: string) => void;
 }
 
 const CADENCE_LABELS: Record<Cadence, string> = {
@@ -75,7 +84,7 @@ const HEALTH_THEMES: Record<
   },
 };
 
-export default function ContactCard({
+const ContactCard = React.memo(function ContactCard({
   id,
   name,
   avatarUrl,
@@ -85,12 +94,61 @@ export default function ContactCard({
   lastContactFormatted,
   socials,
   preferencesPreview,
+  isHidden = false,
+  onHidden,
+  onRestored,
+  onDeleted,
 }: ContactCardProps) {
+  const { showToast, showError } = useToast();
   const theme = HEALTH_THEMES[health];
 
+  const handleHide = async () => {
+    try {
+      const response = await fetch(`/api/contacts/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hiddenAt: new Date().toISOString() }),
+      });
+      if (!response.ok) throw new Error('Failed to hide contact');
+      showToast(`${name} hidden from your garden`);
+      onHidden?.(id);
+    } catch {
+      showError('Failed to hide contact. Please try again.');
+    }
+  };
+
+  const handleRestore = async () => {
+    try {
+      const response = await fetch(`/api/contacts/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hiddenAt: null }),
+      });
+      if (!response.ok) throw new Error('Failed to restore contact');
+      showToast(`${name} restored to your garden`);
+      onRestored?.(id);
+    } catch {
+      showError('Failed to restore contact. Please try again.');
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`/api/contacts/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete contact');
+      showToast(`${name} removed permanently`);
+      onDeleted?.(id);
+    } catch {
+      showError('Failed to delete contact. Please try again.');
+    }
+  };
+
   return (
-    <div
-      className={`relative group p-6 rounded-5xl transition-all duration-500 border-2 border-transparent ${theme.border} hover:shadow-2xl hover:shadow-emerald-900/5 ${theme.color}`}
+    <Link
+      href={`/contact/${id}`}
+      className={`block relative group p-6 rounded-5xl transition-all duration-500 border-2 border-transparent cursor-pointer active:scale-[0.99] ${theme.border} hover:shadow-2xl hover:shadow-emerald-900/5 ${theme.color}`}
     >
       <div className="flex justify-between items-start mb-6">
         <div className="flex items-center gap-4">
@@ -126,9 +184,13 @@ export default function ContactCard({
             </div>
           </div>
         </div>
-        <button className="text-stone-300 hover:text-stone-600 transition-colors p-1">
-          <MoreHorizontal className="w-5 h-5" />
-        </button>
+        <ContactMenu
+          contactName={name}
+          isHidden={isHidden}
+          onHide={handleHide}
+          onRestore={handleRestore}
+          onDelete={handleDelete}
+        />
       </div>
 
       {/* Social & Contact Actions */}
@@ -138,7 +200,8 @@ export default function ContactCard({
             href={socials.instagram}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-2.5 bg-white rounded-2xl text-stone-400 hover:text-emerald-700 hover:shadow-md transition-all"
+            onClick={(e) => e.stopPropagation()}
+            className="p-3 bg-white rounded-2xl text-stone-400 hover:text-emerald-700 hover:shadow-md transition-all"
           >
             <Instagram className="w-4 h-4" />
           </a>
@@ -148,7 +211,8 @@ export default function ContactCard({
             href={socials.linkedin}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-2.5 bg-white rounded-2xl text-stone-400 hover:text-emerald-700 hover:shadow-md transition-all"
+            onClick={(e) => e.stopPropagation()}
+            className="p-3 bg-white rounded-2xl text-stone-400 hover:text-emerald-700 hover:shadow-md transition-all"
           >
             <Linkedin className="w-4 h-4" />
           </a>
@@ -156,7 +220,8 @@ export default function ContactCard({
         {socials?.phone && (
           <a
             href={`tel:${socials.phone}`}
-            className="p-2.5 bg-white rounded-2xl text-stone-400 hover:text-emerald-700 hover:shadow-md transition-all"
+            onClick={(e) => e.stopPropagation()}
+            className="p-3 bg-white rounded-2xl text-stone-400 hover:text-emerald-700 hover:shadow-md transition-all"
           >
             <MessageCircle className="w-4 h-4" />
           </a>
@@ -164,7 +229,8 @@ export default function ContactCard({
         {socials?.email && (
           <a
             href={`mailto:${socials.email}`}
-            className="p-2.5 bg-white rounded-2xl text-stone-400 hover:text-emerald-700 hover:shadow-md transition-all"
+            onClick={(e) => e.stopPropagation()}
+            className="p-3 bg-white rounded-2xl text-stone-400 hover:text-emerald-700 hover:shadow-md transition-all"
           >
             <Mail className="w-4 h-4" />
           </a>
@@ -185,7 +251,7 @@ export default function ContactCard({
         </div>
       )}
 
-      <div className="mt-auto flex items-center justify-between text-[11px] text-stone-400 border-t border-stone-200/40 pt-4">
+      <div className="mt-auto flex items-center text-[11px] text-stone-400 border-t border-stone-200/40 pt-4">
         <span className="flex items-center gap-1.5">
           <div
             className={`w-1.5 h-1.5 rounded-full ${
@@ -196,13 +262,9 @@ export default function ContactCard({
           />
           Last seen {lastContactFormatted}
         </span>
-        <Link
-          href={`/contact/${id}`}
-          className="font-bold text-stone-600 hover:text-emerald-800 transition-all uppercase tracking-tighter"
-        >
-          Open Profile
-        </Link>
       </div>
-    </div>
+    </Link>
   );
-}
+});
+
+export default ContactCard;

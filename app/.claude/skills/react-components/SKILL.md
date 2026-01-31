@@ -56,6 +56,8 @@ Common state patterns:
 
 ## API Integration Pattern
 
+For single-item edits (profile page), use `router.refresh()`:
+
 ```typescript
 const handleUpdate = async (field: string, value: string) => {
   const response = await fetch(`/api/contacts/${id}`, {
@@ -71,6 +73,80 @@ const handleUpdate = async (field: string, value: string) => {
   router.refresh(); // Refetch server data
 };
 ```
+
+For list mutations (dashboard), use optimistic updates instead (see below).
+
+## Optimistic Updates Pattern
+
+For instant UI feedback when mutating list data (hide, delete, restore):
+
+### Pattern
+1. Child component calls API
+2. On success, calls parent callback (e.g., `onHidden`, `onDeleted`)
+3. Parent updates local state with functional updates
+4. Wrap list items in `React.memo` to prevent sibling re-renders
+5. Derive counts from state using `useMemo`
+
+### Example (ContactCard → DashboardClient)
+
+**Child component (ContactCard.tsx):**
+```typescript
+interface ContactCardProps {
+  id: string;
+  onHidden?: (id: string) => void;
+  onDeleted?: (id: string) => void;
+}
+
+const ContactCard = React.memo(function ContactCard({ id, onHidden, onDeleted }) {
+  const handleHide = async () => {
+    const response = await fetch(`/api/contacts/${id}`, { method: 'PUT', ... });
+    if (response.ok) onHidden?.(id);  // Notify parent on success
+  };
+});
+```
+
+**Parent component (DashboardClient.tsx):**
+```typescript
+const [contacts, setContacts] = useState(initialContacts);
+
+const handleContactHidden = useCallback((id: string) => {
+  setContacts(prev => prev.filter(c => c.id !== id));  // Functional update
+}, []);
+
+// Derive counts from state
+const filterCounts = useMemo(() => ({
+  needsWater: contacts.filter(c => c.health === 'thirsty').length,
+}), [contacts]);
+
+return contacts.map(c => (
+  <ContactCard key={c.id} {...c} onHidden={handleContactHidden} />
+));
+```
+
+### When to Use
+- Dashboard/list mutations (hide, delete, restore)
+- Any action where instant feedback improves UX
+
+### When NOT to Use
+- Profile page edits (single item, `router.refresh()` is fine)
+- Actions that need server-computed data in response
+
+## Clickable Card Pattern
+
+When making a card fully clickable while preserving nested interactive elements:
+
+1. Wrap card in `<Link>` (not onClick) for proper semantics
+2. Add `stopPropagation()` to nested `<a>` tags
+3. ContactMenu already handles this internally
+
+```tsx
+<Link href={`/contact/${id}`} className="block cursor-pointer active:scale-[0.99]">
+  {/* Card content */}
+  <a href={url} onClick={(e) => e.stopPropagation()}>External Link</a>
+</Link>
+```
+
+See: `ContactCard.tsx`
 
 ## Icon Library
 
@@ -88,6 +164,10 @@ Tailwind CSS with custom design system:
 - Colors: emerald (primary), stone (neutral), amber, rose
 - Border radius: `rounded-xl`, `rounded-2xl`, `rounded-4xl`, `rounded-5xl`, `rounded-6xl`
 - Shadows: `shadow-sm`, `shadow-xl`, `shadow-2xl`
+
+### Touch Targets (Mobile)
+- Minimum 44x44px for accessibility (advisor-ux-mobile guideline)
+- Use `p-3` with `w-4 h-4` icons (not `p-2.5` which is ~36x36px)
 
 ## TypeScript
 
