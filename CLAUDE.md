@@ -81,6 +81,7 @@ Load skills for detailed guidance on specific areas:
 
 | Skill | When to use |
 |-------|-------------|
+| `skill-discovery` | **Required** before creating new skills - finds and synthesizes existing skills |
 | `testing` | Writing tests, mocking Anthropic SDK |
 | `prisma-patterns` | Database queries, schema, migrations |
 | `nextjs-app-router` | Pages, layouts, API routes, static vs dynamic rendering issues |
