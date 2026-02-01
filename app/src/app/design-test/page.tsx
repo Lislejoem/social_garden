@@ -26,8 +26,9 @@ const AURA_IMAGES: Record<Exclude<BackgroundOption, "none">, string> = {
 export default function DesignTestPage() {
   const [activeBackground, setActiveBackground] =
     useState<BackgroundOption>("none");
-  const [blurLevel, setBlurLevel] = useState<4 | 8 | 12>(8);
-  const [translucency, setTranslucency] = useState<40 | 60 | 80>(60);
+  const [blurLevel, setBlurLevel] = useState<8 | 12 | 16>(12);
+  const [translucency, setTranslucency] = useState<40 | 50 | 60>(50);
+  const [borderStrength, setBorderStrength] = useState<30 | 40 | 50>(40);
   const [pressScale, setPressScale] = useState<0.97 | 0.98 | 0.99>(0.98);
 
   // Get background style - either solid color or image
@@ -43,14 +44,19 @@ export default function DesignTestPage() {
   };
 
   const getGlassClasses = () => {
-    const blur = `backdrop-blur-[${blurLevel}px]`;
     const bgOpacity =
       translucency === 40
         ? "bg-white/40"
-        : translucency === 60
-          ? "bg-white/60"
-          : "bg-white/80";
-    return `${blur} ${bgOpacity} border border-white/20`;
+        : translucency === 50
+          ? "bg-white/50"
+          : "bg-white/60";
+    const border =
+      borderStrength === 30
+        ? "border border-white/30"
+        : borderStrength === 40
+          ? "border border-white/40"
+          : "border border-white/50";
+    return `${bgOpacity} ${border} shadow-sm`;
   };
 
   return (
@@ -156,12 +162,12 @@ export default function DesignTestPage() {
               </label>
               <select
                 value={blurLevel}
-                onChange={(e) => setBlurLevel(Number(e.target.value) as 4 | 8 | 12)}
+                onChange={(e) => setBlurLevel(Number(e.target.value) as 8 | 12 | 16)}
                 className="px-3 py-1.5 rounded-lg border border-stone-200 text-sm"
               >
-                <option value={4}>4px (subtle)</option>
-                <option value={8}>8px (medium)</option>
-                <option value={12}>12px (strong)</option>
+                <option value={8}>8px (subtle)</option>
+                <option value={12}>12px (medium)</option>
+                <option value={16}>16px (strong)</option>
               </select>
             </div>
             <div>
@@ -171,21 +177,105 @@ export default function DesignTestPage() {
               <select
                 value={translucency}
                 onChange={(e) =>
-                  setTranslucency(Number(e.target.value) as 40 | 60 | 80)
+                  setTranslucency(Number(e.target.value) as 40 | 50 | 60)
                 }
                 className="px-3 py-1.5 rounded-lg border border-stone-200 text-sm"
               >
-                <option value={40}>40% (more transparent)</option>
-                <option value={60}>60% (balanced)</option>
-                <option value={80}>80% (more solid)</option>
+                <option value={40}>40% (more glass)</option>
+                <option value={50}>50% (balanced)</option>
+                <option value={60}>60% (more solid)</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-xs text-stone-500 block mb-1">
+                Border Strength
+              </label>
+              <select
+                value={borderStrength}
+                onChange={(e) =>
+                  setBorderStrength(Number(e.target.value) as 30 | 40 | 50)
+                }
+                className="px-3 py-1.5 rounded-lg border border-stone-200 text-sm"
+              >
+                <option value={30}>30% (subtle)</option>
+                <option value={40}>40% (medium)</option>
+                <option value={50}>50% (strong)</option>
               </select>
             </div>
           </div>
 
-          {/* Glass cards comparison */}
+          {/* Glass cards - Border Styles (reduced shadow, enhanced borders) */}
+          <p className="text-stone-500 text-sm font-medium">Border Treatments:</p>
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Subtle border */}
+            <div className="backdrop-blur-[12px] bg-white/50 border border-white/30 rounded-3xl p-5 shadow-sm">
+              <p className="text-xs uppercase tracking-wide text-stone-500 mb-3">
+                Subtle: border-white/30
+              </p>
+              <h3 className="font-serif-new text-xl text-stone-900 mb-2">
+                {mockContact.name}
+              </h3>
+              <p className="text-sm text-stone-600">{mockContact.location}</p>
+              <div className="flex gap-2 mt-3">
+                {mockContact.preferences.slice(0, 2).map((pref) => (
+                  <span
+                    key={pref}
+                    className="px-2 py-1 bg-white/40 border border-white/40 rounded-full text-xs text-stone-600"
+                  >
+                    {pref}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Medium border */}
+            <div className="backdrop-blur-[12px] bg-white/50 border border-white/50 rounded-3xl p-5 shadow-sm">
+              <p className="text-xs uppercase tracking-wide text-stone-500 mb-3">
+                Medium: border-white/50
+              </p>
+              <h3 className="font-serif-new text-xl text-stone-900 mb-2">
+                {mockContact.name}
+              </h3>
+              <p className="text-sm text-stone-600">{mockContact.location}</p>
+              <div className="flex gap-2 mt-3">
+                {mockContact.preferences.slice(0, 2).map((pref) => (
+                  <span
+                    key={pref}
+                    className="px-2 py-1 bg-white/40 border border-white/50 rounded-full text-xs text-stone-600"
+                  >
+                    {pref}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Strong border with gradient effect */}
+            <div className="backdrop-blur-[12px] bg-white/50 border-2 border-white/60 rounded-3xl p-5 shadow-sm ring-1 ring-white/20 ring-inset">
+              <p className="text-xs uppercase tracking-wide text-stone-500 mb-3">
+                Strong: 2px + inner ring
+              </p>
+              <h3 className="font-serif-new text-xl text-stone-900 mb-2">
+                {mockContact.name}
+              </h3>
+              <p className="text-sm text-stone-600">{mockContact.location}</p>
+              <div className="flex gap-2 mt-3">
+                {mockContact.preferences.slice(0, 2).map((pref) => (
+                  <span
+                    key={pref}
+                    className="px-2 py-1 bg-white/40 border border-white/60 rounded-full text-xs text-stone-600"
+                  >
+                    {pref}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Glass cards - Translucency comparison (updated with new border style) */}
+          <p className="text-stone-500 text-sm font-medium mt-8">Translucency Levels (with medium border):</p>
           <div className="grid md:grid-cols-3 gap-6">
             {/* 40% translucency */}
-            <div className="backdrop-blur-[8px] bg-white/40 border border-white/20 rounded-3xl p-5 shadow-lg">
+            <div className="backdrop-blur-[12px] bg-white/40 border border-white/40 rounded-3xl p-5 shadow-sm">
               <p className="text-xs uppercase tracking-wide text-stone-500 mb-3">
                 40% Translucency
               </p>
@@ -197,7 +287,7 @@ export default function DesignTestPage() {
                 {mockContact.preferences.slice(0, 2).map((pref) => (
                   <span
                     key={pref}
-                    className="px-2 py-1 bg-white/50 rounded-full text-xs text-stone-600"
+                    className="px-2 py-1 bg-white/30 border border-white/40 rounded-full text-xs text-stone-600"
                   >
                     {pref}
                   </span>
@@ -206,7 +296,7 @@ export default function DesignTestPage() {
             </div>
 
             {/* 60% translucency */}
-            <div className="backdrop-blur-[8px] bg-white/60 border border-white/20 rounded-3xl p-5 shadow-lg">
+            <div className="backdrop-blur-[12px] bg-white/60 border border-white/40 rounded-3xl p-5 shadow-sm">
               <p className="text-xs uppercase tracking-wide text-stone-500 mb-3">
                 60% Translucency
               </p>
@@ -218,7 +308,7 @@ export default function DesignTestPage() {
                 {mockContact.preferences.slice(0, 2).map((pref) => (
                   <span
                     key={pref}
-                    className="px-2 py-1 bg-white/50 rounded-full text-xs text-stone-600"
+                    className="px-2 py-1 bg-white/40 border border-white/40 rounded-full text-xs text-stone-600"
                   >
                     {pref}
                   </span>
@@ -227,7 +317,7 @@ export default function DesignTestPage() {
             </div>
 
             {/* 80% translucency */}
-            <div className="backdrop-blur-[8px] bg-white/80 border border-white/20 rounded-3xl p-5 shadow-lg">
+            <div className="backdrop-blur-[12px] bg-white/80 border border-white/40 rounded-3xl p-5 shadow-sm">
               <p className="text-xs uppercase tracking-wide text-stone-500 mb-3">
                 80% Translucency
               </p>
@@ -239,7 +329,7 @@ export default function DesignTestPage() {
                 {mockContact.preferences.slice(0, 2).map((pref) => (
                   <span
                     key={pref}
-                    className="px-2 py-1 bg-white/50 rounded-full text-xs text-stone-600"
+                    className="px-2 py-1 bg-white/50 border border-white/40 rounded-full text-xs text-stone-600"
                   >
                     {pref}
                   </span>
@@ -249,14 +339,15 @@ export default function DesignTestPage() {
           </div>
 
           {/* Dynamic glass card with controls */}
+          <p className="text-stone-500 text-sm font-medium mt-8">Dynamic Card (adjust controls above):</p>
           <div
-            className={`rounded-3xl p-6 shadow-lg ${getGlassClasses()}`}
+            className={`rounded-3xl p-6 ${getGlassClasses()}`}
             style={{
               backdropFilter: `blur(${blurLevel}px)`,
             }}
           >
             <p className="text-xs uppercase tracking-wide text-stone-500 mb-3">
-              Dynamic Card (use controls above)
+              Blur: {blurLevel}px · Translucency: {translucency}% · Border: {borderStrength}%
             </p>
             <h3 className="font-serif-new text-2xl text-stone-900 mb-2">
               {mockContact.name}
@@ -266,7 +357,7 @@ export default function DesignTestPage() {
               {mockContact.preferences.map((pref) => (
                 <span
                   key={pref}
-                  className="px-3 py-1.5 bg-white/50 border border-white/30 rounded-full text-sm text-stone-700"
+                  className={`px-3 py-1.5 bg-white/40 rounded-full text-sm text-stone-700 border border-white/${borderStrength}`}
                 >
                   {pref}
                 </span>
