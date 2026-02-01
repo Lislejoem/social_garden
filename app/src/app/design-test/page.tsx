@@ -12,7 +12,16 @@ const mockContact = {
   health: "thriving" as const,
 };
 
-type BackgroundOption = "none" | "aura1" | "aura2" | "aura3" | "aura4";
+type BackgroundOption = "none" | "aura1" | "aura2" | "aura3" | "aura4" | "aura5";
+
+// Aura background image paths
+const AURA_IMAGES: Record<Exclude<BackgroundOption, "none">, string> = {
+  aura1: "/backgrounds/aura-1.webp",
+  aura2: "/backgrounds/aura-2.webp",
+  aura3: "/backgrounds/aura-3.webp",
+  aura4: "/backgrounds/aura-4.webp",
+  aura5: "/backgrounds/aura-5.webp",
+};
 
 export default function DesignTestPage() {
   const [activeBackground, setActiveBackground] =
@@ -21,13 +30,16 @@ export default function DesignTestPage() {
   const [translucency, setTranslucency] = useState<40 | 60 | 80>(60);
   const [pressScale, setPressScale] = useState<0.97 | 0.98 | 0.99>(0.98);
 
-  // Background styles for aura images (placeholder until images are added)
-  const backgroundStyles: Record<BackgroundOption, string> = {
-    none: "bg-[#FDFCFB]",
-    aura1: "bg-gradient-to-br from-emerald-100 via-teal-50 to-orange-100", // Placeholder CSS gradient
-    aura2: "bg-gradient-to-tr from-emerald-200 via-amber-50 to-rose-100",
-    aura3: "bg-gradient-to-bl from-teal-100 via-emerald-50 to-coral-100",
-    aura4: "bg-gradient-to-r from-emerald-100 via-peach-50 to-amber-100",
+  // Get background style - either solid color or image
+  const getBackgroundStyle = () => {
+    if (activeBackground === "none") {
+      return { backgroundColor: "#FDFCFB" };
+    }
+    return {
+      backgroundImage: `url(${AURA_IMAGES[activeBackground]})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+    };
   };
 
   const getGlassClasses = () => {
@@ -43,7 +55,8 @@ export default function DesignTestPage() {
 
   return (
     <div
-      className={`min-h-screen p-6 transition-colors duration-500 ${backgroundStyles[activeBackground]}`}
+      className="min-h-screen p-6 transition-all duration-500"
+      style={getBackgroundStyle()}
     >
       <div className="max-w-4xl mx-auto space-y-12">
         {/* Header */}
@@ -270,13 +283,12 @@ export default function DesignTestPage() {
 
           <p className="text-stone-600 text-sm">
             Select a background to see how glassmorphism looks against it.
-            Currently showing CSS gradient placeholders - will be replaced with
-            AI-generated aura images.
+            These are AI-generated aura images with the multi-color chord aesthetic.
           </p>
 
           <div className="flex flex-wrap gap-3">
             {(
-              ["none", "aura1", "aura2", "aura3", "aura4"] as BackgroundOption[]
+              ["none", "aura1", "aura2", "aura3", "aura4", "aura5"] as BackgroundOption[]
             ).map((bg) => (
               <button
                 key={bg}
@@ -292,10 +304,25 @@ export default function DesignTestPage() {
             ))}
           </div>
 
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
-            <strong>Next step:</strong> Generate aura images with AI, add to{" "}
-            <code className="bg-amber-100 px-1 rounded">/public/backgrounds/</code>,
-            then update this page to use actual images.
+          {/* Thumbnail previews */}
+          <div className="grid grid-cols-5 gap-3">
+            {(["aura1", "aura2", "aura3", "aura4", "aura5"] as const).map((bg) => (
+              <button
+                key={bg}
+                onClick={() => setActiveBackground(bg)}
+                className={`aspect-video rounded-xl overflow-hidden border-2 transition-all ${
+                  activeBackground === bg
+                    ? "border-emerald-500 ring-2 ring-emerald-200"
+                    : "border-transparent hover:border-stone-300"
+                }`}
+              >
+                <img
+                  src={AURA_IMAGES[bg]}
+                  alt={`Aura ${bg.slice(-1)} preview`}
+                  className="w-full h-full object-cover"
+                />
+              </button>
+            ))}
           </div>
         </section>
 
