@@ -12,23 +12,20 @@ const mockContact = {
   health: "thriving" as const,
 };
 
-type BackgroundOption = "none" | "aura1" | "aura2" | "aura3" | "aura4" | "aura5";
+type BackgroundOption = "none" | "aura1" | "aura2";
 
 // Aura background image paths (SVG for crisp scaling)
 const AURA_IMAGES: Record<Exclude<BackgroundOption, "none">, string> = {
-  aura1: "/backgrounds/blob-1.svg",
-  aura2: "/backgrounds/aad895_49c557.svg",
-  aura3: "/backgrounds/f7f4a4_60d66d.svg",
-  aura4: "/backgrounds/90AC82_9fdd81_gradient.svg",
-  aura5: "/backgrounds/f7f4a4_60d66d_gradient.svg",
+  aura1: "/backgrounds/aad895_49c557_blob_scene_3k_square.svg",
+  aura2: "/backgrounds/60d66d_f7f4a4_blob_scene_3k_square.svg",
 };
 
 export default function DesignTestPage() {
   const [activeBackground, setActiveBackground] =
     useState<BackgroundOption>("none");
   const [blurLevel, setBlurLevel] = useState<8 | 12 | 16>(12);
-  const [translucency, setTranslucency] = useState<40 | 50 | 60>(50);
-  const [borderStrength, setBorderStrength] = useState<30 | 40 | 50>(40);
+  const [translucency, setTranslucency] = useState<40 | 50 | 60>(40);
+  const [borderStrength, setBorderStrength] = useState<30 | 40 | 50>(50);
   const [pressScale, setPressScale] = useState<0.97 | 0.98 | 0.99>(0.98);
 
   // Get background style - either solid color or image
@@ -379,7 +376,7 @@ export default function DesignTestPage() {
 
           <div className="flex flex-wrap gap-3">
             {(
-              ["none", "aura1", "aura2", "aura3", "aura4", "aura5"] as BackgroundOption[]
+              ["none", "aura1", "aura2"] as BackgroundOption[]
             ).map((bg) => (
               <button
                 key={bg}
@@ -396,12 +393,12 @@ export default function DesignTestPage() {
           </div>
 
           {/* Thumbnail previews */}
-          <div className="grid grid-cols-5 gap-3">
-            {(["aura1", "aura2", "aura3", "aura4", "aura5"] as const).map((bg) => (
+          <div className="grid grid-cols-2 gap-3 max-w-md">
+            {(["aura1", "aura2"] as const).map((bg) => (
               <button
                 key={bg}
                 onClick={() => setActiveBackground(bg)}
-                className={`aspect-video rounded-xl overflow-hidden border-2 transition-all ${
+                className={`aspect-square rounded-xl overflow-hidden border-2 transition-all ${
                   activeBackground === bg
                     ? "border-emerald-500 ring-2 ring-emerald-200"
                     : "border-transparent hover:border-stone-300"
