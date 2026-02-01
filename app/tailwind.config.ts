@@ -15,6 +15,9 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
         serif: ['var(--font-playfair)', 'Georgia', 'serif'],
+        // New fonts for design testing (Phase 0)
+        'sans-new': ['var(--font-karla)', 'system-ui', 'sans-serif'],
+        'serif-new': ['var(--font-cormorant)', 'Georgia', 'serif'],
       },
       borderRadius: {
         '4xl': '2rem',
