@@ -12,21 +12,21 @@ const mockContact = {
   health: "thriving" as const,
 };
 
-type BackgroundOption = "none" | "aura1" | "aura2";
+type BackgroundOption = "none" | "grove";
 
-// Aura background image paths (SVG for crisp scaling)
-const AURA_IMAGES: Record<Exclude<BackgroundOption, "none">, string> = {
-  aura1: "/backgrounds/aad895_49c557_blob_scene_3k_square.svg",
-  aura2: "/backgrounds/60d66d_f7f4a4_blob_scene_3k_square.svg",
+// Background paths
+const BACKGROUNDS: Record<Exclude<BackgroundOption, "none">, string> = {
+  grove: "/backgrounds/aad895_49c557_blob_scene_3k_square.svg",
 };
 
 export default function DesignTestPage() {
   const [activeBackground, setActiveBackground] =
-    useState<BackgroundOption>("none");
-  const [blurLevel, setBlurLevel] = useState<8 | 12 | 16>(12);
-  const [translucency, setTranslucency] = useState<40 | 50 | 60>(40);
-  const [borderStrength, setBorderStrength] = useState<30 | 40 | 50>(50);
-  const [pressScale, setPressScale] = useState<0.97 | 0.98 | 0.99>(0.98);
+    useState<BackgroundOption>("grove");
+  // Locked settings from Phase 0
+  const blurLevel = 12;
+  const translucency = 60;
+  const borderStrength = 50;
+  const pressScale = 0.98;
 
   // Get background style - either solid color or image
   const getBackgroundStyle = () => {
@@ -34,26 +34,10 @@ export default function DesignTestPage() {
       return { backgroundColor: "#FDFCFB" };
     }
     return {
-      backgroundImage: `url(${AURA_IMAGES[activeBackground]})`,
+      backgroundImage: `url(${BACKGROUNDS[activeBackground]})`,
       backgroundSize: "cover",
       backgroundPosition: "center",
     };
-  };
-
-  const getGlassClasses = () => {
-    const bgOpacity =
-      translucency === 40
-        ? "bg-white/40"
-        : translucency === 50
-          ? "bg-white/50"
-          : "bg-white/60";
-    const border =
-      borderStrength === 30
-        ? "border border-white/30"
-        : borderStrength === 40
-          ? "border border-white/40"
-          : "border border-white/50";
-    return `${bgOpacity} ${border} shadow-sm`;
   };
 
   return (
@@ -64,353 +48,168 @@ export default function DesignTestPage() {
       <div className="max-w-4xl mx-auto space-y-12">
         {/* Header */}
         <header className="text-center py-8">
-          <h1 className="font-serif text-4xl text-stone-900 mb-2">
-            Design Testing Playground
+          <h1 className="font-serif text-4xl text-ink-rich mb-2">
+            Grove Design System
           </h1>
-          <p className="text-stone-600">
-            Phase 0: Visual design iteration for Grove
+          <p className="text-ink-muted">
+            Phase 1: Design tokens and CSS utilities
           </p>
-          <p className="text-sm text-stone-400 mt-2">
-            Not linked in nav - dev only
+          <p className="text-sm text-ink-muted/60 mt-2">
+            Dev reference · Not linked in nav
           </p>
         </header>
 
         {/* Section 1: Typography */}
         <section className="space-y-6">
           <h2 className="font-serif text-2xl text-stone-800 border-b border-stone-200 pb-2">
-            1. Typography Comparison
+            1. Typography
           </h2>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Current fonts */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-100">
-              <p className="text-xs uppercase tracking-wide text-stone-400 mb-4">
-                Current: Inter + Playfair Display
-              </p>
-              <h3 className="font-serif text-3xl text-stone-900 mb-3">
-                Your Grove is Flourishing
-              </h3>
-              <h4 className="font-serif text-2xl text-stone-800 mb-3">
-                Sarah Chen
-              </h4>
-              <p className="font-sans text-base text-stone-700 mb-2">
-                Nurture your relationships with intention. Grove helps you
-                remember the details that matter.
-              </p>
-              <p className="font-sans text-sm text-stone-500">
-                Last contact: 3 days ago · Weekly cadence
-              </p>
-            </div>
-
-            {/* New fonts */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-100">
-              <p className="text-xs uppercase tracking-wide text-stone-400 mb-4">
-                New: Karla + Cormorant Garamond
-              </p>
-              <h3 className="font-serif-new text-3xl text-stone-900 mb-3">
-                Your Grove is Flourishing
-              </h3>
-              <h4 className="font-serif-new text-2xl text-stone-800 mb-3">
-                Sarah Chen
-              </h4>
-              <p className="font-sans-new text-base text-stone-700 mb-2">
-                Nurture your relationships with intention. Grove helps you
-                remember the details that matter.
-              </p>
-              <p className="font-sans-new text-sm text-stone-500">
-                Last contact: 3 days ago · Weekly cadence
-              </p>
-            </div>
+          <div className="glass-card rounded-2xl p-6">
+            <p className="text-xs uppercase tracking-wide text-ink-muted mb-4">
+              Cormorant Garamond (headers) + Karla (body)
+            </p>
+            <h3 className="font-serif text-3xl text-ink-rich mb-3">
+              Your Grove is Flourishing
+            </h3>
+            <h4 className="font-serif text-2xl text-ink-rich mb-3">
+              Sarah Chen
+            </h4>
+            <p className="font-sans text-base text-ink-rich mb-2">
+              Nurture your relationships with intention. Grove helps you
+              remember the details that matter.
+            </p>
+            <p className="font-sans text-sm text-ink-muted">
+              Last contact: 3 days ago · Weekly cadence
+            </p>
           </div>
 
-          {/* Header size tests */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-100">
-            <p className="text-xs uppercase tracking-wide text-stone-400 mb-4">
-              Cormorant Garamond Header Sizes
+          {/* Header size reference */}
+          <div className="glass-card rounded-2xl p-6">
+            <p className="text-xs uppercase tracking-wide text-ink-muted mb-4">
+              Header Size Reference (24px minimum for serif)
             </p>
             <div className="space-y-3">
-              <p className="font-serif-new text-[32px] text-stone-900">
+              <p className="font-serif text-[32px] text-ink-rich">
                 32px - Your Grove
               </p>
-              <p className="font-serif-new text-[28px] text-stone-900">
+              <p className="font-serif text-[28px] text-ink-rich">
                 28px - Your Grove
               </p>
-              <p className="font-serif-new text-[24px] text-stone-900">
-                24px - Your Grove (minimum recommended)
+              <p className="font-serif text-[24px] text-ink-rich">
+                24px - Your Grove ✓
               </p>
-              <p className="font-serif-new text-[20px] text-stone-500">
-                20px - Below minimum (not recommended)
+              <p className="font-serif text-[20px] text-ink-muted">
+                20px - Below minimum
               </p>
             </div>
           </div>
         </section>
 
-        {/* Section 2: Glassmorphism */}
+        {/* Section 2: Glassmorphism Layers (Option D: Layered Depth) */}
         <section className="space-y-6">
           <h2 className="font-serif text-2xl text-stone-800 border-b border-stone-200 pb-2">
-            2. Glassmorphism Cards
+            2. Glassmorphism Layers
           </h2>
 
-          {/* Controls */}
-          <div className="flex flex-wrap gap-4 p-4 bg-stone-100 rounded-xl">
-            <div>
-              <label className="text-xs text-stone-500 block mb-1">
-                Blur Level
-              </label>
-              <select
-                value={blurLevel}
-                onChange={(e) => setBlurLevel(Number(e.target.value) as 8 | 12 | 16)}
-                className="px-3 py-1.5 rounded-lg border border-stone-200 text-sm"
-              >
-                <option value={8}>8px (subtle)</option>
-                <option value={12}>12px (medium)</option>
-                <option value={16}>16px (strong)</option>
-              </select>
+          {/* Locked settings display */}
+          <div className="flex flex-wrap gap-4 p-4 bg-white/60 border border-white/50 rounded-xl">
+            <div className="text-sm">
+              <span className="text-stone-500">Blur:</span>{" "}
+              <span className="font-medium text-stone-800">{blurLevel}px</span>
             </div>
-            <div>
-              <label className="text-xs text-stone-500 block mb-1">
-                Translucency
-              </label>
-              <select
-                value={translucency}
-                onChange={(e) =>
-                  setTranslucency(Number(e.target.value) as 40 | 50 | 60)
-                }
-                className="px-3 py-1.5 rounded-lg border border-stone-200 text-sm"
-              >
-                <option value={40}>40% (more glass)</option>
-                <option value={50}>50% (balanced)</option>
-                <option value={60}>60% (more solid)</option>
-              </select>
+            <div className="text-sm">
+              <span className="text-stone-500">Translucency:</span>{" "}
+              <span className="font-medium text-stone-800">{translucency}%</span>
             </div>
-            <div>
-              <label className="text-xs text-stone-500 block mb-1">
-                Border Strength
-              </label>
-              <select
-                value={borderStrength}
-                onChange={(e) =>
-                  setBorderStrength(Number(e.target.value) as 30 | 40 | 50)
-                }
-                className="px-3 py-1.5 rounded-lg border border-stone-200 text-sm"
-              >
-                <option value={30}>30% (subtle)</option>
-                <option value={40}>40% (medium)</option>
-                <option value={50}>50% (strong)</option>
-              </select>
+            <div className="text-sm">
+              <span className="text-stone-500">Border:</span>{" "}
+              <span className="font-medium text-stone-800">{borderStrength}%</span>
+            </div>
+            <div className="text-sm">
+              <span className="text-stone-500">Press Scale:</span>{" "}
+              <span className="font-medium text-stone-800">{pressScale}</span>
             </div>
           </div>
 
-          {/* Glass cards - Border Styles (reduced shadow, enhanced borders) */}
-          <p className="text-stone-500 text-sm font-medium">Border Treatments:</p>
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* Subtle border */}
-            <div className="backdrop-blur-[12px] bg-white/50 border border-white/30 rounded-3xl p-5 shadow-sm">
-              <p className="text-xs uppercase tracking-wide text-stone-500 mb-3">
-                Subtle: border-white/30
+          {/* Layer examples using new CSS utilities */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* glass-background */}
+            <div className="glass-background rounded-2xl p-4">
+              <p className="text-xs uppercase tracking-wide text-ink-muted mb-2">
+                glass-background
               </p>
-              <h3 className="font-serif-new text-xl text-stone-900 mb-2">
-                {mockContact.name}
-              </h3>
-              <p className="text-sm text-stone-600">{mockContact.location}</p>
-              <div className="flex gap-2 mt-3">
-                {mockContact.preferences.slice(0, 2).map((pref) => (
-                  <span
-                    key={pref}
-                    className="px-2 py-1 bg-white/40 border border-white/40 rounded-full text-xs text-stone-600"
-                  >
-                    {pref}
-                  </span>
-                ))}
-              </div>
+              <p className="text-sm text-ink-rich">blur: 12px</p>
+              <p className="text-xs text-ink-muted">Page overlays</p>
             </div>
 
-            {/* Medium border */}
-            <div className="backdrop-blur-[12px] bg-white/50 border border-white/50 rounded-3xl p-5 shadow-sm">
-              <p className="text-xs uppercase tracking-wide text-stone-500 mb-3">
-                Medium: border-white/50
+            {/* glass-container */}
+            <div className="glass-container p-4">
+              <p className="text-xs uppercase tracking-wide text-ink-muted mb-2">
+                glass-container
               </p>
-              <h3 className="font-serif-new text-xl text-stone-900 mb-2">
-                {mockContact.name}
-              </h3>
-              <p className="text-sm text-stone-600">{mockContact.location}</p>
-              <div className="flex gap-2 mt-3">
-                {mockContact.preferences.slice(0, 2).map((pref) => (
-                  <span
-                    key={pref}
-                    className="px-2 py-1 bg-white/40 border border-white/50 rounded-full text-xs text-stone-600"
-                  >
-                    {pref}
-                  </span>
-                ))}
-              </div>
+              <p className="text-sm text-ink-rich">blur: 4px</p>
+              <p className="text-xs text-ink-muted">Dashboard sections</p>
             </div>
 
-            {/* Strong border with gradient effect */}
-            <div className="backdrop-blur-[12px] bg-white/50 border-2 border-white/60 rounded-3xl p-5 shadow-sm ring-1 ring-white/20 ring-inset">
-              <p className="text-xs uppercase tracking-wide text-stone-500 mb-3">
-                Strong: 2px + inner ring
+            {/* glass-card */}
+            <div className="glass-card rounded-2xl p-4">
+              <p className="text-xs uppercase tracking-wide text-ink-muted mb-2">
+                glass-card
               </p>
-              <h3 className="font-serif-new text-xl text-stone-900 mb-2">
-                {mockContact.name}
-              </h3>
-              <p className="text-sm text-stone-600">{mockContact.location}</p>
-              <div className="flex gap-2 mt-3">
-                {mockContact.preferences.slice(0, 2).map((pref) => (
-                  <span
-                    key={pref}
-                    className="px-2 py-1 bg-white/40 border border-white/60 rounded-full text-xs text-stone-600"
-                  >
-                    {pref}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Glass cards - Translucency comparison (updated with new border style) */}
-          <p className="text-stone-500 text-sm font-medium mt-8">Translucency Levels (with medium border):</p>
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* 40% translucency */}
-            <div className="backdrop-blur-[12px] bg-white/40 border border-white/40 rounded-3xl p-5 shadow-sm">
-              <p className="text-xs uppercase tracking-wide text-stone-500 mb-3">
-                40% Translucency
-              </p>
-              <h3 className="font-serif-new text-xl text-stone-900 mb-2">
-                {mockContact.name}
-              </h3>
-              <p className="text-sm text-stone-600">{mockContact.location}</p>
-              <div className="flex gap-2 mt-3">
-                {mockContact.preferences.slice(0, 2).map((pref) => (
-                  <span
-                    key={pref}
-                    className="px-2 py-1 bg-white/30 border border-white/40 rounded-full text-xs text-stone-600"
-                  >
-                    {pref}
-                  </span>
-                ))}
-              </div>
+              <p className="text-sm text-ink-rich">no blur</p>
+              <p className="text-xs text-ink-muted">Contact cards, list items</p>
             </div>
 
-            {/* 60% translucency */}
-            <div className="backdrop-blur-[12px] bg-white/60 border border-white/40 rounded-3xl p-5 shadow-sm">
-              <p className="text-xs uppercase tracking-wide text-stone-500 mb-3">
-                60% Translucency
+            {/* glass-floating */}
+            <div className="glass-floating rounded-2xl p-4">
+              <p className="text-xs uppercase tracking-wide text-ink-muted mb-2">
+                glass-floating
               </p>
-              <h3 className="font-serif-new text-xl text-stone-900 mb-2">
-                {mockContact.name}
-              </h3>
-              <p className="text-sm text-stone-600">{mockContact.location}</p>
-              <div className="flex gap-2 mt-3">
-                {mockContact.preferences.slice(0, 2).map((pref) => (
-                  <span
-                    key={pref}
-                    className="px-2 py-1 bg-white/40 border border-white/40 rounded-full text-xs text-stone-600"
-                  >
-                    {pref}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* 80% translucency */}
-            <div className="backdrop-blur-[12px] bg-white/80 border border-white/40 rounded-3xl p-5 shadow-sm">
-              <p className="text-xs uppercase tracking-wide text-stone-500 mb-3">
-                80% Translucency
-              </p>
-              <h3 className="font-serif-new text-xl text-stone-900 mb-2">
-                {mockContact.name}
-              </h3>
-              <p className="text-sm text-stone-600">{mockContact.location}</p>
-              <div className="flex gap-2 mt-3">
-                {mockContact.preferences.slice(0, 2).map((pref) => (
-                  <span
-                    key={pref}
-                    className="px-2 py-1 bg-white/50 border border-white/40 rounded-full text-xs text-stone-600"
-                  >
-                    {pref}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Dynamic glass card with controls */}
-          <p className="text-stone-500 text-sm font-medium mt-8">Dynamic Card (adjust controls above):</p>
-          <div
-            className={`rounded-3xl p-6 ${getGlassClasses()}`}
-            style={{
-              backdropFilter: `blur(${blurLevel}px)`,
-            }}
-          >
-            <p className="text-xs uppercase tracking-wide text-stone-500 mb-3">
-              Blur: {blurLevel}px · Translucency: {translucency}% · Border: {borderStrength}%
-            </p>
-            <h3 className="font-serif-new text-2xl text-stone-900 mb-2">
-              {mockContact.name}
-            </h3>
-            <p className="text-stone-600 mb-4">{mockContact.location}</p>
-            <div className="flex flex-wrap gap-2">
-              {mockContact.preferences.map((pref) => (
-                <span
-                  key={pref}
-                  className={`px-3 py-1.5 bg-white/40 rounded-full text-sm text-stone-700 border border-white/${borderStrength}`}
-                >
-                  {pref}
-                </span>
-              ))}
+              <p className="text-sm text-ink-rich">blur: 12px + shadow</p>
+              <p className="text-xs text-ink-muted">FAB, modals</p>
             </div>
           </div>
         </section>
 
-        {/* Section 3: Backgrounds */}
+        {/* Section 3: Background */}
         <section className="space-y-6">
           <h2 className="font-serif text-2xl text-stone-800 border-b border-stone-200 pb-2">
-            3. Aura Backgrounds
+            3. Grove Background
           </h2>
 
           <p className="text-stone-600 text-sm">
-            Select a background to see how glassmorphism looks against it.
-            These are AI-generated aura images with the multi-color chord aesthetic.
+            Selected background: Sage-to-green gradient (#aad895 → #49c557).
+            Use the <code className="bg-stone-100 px-1 rounded">grove-bg</code> CSS class.
           </p>
 
           <div className="flex flex-wrap gap-3">
-            {(
-              ["none", "aura1", "aura2"] as BackgroundOption[]
-            ).map((bg) => (
+            {(["none", "grove"] as BackgroundOption[]).map((bg) => (
               <button
                 key={bg}
                 onClick={() => setActiveBackground(bg)}
-                className={`px-4 py-2 rounded-xl text-sm transition-all ${
+                className={`px-4 py-2 rounded-xl text-sm transition-all soft-press ${
                   activeBackground === bg
-                    ? "bg-emerald-900 text-white"
+                    ? "bg-grove-primary text-white"
                     : "bg-white border border-stone-200 text-stone-700 hover:border-emerald-300"
                 }`}
               >
-                {bg === "none" ? "No Background" : `Aura ${bg.slice(-1)}`}
+                {bg === "none" ? "No Background" : "Grove Background"}
               </button>
             ))}
           </div>
 
-          {/* Thumbnail previews */}
-          <div className="grid grid-cols-2 gap-3 max-w-md">
-            {(["aura1", "aura2"] as const).map((bg) => (
-              <button
-                key={bg}
-                onClick={() => setActiveBackground(bg)}
-                className={`aspect-square rounded-xl overflow-hidden border-2 transition-all ${
-                  activeBackground === bg
-                    ? "border-emerald-500 ring-2 ring-emerald-200"
-                    : "border-transparent hover:border-stone-300"
-                }`}
-              >
-                <img
-                  src={AURA_IMAGES[bg]}
-                  alt={`Aura ${bg.slice(-1)} preview`}
-                  className="w-full h-full object-cover"
-                />
-              </button>
-            ))}
+          {/* Preview */}
+          <div className="max-w-xs">
+            <div
+              className="aspect-square rounded-xl overflow-hidden border-2 border-grove-primary ring-2 ring-emerald-200"
+            >
+              <img
+                src={BACKGROUNDS.grove}
+                alt="Grove background preview"
+                className="w-full h-full object-cover"
+              />
+            </div>
           </div>
         </section>
 
@@ -420,236 +219,128 @@ export default function DesignTestPage() {
             4. Soft Press Animations
           </h2>
 
-          {/* Scale control */}
-          <div className="flex gap-4 p-4 bg-stone-100 rounded-xl">
-            <div>
-              <label className="text-xs text-stone-500 block mb-1">
-                Press Scale
-              </label>
-              <select
-                value={pressScale}
-                onChange={(e) =>
-                  setPressScale(Number(e.target.value) as 0.97 | 0.98 | 0.99)
-                }
-                className="px-3 py-1.5 rounded-lg border border-stone-200 text-sm"
-              >
-                <option value={0.97}>0.97 (more cushion)</option>
-                <option value={0.98}>0.98 (balanced)</option>
-                <option value={0.99}>0.99 (subtle)</option>
-              </select>
-            </div>
-          </div>
-
           <p className="text-stone-600 text-sm">
-            Click/tap each button to feel the soft press effect:
+            Use the <code className="bg-stone-100 px-1 rounded">soft-press</code> CSS class.
+            Click/tap each button to feel the effect (scale: {pressScale}):
           </p>
 
           <div className="grid md:grid-cols-3 gap-6">
             {/* Primary button */}
-            <button
-              className="bg-emerald-900 text-white px-6 py-4 rounded-2xl font-medium transition-transform duration-150 ease-out hover:bg-emerald-800"
-              style={{
-                transform: "scale(1)",
-              }}
-              onMouseDown={(e) =>
-                (e.currentTarget.style.transform = `scale(${pressScale})`)
-              }
-              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.transform = "scale(1)")
-              }
-              onTouchStart={(e) =>
-                (e.currentTarget.style.transform = `scale(${pressScale})`)
-              }
-              onTouchEnd={(e) => (e.currentTarget.style.transform = "scale(1)")}
-            >
+            <button className="bg-grove-primary hover:bg-grove-primary-hover text-white px-6 py-4 rounded-2xl font-medium soft-press">
               Primary Button
             </button>
 
             {/* Secondary button */}
-            <button
-              className="bg-stone-100 text-stone-800 px-6 py-4 rounded-2xl font-medium transition-transform duration-150 ease-out hover:bg-stone-200"
-              style={{
-                transform: "scale(1)",
-              }}
-              onMouseDown={(e) =>
-                (e.currentTarget.style.transform = `scale(${pressScale})`)
-              }
-              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.transform = "scale(1)")
-              }
-              onTouchStart={(e) =>
-                (e.currentTarget.style.transform = `scale(${pressScale})`)
-              }
-              onTouchEnd={(e) => (e.currentTarget.style.transform = "scale(1)")}
-            >
+            <button className="bg-stone-100 hover:bg-stone-200 text-stone-800 px-6 py-4 rounded-2xl font-medium soft-press">
               Secondary Button
             </button>
 
-            {/* Glass button */}
-            <button
-              className="backdrop-blur-[8px] bg-white/60 border border-white/30 text-stone-800 px-6 py-4 rounded-2xl font-medium transition-transform duration-150 ease-out hover:bg-white/70"
-              style={{
-                transform: "scale(1)",
-              }}
-              onMouseDown={(e) =>
-                (e.currentTarget.style.transform = `scale(${pressScale})`)
-              }
-              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.transform = "scale(1)")
-              }
-              onTouchStart={(e) =>
-                (e.currentTarget.style.transform = `scale(${pressScale})`)
-              }
-              onTouchEnd={(e) => (e.currentTarget.style.transform = "scale(1)")}
-            >
+            {/* Glass floating button */}
+            <button className="glass-floating text-stone-800 px-6 py-4 rounded-2xl font-medium soft-press hover:bg-white/70">
               Glass Button
             </button>
           </div>
 
           {/* Card with soft press */}
           <div className="space-y-3">
-            <p className="text-stone-600 text-sm">Card with soft press:</p>
-            <button
-              className="w-full text-left backdrop-blur-[8px] bg-white/60 border border-white/20 rounded-3xl p-5 shadow-lg transition-transform duration-150 ease-out"
-              style={{
-                transform: "scale(1)",
-              }}
-              onMouseDown={(e) =>
-                (e.currentTarget.style.transform = `scale(${pressScale})`)
-              }
-              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.transform = "scale(1)")
-              }
-              onTouchStart={(e) =>
-                (e.currentTarget.style.transform = `scale(${pressScale})`)
-              }
-              onTouchEnd={(e) => (e.currentTarget.style.transform = "scale(1)")}
-            >
-              <h3 className="font-serif-new text-xl text-stone-900 mb-2">
+            <p className="text-stone-600 text-sm">Card with soft press (using glass-card class):</p>
+            <button className="w-full text-left glass-card rounded-3xl p-5 soft-press">
+              <h3 className="font-serif text-xl text-stone-900 mb-2">
                 {mockContact.name}
               </h3>
               <p className="text-sm text-stone-600">{mockContact.location}</p>
-              <p className="text-xs text-emerald-700 mt-2">
+              <p className="text-xs text-grove-thriving mt-2">
                 ✓ Thriving · Last contact {mockContact.lastContact}
               </p>
             </button>
           </div>
         </section>
 
-        {/* Section 5: Combined Preview */}
+        {/* Section 5: Combined Preview (Layered Depth Demo) */}
         <section className="space-y-6">
           <h2 className="font-serif text-2xl text-stone-800 border-b border-stone-200 pb-2">
-            5. Combined Preview
+            5. Layered Depth Preview
           </h2>
 
           <p className="text-stone-600 text-sm">
-            Full preview with all design elements combined:
+            Demonstrates the 4-layer glassmorphism approach:
+            <span className="block mt-1 text-xs text-stone-400">
+              Background (blur 12px) → Container (blur 4px) → Cards (no blur) → Floating (blur 12px)
+            </span>
           </p>
 
-          {/* Mock dashboard preview */}
-          <div className="backdrop-blur-[8px] bg-white/50 border border-white/20 rounded-3xl p-6 shadow-xl">
+          {/* Mock dashboard preview using new CSS classes */}
+          <div className="glass-container p-6 shadow-xl">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="font-serif-new text-2xl text-stone-900">
+              <h2 className="font-serif text-2xl text-ink-rich">
                 Your Grove
               </h2>
-              <button
-                className="bg-emerald-900 text-white px-4 py-2 rounded-xl text-sm font-medium transition-transform duration-150 ease-out"
-                style={{ transform: "scale(1)" }}
-                onMouseDown={(e) =>
-                  (e.currentTarget.style.transform = `scale(${pressScale})`)
-                }
-                onMouseUp={(e) =>
-                  (e.currentTarget.style.transform = "scale(1)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.transform = "scale(1)")
-                }
-              >
+              <button className="bg-grove-primary hover:bg-grove-primary-hover text-white px-4 py-2 rounded-xl text-sm font-medium soft-press">
                 + Add Contact
               </button>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
-              {/* Contact card 1 */}
-              <button
-                className="text-left backdrop-blur-[4px] bg-white/40 border border-white/20 rounded-2xl p-4 transition-transform duration-150 ease-out"
-                style={{ transform: "scale(1)" }}
-                onMouseDown={(e) =>
-                  (e.currentTarget.style.transform = `scale(${pressScale})`)
-                }
-                onMouseUp={(e) =>
-                  (e.currentTarget.style.transform = "scale(1)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.transform = "scale(1)")
-                }
-              >
+              {/* Contact card 1 - Thriving */}
+              <button className="text-left glass-card rounded-2xl p-4 soft-press">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-700 font-medium">
+                  <div className="w-12 h-12 bg-grove-thriving/20 rounded-2xl flex items-center justify-center text-grove-thriving font-medium">
                     SC
                   </div>
                   <div>
-                    <h3 className="font-serif-new text-lg text-stone-900">
+                    <h3 className="font-serif text-lg text-ink-rich">
                       Sarah Chen
                     </h3>
-                    <p className="text-xs text-stone-500">San Francisco</p>
+                    <p className="text-xs text-ink-muted">San Francisco</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <span className="px-2 py-1 bg-emerald-100/60 text-emerald-700 rounded-full text-xs">
+                  <span className="px-2 py-1 bg-grove-thriving/20 text-grove-thriving rounded-full text-xs">
                     Thriving
                   </span>
-                  <span className="px-2 py-1 bg-white/50 text-stone-600 rounded-full text-xs">
+                  <span className="px-2 py-1 bg-white/50 text-ink-muted rounded-full text-xs">
                     3 days ago
                   </span>
                 </div>
               </button>
 
-              {/* Contact card 2 */}
-              <button
-                className="text-left backdrop-blur-[4px] bg-white/40 border border-white/20 rounded-2xl p-4 transition-transform duration-150 ease-out"
-                style={{ transform: "scale(1)" }}
-                onMouseDown={(e) =>
-                  (e.currentTarget.style.transform = `scale(${pressScale})`)
-                }
-                onMouseUp={(e) =>
-                  (e.currentTarget.style.transform = "scale(1)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.transform = "scale(1)")
-                }
-              >
+              {/* Contact card 2 - Parched */}
+              <button className="text-left glass-card rounded-2xl p-4 soft-press">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center text-orange-700 font-medium">
+                  <div className="w-12 h-12 bg-grove-parched/20 rounded-2xl flex items-center justify-center text-grove-parched font-medium">
                     MR
                   </div>
                   <div>
-                    <h3 className="font-serif-new text-lg text-stone-900">
+                    <h3 className="font-serif text-lg text-ink-rich">
                       Marcus Rivera
                     </h3>
-                    <p className="text-xs text-stone-500">Austin, TX</p>
+                    <p className="text-xs text-ink-muted">Austin, TX</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <span className="px-2 py-1 bg-orange-100/60 text-orange-700 rounded-full text-xs">
+                  <span className="px-2 py-1 bg-grove-parched/20 text-grove-parched rounded-full text-xs">
                     Needs attention
                   </span>
-                  <span className="px-2 py-1 bg-white/50 text-stone-600 rounded-full text-xs">
+                  <span className="px-2 py-1 bg-white/50 text-ink-muted rounded-full text-xs">
                     3 weeks ago
                   </span>
                 </div>
               </button>
             </div>
+
+            {/* Floating element demo */}
+            <div className="mt-6 pt-4 border-t border-white/30">
+              <p className="text-xs text-ink-muted mb-3">Floating layer (glass-floating):</p>
+              <div className="glass-floating rounded-2xl p-4 inline-block">
+                <span className="text-sm text-ink-rich">🎙️ Voice Recorder FAB</span>
+              </div>
+            </div>
           </div>
         </section>
 
         {/* Footer */}
-        <footer className="text-center py-8 text-stone-400 text-sm">
-          Design Test Page · Phase 0 of Visual Design Implementation (#31)
+        <footer className="text-center py-8 text-ink-muted/60 text-sm">
+          Grove Design System · Issue #31
         </footer>
       </div>
     </div>
