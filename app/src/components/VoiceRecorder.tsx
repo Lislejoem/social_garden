@@ -249,7 +249,7 @@ export default function VoiceRecorder({
         <div className="relative">
           <button
             onClick={startRecording}
-            className="w-20 h-20 bg-emerald-900 text-white rounded-4xl shadow-2xl flex items-center justify-center hover:scale-110 hover:-rotate-6 active:scale-95 transition-all"
+            className="w-20 h-20 glass-floating bg-grove-primary/90 text-white rounded-4xl flex items-center justify-center hover:scale-110 hover:-rotate-6 soft-press transition-all"
             title="Record a voice note"
           >
             <Mic className="w-10 h-10" />
@@ -261,14 +261,14 @@ export default function VoiceRecorder({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center p-4 md:items-center">
-      <div className="bg-white rounded-4xl w-full max-w-lg shadow-2xl overflow-hidden animate-in slide-in-from-bottom duration-300">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end justify-center p-4 md:items-center">
+      <div className="glass-floating rounded-4xl w-full max-w-lg overflow-hidden animate-in slide-in-from-bottom duration-300">
         {/* Header */}
-        <div className="p-6 border-b border-stone-100 flex items-center justify-between">
+        <div className="p-6 border-b border-white/30 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div
               className={`w-3 h-3 rounded-full ${
-                isRecording ? 'bg-red-500 animate-pulse' : 'bg-stone-300'
+                isRecording ? 'bg-red-500 animate-pulse' : 'bg-ink-muted'
               }`}
             />
             <h3 className="font-serif text-xl font-bold">
@@ -277,7 +277,7 @@ export default function VoiceRecorder({
           </div>
           <button
             onClick={handleCancel}
-            className="p-2 text-stone-400 hover:text-stone-600 rounded-xl hover:bg-stone-50 transition-all"
+            className="p-2 text-ink-muted hover:text-ink-rich rounded-xl hover:bg-white/20 transition-all"
           >
             <X className="w-5 h-5" />
           </button>
@@ -286,7 +286,7 @@ export default function VoiceRecorder({
         {/* Content */}
         <div className="p-6">
           {error && (
-            <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-2xl text-sm">
+            <div className="mb-4 p-4 glass-card bg-red-500/10 text-red-700 rounded-2xl text-sm">
               {error}
             </div>
           )}
@@ -297,7 +297,7 @@ export default function VoiceRecorder({
               {[...Array(5)].map((_, i) => (
                 <div
                   key={i}
-                  className="w-1 bg-emerald-500 rounded-full animate-pulse"
+                  className="w-1 bg-grove-primary rounded-full animate-pulse"
                   style={{
                     height: `${20 + Math.random() * 30}px`,
                     animationDelay: `${i * 0.1}s`,
@@ -311,9 +311,9 @@ export default function VoiceRecorder({
           {/* Transcript */}
           <div className="min-h-[120px] max-h-[200px] overflow-y-auto">
             {transcript ? (
-              <p className="text-stone-700 leading-relaxed">{transcript}</p>
+              <p className="text-ink-rich leading-relaxed">{transcript}</p>
             ) : (
-              <p className="text-stone-400 italic">
+              <p className="text-ink-muted italic">
                 {isRecording
                   ? 'Start speaking...'
                   : 'Press the microphone to start recording'}
@@ -323,11 +323,11 @@ export default function VoiceRecorder({
         </div>
 
         {/* Actions */}
-        <div className="p-6 border-t border-stone-100 flex gap-3">
+        <div className="p-6 border-t border-white/30 flex gap-3">
           {isRecording ? (
             <button
               onClick={stopRecording}
-              className="flex-1 py-4 bg-red-500 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-red-600 transition-all"
+              className="flex-1 py-4 bg-red-500 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-red-600 soft-press transition-all"
             >
               <MicOff className="w-5 h-5" />
               Stop Recording
@@ -336,7 +336,7 @@ export default function VoiceRecorder({
             <>
               <button
                 onClick={startRecording}
-                className="flex-1 py-4 bg-stone-100 text-stone-700 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-stone-200 transition-all"
+                className="flex-1 py-4 bg-white/50 text-ink-rich rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-white/70 soft-press transition-all"
               >
                 <Mic className="w-5 h-5" />
                 Record More
@@ -344,7 +344,7 @@ export default function VoiceRecorder({
               <button
                 onClick={handleSend}
                 disabled={!transcript.trim() || isProcessing}
-                className="flex-1 py-4 bg-emerald-900 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 py-4 bg-grove-primary text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-grove-primary-hover soft-press transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isProcessing ? (
                   <>

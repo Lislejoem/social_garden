@@ -12,13 +12,13 @@ describe('Toast', () => {
   });
 
   describe('success variant', () => {
-    it('renders success message with emerald styling', () => {
+    it('renders success message with grove-primary styling', () => {
       render(<Toast message="Saved successfully" type="success" onClose={() => {}} />);
 
       expect(screen.getByText('Saved successfully')).toBeInTheDocument();
-      // Check for emerald background class on container
+      // Check for grove-primary background class on container
       const container = screen.getByText('Saved successfully').closest('div');
-      expect(container).toHaveClass('bg-emerald-900');
+      expect(container).toHaveClass('bg-grove-primary/90');
     });
 
     it('shows Check icon for success', () => {
@@ -36,7 +36,7 @@ describe('Toast', () => {
 
       expect(screen.getByText('Failed to save')).toBeInTheDocument();
       const container = screen.getByText('Failed to save').closest('div');
-      expect(container).toHaveClass('bg-red-600');
+      expect(container).toHaveClass('bg-red-600/90');
     });
 
     it('shows AlertCircle icon for error', () => {
