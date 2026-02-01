@@ -14,13 +14,13 @@ const mockContact = {
 
 type BackgroundOption = "none" | "aura1" | "aura2" | "aura3" | "aura4" | "aura5";
 
-// Aura background image paths
+// Aura background image paths (SVG for crisp scaling)
 const AURA_IMAGES: Record<Exclude<BackgroundOption, "none">, string> = {
-  aura1: "/backgrounds/aura-1.webp",
-  aura2: "/backgrounds/aura-2.webp",
-  aura3: "/backgrounds/aura-3.webp",
-  aura4: "/backgrounds/aura-4.webp",
-  aura5: "/backgrounds/aura-5.webp",
+  aura1: "/backgrounds/blob-1.svg",
+  aura2: "/backgrounds/aad895_49c557.svg",
+  aura3: "/backgrounds/f7f4a4_60d66d.svg",
+  aura4: "/backgrounds/90AC82_9fdd81_gradient.svg",
+  aura5: "/backgrounds/f7f4a4_60d66d_gradient.svg",
 };
 
 export default function DesignTestPage() {
