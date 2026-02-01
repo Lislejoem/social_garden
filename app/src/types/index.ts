@@ -1,6 +1,6 @@
 /**
  * @file Type Definitions
- * @description Centralized TypeScript interfaces for the Social Garden app.
+ * @description Centralized TypeScript interfaces for the Grove app.
  * All data models, API request/response types, and component props are defined here.
  */
 import type { HealthStatus, Cadence } from '@/lib/health';

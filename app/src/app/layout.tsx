@@ -14,7 +14,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "The Social Garden",
+  title: "Grove",
   description: "Cultivate your meaningful connections",
 };
 

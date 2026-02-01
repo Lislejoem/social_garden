@@ -1,6 +1,6 @@
 # Skill Discovery
 
-**REQUIRED** before creating any new skill for Social Garden. Use to find existing skills, learn from them, and synthesize the best parts into our new skill.
+**REQUIRED** before creating any new skill for Grove. Use to find existing skills, learn from them, and synthesize the best parts into our new skill.
 
 ## When to Use
 
@@ -111,7 +111,7 @@ From each skill, identify and extract:
 Combine the strongest parts into a single cohesive skill:
 - Merge overlapping questions/criteria
 - Remove contradictions (prefer more specific advice)
-- Adapt to Social Garden conventions
+- Adapt to Grove conventions
 - Add project-specific context (Key Files, integration points)
 
 ### Step 5: Document Sources
@@ -237,7 +237,7 @@ gh api repos/owner/repo/contents/SKILL.md -q .content | base64 -d
 gh search repos "SKILL.md <keyword>" --json fullName,description,stargazersCount
 ```
 
-## Integration with Social Garden
+## Integration with Grove
 
 When creating skills for this project:
 - Skills go in `app/.claude/skills/<skill-name>/SKILL.md`

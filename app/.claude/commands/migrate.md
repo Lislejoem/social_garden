@@ -5,7 +5,7 @@ description: Prisma database migration workflow
 
 # Prisma Migration
 
-Database workflow for Social Garden (SQLite).
+Database workflow for Grove (PostgreSQL).
 
 ## Schema Location
 

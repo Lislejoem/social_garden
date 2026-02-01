@@ -411,7 +411,7 @@ export default function DashboardClient({
       <header className="max-w-7xl mx-auto px-6 pt-12 pb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
           <h1 className="text-4xl font-serif font-bold text-stone-800">
-            The Social Garden
+            Grove
           </h1>
           <p className="text-stone-500 mt-1">
             Cultivating {contacts.length} meaningful connection
@@ -444,12 +444,12 @@ export default function DashboardClient({
               <div className="flex-1 text-center md:text-left">
                 <div className="inline-flex items-center gap-2 text-emerald-700 font-bold text-[10px] uppercase tracking-[0.3em] mb-4 px-3 py-1 bg-emerald-50 rounded-full">
                   <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                  Garden Status
+                  Grove Status
                 </div>
                 <h2 className="text-3xl md:text-4xl font-serif font-medium mb-6 leading-tight">
                   {needsWatering === 0 ? (
                     <>
-                      Your garden is{' '}
+                      Your grove is{' '}
                       <span className="text-emerald-700 italic underline decoration-emerald-100 underline-offset-8">
                         thriving
                       </span>
@@ -527,7 +527,7 @@ export default function DashboardClient({
                   Plant a New Connection
                 </p>
                 <p className="text-xs font-sans uppercase tracking-[0.2em] mt-2 opacity-60">
-                  Add to your garden
+                  Add to your grove
                 </p>
               </a>
             )}
@@ -539,7 +539,7 @@ export default function DashboardClient({
               <Plus className="w-12 h-12 text-emerald-300" />
             </div>
             <h2 className="text-2xl font-serif font-bold text-stone-800 mb-2">
-              Your garden is empty
+              Your grove is empty
             </h2>
             <p className="text-stone-500 mb-8 max-w-md mx-auto">
               Start planting connections by recording a voice note or adding

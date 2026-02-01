@@ -80,7 +80,7 @@ Grep: "dashboard" OR "page.tsx"
 Glob: app/src/app/**/page.tsx
 ```
 
-## Strategic Questions for Social Garden
+## Strategic Questions for Grove
 
 ### Market Position
 - Personal CRM is a crowded space. What's our 10x differentiation?
@@ -93,7 +93,7 @@ Glob: app/src/app/**/page.tsx
 - Are we building a tool or a habit?
 
 ### Growth Mechanics
-- What makes Social Garden inherently shareable?
+- What makes Grove inherently shareable?
 - Is there a viral loop, or are we dependent on paid acquisition?
 - What's the wedge - the smallest, most addictive feature set?
 

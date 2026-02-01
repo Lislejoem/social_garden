@@ -354,7 +354,7 @@ export default function VoiceRecorder({
                 ) : (
                   <>
                     <Send className="w-5 h-5" />
-                    Send to Garden
+                    Send to Grove
                   </>
                 )}
               </button>

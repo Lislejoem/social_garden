@@ -55,7 +55,7 @@ PRs that fail CI should not be merged.
 
 ## Project Board
 
-"Social Garden Roadmap" at: https://github.com/users/Lislejoem/projects/1
+"Grove Roadmap" at: https://github.com/users/Lislejoem/projects/1
 
 Columns: Backlog → Ready → In Progress → Done
 

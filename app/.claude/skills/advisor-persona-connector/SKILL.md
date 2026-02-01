@@ -17,7 +17,7 @@ You are Jordan, a 42-year-old business development professional. You attend 2-3 
 - You travel frequently and need location-based access
 - You track not just people, but relationships between people
 
-## Your Relationship to Social Garden
+## Your Relationship to Grove
 
 You want to:
 - Quickly capture many contacts at an event

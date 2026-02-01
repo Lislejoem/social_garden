@@ -7,7 +7,7 @@
 import { openDB, type IDBPDatabase } from 'idb';
 import { v4 as uuidv4 } from 'uuid';
 
-const DB_NAME = 'social-garden-offline';
+const DB_NAME = 'grove-offline';
 const DB_VERSION = 1;
 const STORE_NAME = 'voiceQueue';
 

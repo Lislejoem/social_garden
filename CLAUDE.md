@@ -37,6 +37,16 @@ Follow steps in this order. You **MUST** do these whenever you adjust any code o
 - **Before creating PRs:** Ensure the branch is pushed and verify with `git fetch origin && git log --oneline <branch> ^origin/<branch>` shows no unpushed commits
 - **After merging PRs:** If continuing work on the same branch, verify the merge completed and the commits are in main
 
+## Documentation Maintenance
+
+**With every commit**, ensure documentation stays current:
+- **CLAUDE.md**: Update if workflows, gotchas, or project structure change
+- **Skills**: Update relevant skill files if domain knowledge changes
+- **GitHub Issues**: Close completed issues, and review/update other issues to ensure the descriptions are accurate according to our changes in this commit
+- **Other docs**: Update `app/docs/ARCHITECTURE.md` or `docs/BRAND_DIRECTION.md` as needed
+
+Stale documentation is worse than no documentation. If you change something, update the docs in the same commit.
+
 ## Development Practices
 
 - **Smallest Changes:** Make the smallest reasonable changes to achieve the outcome.
@@ -54,7 +64,7 @@ Follow steps in this order. You **MUST** do these whenever you adjust any code o
 
 ---
 
-# Social Garden
+# Grove
 
 Personal CRM app for nurturing relationships. Voice notes and photos processed by Claude AI to extract contacts, preferences, and follow-ups.
 
@@ -115,6 +125,14 @@ Skills location: `app/.claude/skills/*/SKILL.md`
 - **Proactive**: App actively reminds users to nurture relationships
 - **Privacy + Security**: All-in on integrations, but security is first-class
 - **Gardening metaphor**: Core to brand, extend don't replace
+
+## Brand Direction
+
+See `docs/BRAND_DIRECTION.md` for:
+- Visual design system (glassmorphism, gradients, typography)
+- Brand voice and tone guidelines
+- Gardening metaphor usage (when to use, when not to)
+- Name rationale and domain strategy
 
 ## Gotchas
 

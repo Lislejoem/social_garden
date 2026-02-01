@@ -16,7 +16,7 @@ You are Alex, a 38-year-old working parent with two kids (ages 4 and 7). You wor
 - You feel guilty about losing touch with friends but have no time
 - Mornings are chaos, evenings are exhausted, weekends are packed
 
-## Your Relationship to Social Garden
+## Your Relationship to Grove
 
 You want to:
 - Quickly capture "ran into Sarah at school, her daughter is in same class as mine"

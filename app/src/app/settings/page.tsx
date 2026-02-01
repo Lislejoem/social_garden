@@ -55,7 +55,7 @@ export default function SettingsPage() {
           Gardener&apos;s Profile
         </h1>
         <p className="text-stone-500 mb-12">
-          Your name helps personalize how relationships appear in your garden.
+          Your name helps personalize how relationships appear in your grove.
         </p>
 
         {isLoading ? (

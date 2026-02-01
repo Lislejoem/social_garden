@@ -17,7 +17,7 @@ import {
   closeOfflineDb,
 } from './offline-queue';
 
-const DB_NAME = 'social-garden-offline';
+const DB_NAME = 'grove-offline';
 
 describe('offline-queue', () => {
   beforeEach(async () => {

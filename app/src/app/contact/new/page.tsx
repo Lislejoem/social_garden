@@ -67,7 +67,7 @@ export default function NewContactPage() {
             className="flex items-center gap-2 text-stone-500 hover:text-emerald-800 font-bold transition-all group"
           >
             <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-            <span>Back to Garden</span>
+            <span>Back to Grove</span>
           </Link>
         </div>
       </nav>
@@ -77,7 +77,7 @@ export default function NewContactPage() {
           Plant a New Contact
         </h1>
         <p className="text-stone-500 mb-12">
-          Add someone to your garden. You can always add more details later.
+          Add someone to your grove. You can always add more details later.
         </p>
 
         {error && (

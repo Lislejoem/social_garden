@@ -110,7 +110,7 @@ const ContactCard = React.memo(function ContactCard({
         body: JSON.stringify({ hiddenAt: new Date().toISOString() }),
       });
       if (!response.ok) throw new Error('Failed to hide contact');
-      showToast(`${name} hidden from your garden`);
+      showToast(`${name} hidden from your grove`);
       onHidden?.(id);
     } catch {
       showError('Failed to hide contact. Please try again.');
@@ -125,7 +125,7 @@ const ContactCard = React.memo(function ContactCard({
         body: JSON.stringify({ hiddenAt: null }),
       });
       if (!response.ok) throw new Error('Failed to restore contact');
-      showToast(`${name} restored to your garden`);
+      showToast(`${name} restored to your grove`);
       onRestored?.(id);
     } catch {
       showError('Failed to restore contact. Please try again.');

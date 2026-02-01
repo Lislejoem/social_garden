@@ -179,7 +179,7 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
         body: JSON.stringify({ hiddenAt: new Date().toISOString() }),
       });
       if (!response.ok) throw new Error('Failed to hide contact');
-      showToast(`${contact.name} hidden from your garden`);
+      showToast(`${contact.name} hidden from your grove`);
       router.push('/');
     } catch {
       showToast(`Failed to hide contact. Please try again.`);
@@ -194,7 +194,7 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
         body: JSON.stringify({ hiddenAt: null }),
       });
       if (!response.ok) throw new Error('Failed to restore contact');
-      showToast(`${contact.name} restored to your garden`);
+      showToast(`${contact.name} restored to your grove`);
       router.push('/');
     } catch {
       showToast(`Failed to restore contact. Please try again.`);

@@ -33,12 +33,12 @@ You think in terms of:
 7. Is the brand positioning clear in 5 seconds?
 8. What's the primary acquisition channel, and is it sustainable?
 
-## AARRR Framework for Social Garden
+## AARRR Framework for Grove
 
 ### Acquisition: How do users discover us?
 
 **Questions**:
-- What's the positioning? "Social Garden is ___ for ___"
+- What's the positioning? "Grove is ___ for ___"
 - What search terms would target users use?
 - Is there a content/SEO opportunity (relationship advice, networking tips)?
 - Can users create something shareable (garden visualization)?
@@ -179,7 +179,7 @@ Read: app/docs/ARCHITECTURE.md
 Grep: "tagline" OR "positioning" OR "value prop"
 ```
 
-## Social Garden Growth Opportunities
+## Grove Growth Opportunities
 
 ### Positioning Options
 1. "Remember everyone who matters" - Memory/relationship focus

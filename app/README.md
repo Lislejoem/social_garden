@@ -1,4 +1,4 @@
-# The Social Garden
+# Grove
 
 A Personal CRM that helps you cultivate meaningful connections. Think of your relationships as plants in a garden - some need frequent watering (contact), others thrive with less attention.
 

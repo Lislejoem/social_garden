@@ -7,7 +7,7 @@ Use when deploying to production, managing environment variables, or running dat
 | Component | Service | URL/Details |
 |-----------|---------|-------------|
 | Hosting | Vercel | https://app-five-zeta-92.vercel.app |
-| Database | Neon PostgreSQL | Project: Social Garden |
+| Database | Neon PostgreSQL | Project: Grove |
 | AI | Anthropic Claude API | claude-sonnet-4-20250514 |
 
 ## Vercel CLI
