@@ -142,13 +142,13 @@ export default function EditAvatarModal({
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="relative glass-floating rounded-3xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-stone-100">
-          <h2 className="text-xl font-serif font-bold text-stone-800">Edit Avatar</h2>
+        <div className="flex items-center justify-between p-6 border-b border-white/30">
+          <h2 className="text-xl font-serif font-bold text-ink-rich">Edit Avatar</h2>
           <button
             onClick={onClose}
-            className="p-2 text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded-xl transition-colors"
+            className="p-2 text-stone-400 hover:text-stone-600 hover:bg-white/50 rounded-xl transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -204,8 +204,8 @@ export default function EditAvatarModal({
 
           {/* Manual URL Input */}
           <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-medium text-stone-700">
-              <Link2 className="w-4 h-4 text-violet-600" />
+            <label className="flex items-center gap-2 text-sm font-medium text-ink-rich">
+              <Link2 className="w-4 h-4 text-grove-primary" />
               Manual URL
             </label>
             <input
@@ -232,7 +232,7 @@ export default function EditAvatarModal({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-between p-6 border-t border-stone-100 bg-stone-50">
+        <div className="flex justify-between p-6 border-t border-white/30 bg-white/30">
           <button
             onClick={handleClear}
             disabled={isSaving}
@@ -253,7 +253,7 @@ export default function EditAvatarModal({
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="px-5 py-2.5 bg-emerald-600 text-white text-sm font-medium rounded-xl hover:bg-emerald-700 disabled:opacity-50 flex items-center gap-2 transition-colors"
+              className="px-5 py-2.5 bg-grove-primary text-white text-sm font-medium rounded-xl hover:bg-grove-primary/90 disabled:opacity-50 flex items-center gap-2 transition-colors"
             >
               {isSaving ? (
                 <>

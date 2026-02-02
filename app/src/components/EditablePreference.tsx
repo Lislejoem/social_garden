@@ -102,10 +102,10 @@ export default function EditablePreference({
 
   return (
     <div
-      className={`flex items-center gap-2 p-3 rounded-2xl transition-colors group ${
+      className={`flex items-center gap-2 p-3 glass-card transition-colors group ${
         isAlways
-          ? 'bg-emerald-50 hover:bg-emerald-100/70'
-          : 'bg-red-50 hover:bg-red-100/70'
+          ? 'bg-grove-primary/10 hover:bg-grove-primary/15'
+          : 'bg-red-500/10 hover:bg-red-500/15'
       }`}
     >
       {/* Category Toggle */}
@@ -114,7 +114,7 @@ export default function EditablePreference({
         disabled={isSaving}
         className={`p-1.5 rounded-lg transition-colors shrink-0 ${
           isAlways
-            ? 'text-emerald-600 hover:bg-emerald-200'
+            ? 'text-grove-primary hover:bg-grove-primary/20'
             : 'text-red-600 hover:bg-red-200'
         }`}
         title={`Switch to ${isAlways ? 'NEVER' : 'ALWAYS'}`}
@@ -137,11 +137,11 @@ export default function EditablePreference({
             value={editContent}
             onChange={(e) => setEditContent(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="flex-1 px-2 py-1 bg-white border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="flex-1 px-2 py-1 bg-white border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-grove-primary"
           />
           <button
             onClick={handleSaveContent}
-            className="p-1 text-emerald-600 hover:bg-emerald-100 rounded"
+            className="p-1 text-grove-primary hover:bg-grove-primary/10 rounded"
           >
             <Check className="w-4 h-4" />
           </button>

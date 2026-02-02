@@ -193,10 +193,16 @@ export default function VoicePreviewModal({
   );
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center p-4 md:items-center">
-      <div className="bg-white rounded-4xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom duration-300 max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-end justify-center p-4 md:items-center">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onCancel}
+      />
+      {/* Modal */}
+      <div className="relative glass-floating rounded-4xl w-full max-w-2xl overflow-hidden animate-in slide-in-from-bottom duration-300 max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="p-6 border-b border-stone-100 flex items-center justify-between shrink-0">
+        <div className="p-6 border-b border-white/30 flex items-center justify-between shrink-0">
           <div>
             <h3 className="font-serif text-xl font-bold">Review & Edit</h3>
             <p className="text-sm text-stone-500 mt-1">
@@ -617,7 +623,7 @@ export default function VoicePreviewModal({
         </div>
 
         {/* Actions */}
-        <div className="p-6 border-t border-stone-100 flex gap-3 shrink-0">
+        <div className="p-6 border-t border-white/30 flex gap-3 shrink-0">
           <button
             onClick={onCancel}
             className="flex-1 py-4 bg-stone-100 text-stone-700 rounded-2xl font-bold hover:bg-stone-200 transition-all"
@@ -627,7 +633,7 @@ export default function VoicePreviewModal({
           <button
             onClick={handleSave}
             disabled={isSaving || !data.contactName.trim()}
-            className="flex-1 py-4 bg-emerald-900 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 py-4 bg-grove-primary text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-grove-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSaving ? (
               <>

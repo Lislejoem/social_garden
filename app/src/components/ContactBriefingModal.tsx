@@ -80,23 +80,23 @@ export default function ContactBriefingModal({
       />
 
       {/* Modal */}
-      <div className="relative bg-gradient-to-br from-violet-50 to-indigo-50 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="relative glass-floating rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-violet-100">
+        <div className="flex items-center justify-between p-6 border-b border-white/30">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-violet-100 rounded-2xl text-violet-600">
+            <div className="p-3 bg-grove-primary/10 rounded-2xl text-grove-primary">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-xl font-serif font-bold text-violet-900">
+              <h2 className="text-xl font-serif font-bold text-ink-rich">
                 Conversation Prep
               </h2>
-              <p className="text-sm text-violet-600">{contactName}</p>
+              <p className="text-sm text-grove-primary">{contactName}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {isFromCache && !isLoading && !isRefreshing && briefing && (
-              <span className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-violet-600 bg-violet-100 rounded-full">
+              <span className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-grove-primary bg-grove-primary/10 rounded-full">
                 <Clock className="w-3 h-3" />
                 Cached
               </span>
@@ -105,7 +105,7 @@ export default function ContactBriefingModal({
               <button
                 onClick={handleRefresh}
                 disabled={isRefreshing}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-violet-600 bg-white rounded-xl border border-violet-200 hover:bg-violet-50 transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-grove-primary bg-white/50 rounded-xl border border-grove-primary/20 hover:bg-grove-primary/10 transition-colors disabled:opacity-50"
                 aria-label="Refresh briefing"
               >
                 <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -125,8 +125,8 @@ export default function ContactBriefingModal({
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
           {isLoading && (
             <div className="flex items-center justify-center py-12">
-              <RefreshCw className="w-6 h-6 text-violet-400 animate-spin mr-3" />
-              <span className="text-violet-600">Generating briefing for {contactName}...</span>
+              <RefreshCw className="w-6 h-6 text-grove-primary animate-spin mr-3" />
+              <span className="text-grove-primary">Generating briefing for {contactName}...</span>
             </div>
           )}
 
@@ -135,7 +135,7 @@ export default function ContactBriefingModal({
               <p className="text-red-600 mb-4">Failed to generate briefing. Please try again.</p>
               <button
                 onClick={() => fetchBriefing()}
-                className="flex items-center gap-2 mx-auto px-4 py-2 text-sm font-medium text-violet-600 bg-white rounded-xl border border-violet-200 hover:bg-violet-50 transition-colors"
+                className="flex items-center gap-2 mx-auto px-4 py-2 text-sm font-medium text-grove-primary bg-white/50 rounded-xl border border-grove-primary/20 hover:bg-grove-primary/10 transition-colors"
               >
                 <RefreshCw className="w-4 h-4" />
                 Try Again
@@ -146,8 +146,8 @@ export default function ContactBriefingModal({
           {briefing && !isLoading && (
             <div className={isRefreshing ? 'opacity-50' : ''}>
               {/* Relationship Summary */}
-              <div className="mb-6 p-4 bg-white/60 rounded-2xl">
-                <p className="text-stone-700 leading-relaxed">{briefing.relationshipSummary}</p>
+              <div className="mb-6 p-4 glass-card">
+                <p className="text-ink-rich leading-relaxed">{briefing.relationshipSummary}</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -155,13 +155,13 @@ export default function ContactBriefingModal({
                 {briefing.recentHighlights.length > 0 && (
                   <div>
                     <div className="flex items-center gap-2 mb-3">
-                      <TrendingUp className="w-4 h-4 text-violet-500" />
-                      <h3 className="font-semibold text-violet-900">Recent Highlights</h3>
+                      <TrendingUp className="w-4 h-4 text-grove-primary" />
+                      <h3 className="font-semibold text-ink-rich">Recent Highlights</h3>
                     </div>
                     <ul className="space-y-2">
                       {briefing.recentHighlights.map((highlight, index) => (
-                        <li key={index} className="flex items-start gap-2 text-sm text-stone-600">
-                          <span className="text-violet-400 mt-1">•</span>
+                        <li key={index} className="flex items-start gap-2 text-sm text-ink-muted">
+                          <span className="text-grove-primary mt-1">•</span>
                           {highlight}
                         </li>
                       ))}
@@ -173,13 +173,13 @@ export default function ContactBriefingModal({
                 {briefing.conversationStarters.length > 0 && (
                   <div>
                     <div className="flex items-center gap-2 mb-3">
-                      <MessageCircle className="w-4 h-4 text-violet-500" />
-                      <h3 className="font-semibold text-violet-900">Ask About</h3>
+                      <MessageCircle className="w-4 h-4 text-grove-primary" />
+                      <h3 className="font-semibold text-ink-rich">Ask About</h3>
                     </div>
                     <ul className="space-y-2">
                       {briefing.conversationStarters.map((starter, index) => (
-                        <li key={index} className="flex items-start gap-2 text-sm text-stone-600">
-                          <span className="text-violet-400 mt-1">•</span>
+                        <li key={index} className="flex items-start gap-2 text-sm text-ink-muted">
+                          <span className="text-grove-primary mt-1">•</span>
                           {starter}
                         </li>
                       ))}
@@ -190,15 +190,15 @@ export default function ContactBriefingModal({
 
               {/* Upcoming Milestones */}
               {briefing.upcomingMilestones.length > 0 && (
-                <div className="mt-6 pt-6 border-t border-violet-100">
+                <div className="mt-6 pt-6 border-t border-white/30">
                   <div className="flex items-center gap-2 mb-3">
-                    <Calendar className="w-4 h-4 text-violet-500" />
-                    <h3 className="font-semibold text-violet-900">Remember</h3>
+                    <Calendar className="w-4 h-4 text-grove-primary" />
+                    <h3 className="font-semibold text-ink-rich">Remember</h3>
                   </div>
                   <ul className="space-y-2">
                     {briefing.upcomingMilestones.map((milestone, index) => (
-                      <li key={index} className="flex items-start gap-2 text-sm text-stone-600">
-                        <span className="text-violet-400 mt-1">•</span>
+                      <li key={index} className="flex items-start gap-2 text-sm text-ink-muted">
+                        <span className="text-grove-primary mt-1">•</span>
                         {milestone}
                       </li>
                     ))}
