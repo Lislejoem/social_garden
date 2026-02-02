@@ -145,3 +145,4 @@ See `docs/BRAND_DIRECTION.md` for:
 - Windows NUL files: Bash commands with Windows syntax (e.g., `2>NUL`) can create junk files named "NUL". Delete them if found.
 - Clerk middleware: Place at `src/middleware.ts`, NOT inside `app/` directory
 - Clerk keys: `CLERK_SECRET_KEY` is server-only; `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` is intentionally public (required for frontend SDK)
+- Clerk custom pages: Set `NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in` and `NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up` env vars to use embedded pages instead of Clerk's hosted pages
