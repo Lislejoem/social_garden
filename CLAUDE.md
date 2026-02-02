@@ -70,7 +70,7 @@ Personal CRM app for nurturing relationships. Voice notes and photos processed b
 
 ## Tech Stack
 
-Next.js 14.2 (App Router) • TypeScript 5 • PostgreSQL (Neon) + Prisma • Vercel • Tailwind CSS • Anthropic Claude API
+Next.js 14.2 (App Router) • TypeScript 5 • PostgreSQL (Neon) + Prisma • Clerk Auth • Vercel • Tailwind CSS • Anthropic Claude API
 
 Github repo: `Lislejoem/social_garden`
 
@@ -143,3 +143,5 @@ See `docs/BRAND_DIRECTION.md` for:
 - Prisma migrations: Use `prisma db push` (non-interactive env doesn't support `prisma migrate dev`)
 - DATABASE_URL is in `.env.local`, not `.env` (Prisma looks at `.env` by default)
 - Windows NUL files: Bash commands with Windows syntax (e.g., `2>NUL`) can create junk files named "NUL". Delete them if found.
+- Clerk middleware: Place at `src/middleware.ts`, NOT inside `app/` directory
+- Clerk keys: `CLERK_SECRET_KEY` is server-only; `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` is intentionally public (required for frontend SDK)
