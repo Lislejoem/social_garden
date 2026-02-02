@@ -6,6 +6,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireUserId } from '@/lib/auth';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -18,6 +19,7 @@ interface RouteParams {
  */
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
+    const userId = await requireUserId();
     const { id } = await params;
     const body = await request.json();
     const { content } = body;
@@ -29,9 +31,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Verify contact exists
-    const contact = await prisma.contact.findUnique({
-      where: { id },
+    // Verify contact exists and belongs to user (security pattern)
+    const contact = await prisma.contact.findFirst({
+      where: { id, userId },
     });
 
     if (!contact) {
@@ -43,6 +45,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     const seedling = await prisma.seedling.create({
       data: {
+        userId,
         contactId: id,
         content,
         status: 'ACTIVE',
@@ -51,6 +54,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json(seedling, { status: 201 });
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('Failed to create seedling:', error);
     return NextResponse.json(
       { error: 'Failed to create seedling' },

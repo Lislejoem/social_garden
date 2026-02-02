@@ -12,6 +12,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireUserId } from '@/lib/auth';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -24,9 +25,23 @@ interface RouteParams {
  */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
+    const userId = await requireUserId();
     const { id } = await params;
     const body = await request.json();
     const { content, status } = body;
+
+    // Verify ownership via seedling's own userId (security pattern)
+    const existing = await prisma.seedling.findFirst({
+      where: { id, userId },
+      select: { id: true },
+    });
+
+    if (!existing) {
+      return NextResponse.json(
+        { error: 'Seedling not found' },
+        { status: 404 }
+      );
+    }
 
     const seedling = await prisma.seedling.update({
       where: { id },
@@ -44,6 +59,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json(seedling);
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('Failed to update seedling:', error);
     return NextResponse.json(
       { error: 'Failed to update seedling' },
@@ -58,11 +76,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
  */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
+    const userId = await requireUserId();
     const { id } = await params;
 
-    // Get the seedling first to find the contactId
-    const seedling = await prisma.seedling.findUnique({
-      where: { id },
+    // Verify ownership via seedling's own userId (security pattern)
+    const seedling = await prisma.seedling.findFirst({
+      where: { id, userId },
       select: { contactId: true },
     });
 
@@ -85,6 +104,9 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('Failed to delete seedling:', error);
     return NextResponse.json(
       { error: 'Failed to delete seedling' },

@@ -25,12 +25,14 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireUserId } from '@/lib/auth';
 import { extractFromNote, extractFromImage } from '@/lib/anthropic';
 import { parseDateFromInput, parseRelativeDate } from '@/lib/dates';
 import type { AIExtraction, IngestPreviewResponse } from '@/types';
 
 export async function POST(request: NextRequest) {
   try {
+    const userId = await requireUserId();
     const body = await request.json();
     const { rawInput, imageData, additionalContext, contactId, dryRun, overrides } = body;
 
@@ -67,13 +69,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if contact exists
+    // Check if contact exists (scoped to user)
     let existingContact = null;
     let isNewContact = true;
 
     if (contactId) {
-      existingContact = await prisma.contact.findUnique({
-        where: { id: contactId },
+      // Verify contact ownership (security pattern)
+      existingContact = await prisma.contact.findFirst({
+        where: { id: contactId, userId },
         select: { id: true, name: true, location: true },
       });
 
@@ -85,9 +88,10 @@ export async function POST(request: NextRequest) {
       }
       isNewContact = false;
     } else {
-      // Try to find existing contact by name (case-insensitive)
+      // Try to find existing contact by name (scoped to user)
       const existingContacts = await prisma.contact.findMany({
         where: {
+          userId,
           name: {
             equals: extraction.contactName,
           },
@@ -121,9 +125,10 @@ export async function POST(request: NextRequest) {
         where: { id: existingContact.id },
       });
     } else {
-      // Create new contact
+      // Create new contact with userId
       contact = await prisma.contact.create({
         data: {
+          userId,
           name: extraction.contactName,
           location: extraction.location || null,
         },
@@ -176,6 +181,7 @@ export async function POST(request: NextRequest) {
         if (!existing) {
           await prisma.preference.create({
             data: {
+              userId,
               contactId: contact.id,
               category: pref.category,
               preferenceType: pref.preferenceType || 'PREFERENCE',
@@ -201,6 +207,7 @@ export async function POST(request: NextRequest) {
         if (!existing) {
           await prisma.familyMember.create({
             data: {
+              userId,
               contactId: contact.id,
               name: member.name,
               relation: member.relation,
@@ -216,6 +223,7 @@ export async function POST(request: NextRequest) {
       for (const seedlingContent of extraction.seedlings) {
         await prisma.seedling.create({
           data: {
+            userId,
             contactId: contact.id,
             content: seedlingContent,
             status: 'ACTIVE',
@@ -246,6 +254,7 @@ export async function POST(request: NextRequest) {
 
       await prisma.interaction.create({
         data: {
+          userId,
           contactId: contact.id,
           type: interactionType,
           platform: interactionType === 'MESSAGE' ? (extraction.interactionPlatform || 'text') : null,
@@ -285,6 +294,9 @@ export async function POST(request: NextRequest) {
       updates,
     });
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('Failed to process note:', error);
     return NextResponse.json(
       { error: 'Failed to process note. Please try again.' },

@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import { requireUserId } from '@/lib/auth';
 import {
   calculateHealth,
   getLastInteractionDate,
@@ -14,9 +15,10 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-async function getContact(id: string) {
-  const contact = await prisma.contact.findUnique({
-    where: { id },
+async function getContact(id: string, userId: string) {
+  // Use findFirst with id AND userId for ownership verification (security pattern)
+  const contact = await prisma.contact.findFirst({
+    where: { id, userId },
     include: {
       preferences: true,
       interactions: {
@@ -93,8 +95,9 @@ async function getContact(id: string) {
 }
 
 export default async function ContactPage({ params }: PageProps) {
+  const userId = await requireUserId();
   const { id } = await params;
-  const contact = await getContact(id);
+  const contact = await getContact(id, userId);
 
   if (!contact) {
     notFound();

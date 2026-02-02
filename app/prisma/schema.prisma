@@ -12,6 +12,7 @@ datasource db {
 
 model Contact {
   id                    String    @id @default(cuid())
+  userId                String    // Clerk user ID for multi-tenant isolation
   name                  String
   avatarUrl             String?
   avatarSource          String?   // 'manual' | 'gravatar' | 'linkedin' | 'instagram'
@@ -33,46 +34,63 @@ model Contact {
   interactions  Interaction[]
   seedlings     Seedling[]
   familyMembers FamilyMember[]
+
+  @@unique([userId, name])      // Unique name per user, not globally
+  @@index([userId, updatedAt])  // Common query pattern
+  @@index([userId, hiddenAt])   // Dashboard filter
 }
 
 model Preference {
   id             String  @id @default(cuid())
+  userId         String  // Clerk user ID for multi-tenant isolation
   contactId      String
   category       String  // ALWAYS or NEVER
   preferenceType String  @default("PREFERENCE") // TOPIC or PREFERENCE
   content        String
   contact        Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Interaction {
   id        String   @id @default(cuid())
+  userId    String   // Clerk user ID for multi-tenant isolation
   contactId String
   date      DateTime @default(now())
   type      String   // CALL, MESSAGE, MEET, VOICE
   platform  String?  // For MESSAGE type: text, instagram, telegram, linkedin
   summary   String
   contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Seedling {
   id        String   @id @default(cuid())
+  userId    String   // Clerk user ID for multi-tenant isolation
   contactId String
   content   String
   status    String   @default("ACTIVE") // ACTIVE or PLANTED
   createdAt DateTime @default(now())
   contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model FamilyMember {
   id        String  @id @default(cuid())
+  userId    String  // Clerk user ID for multi-tenant isolation
   contactId String
   name      String
   relation  String
   contact   Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@unique([contactId, name])  // Prevent duplicate family members per contact
+  @@index([userId])
 }
 
 model UserSettings {
-  id        String   @id @default("default") // Single user, always "default"
+  id        String   @id  // This IS the Clerk userId (no default)
   userName  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

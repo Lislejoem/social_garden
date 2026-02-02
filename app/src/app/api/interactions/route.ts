@@ -12,6 +12,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireUserId } from '@/lib/auth';
 
 const VALID_TYPES = ['CALL', 'MESSAGE', 'MEET', 'VOICE'];
 const VALID_PLATFORMS = ['text', 'instagram', 'telegram', 'linkedin'];
@@ -23,6 +24,7 @@ const VALID_PLATFORMS = ['text', 'instagram', 'telegram', 'linkedin'];
  */
 export async function POST(request: NextRequest) {
   try {
+    const userId = await requireUserId();
     const body = await request.json();
     const { contactId, type, platform, summary, date } = body;
 
@@ -56,9 +58,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify contact exists
-    const contact = await prisma.contact.findUnique({
-      where: { id: contactId },
+    // Verify contact exists and belongs to user (security pattern)
+    const contact = await prisma.contact.findFirst({
+      where: { id: contactId, userId },
     });
 
     if (!contact) {
@@ -79,6 +81,7 @@ export async function POST(request: NextRequest) {
 
     const interaction = await prisma.interaction.create({
       data: {
+        userId,
         contactId,
         type,
         platform: type === 'MESSAGE' ? (platform || 'text') : null,
@@ -95,6 +98,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(interaction, { status: 201 });
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('Failed to create interaction:', error);
     return NextResponse.json(
       { error: 'Failed to create interaction' },
