@@ -89,7 +89,13 @@
       "Skill(advisor-startup-ceo)",
       "Skill(advisor-startup-ceo:*)",
       "Bash(git -C \"c:\\\\Users\\\\lisle\\\\Personal Projects\\\\social_garden\" log --oneline GardenDashboard.jsx ProfileView.jsx)",
-      "Bash(if exist NUL del NUL)"
+      "Bash(if exist NUL del NUL)",
+      "Bash(grep:*)",
+      "Skill(advisor-privacy-security)",
+      "Skill(advisor-privacy-security:*)",
+      "Skill(advisor-security-pentest)",
+      "Skill(advisor-security-pentest:*)",
+      "Bash(gh issue comment:*)"
     ]
   }
 }
