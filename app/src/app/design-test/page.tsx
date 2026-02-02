@@ -17,8 +17,8 @@ type BackgroundOption = "none" | "grove" | "forest-sunset" | "forest-dawn";
 // Background paths
 const BACKGROUNDS: Record<Exclude<BackgroundOption, "none">, string> = {
   grove: "/backgrounds/aad895_49c557_blob_scene_3k_square.svg",
-  "forest-sunset": "/backgrounds/Calming forest silhouette at sunset.webp",
-  "forest-dawn": "/backgrounds/Serene forest mist at dawn.webp",
+  "forest-sunset": "/backgrounds/forest-silhouette-sunset.webp",
+  "forest-dawn": "/backgrounds/forest-mist-dawn.webp",
 };
 
 export default function DesignTestPage() {
