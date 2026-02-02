@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Gift, Droplets, Settings } from 'lucide-react';
+import { UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import ContactCard from '@/components/ContactCard';
 import SearchBar from '@/components/SearchBar';
@@ -435,6 +436,13 @@ export default function DashboardClient({
               >
                 <Settings className="w-5 h-5" />
               </Link>
+              <UserButton
+                appearance={{
+                  elements: {
+                    avatarBox: 'w-10 h-10',
+                  },
+                }}
+              />
             </div>
           </header>
 
