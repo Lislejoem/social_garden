@@ -12,11 +12,13 @@ const mockContact = {
   health: "thriving" as const,
 };
 
-type BackgroundOption = "none" | "grove";
+type BackgroundOption = "none" | "grove" | "forest-sunset" | "forest-dawn";
 
 // Background paths
 const BACKGROUNDS: Record<Exclude<BackgroundOption, "none">, string> = {
   grove: "/backgrounds/aad895_49c557_blob_scene_3k_square.svg",
+  "forest-sunset": "/backgrounds/Calming forest silhouette at sunset.webp",
+  "forest-dawn": "/backgrounds/Serene forest mist at dawn.webp",
 };
 
 export default function DesignTestPage() {
@@ -179,37 +181,61 @@ export default function DesignTestPage() {
           </h2>
 
           <p className="text-stone-600 text-sm">
-            Selected background: Sage-to-green gradient (#aad895 → #49c557).
-            Use the <code className="bg-stone-100 px-1 rounded">grove-bg</code> CSS class.
+            Testing background options. Click to preview each with glassmorphism layers.
           </p>
 
           <div className="flex flex-wrap gap-3">
-            {(["none", "grove"] as BackgroundOption[]).map((bg) => (
-              <button
-                key={bg}
-                onClick={() => setActiveBackground(bg)}
-                className={`px-4 py-2 rounded-xl text-sm transition-all soft-press ${
-                  activeBackground === bg
-                    ? "bg-grove-primary text-white"
-                    : "bg-white border border-stone-200 text-stone-700 hover:border-emerald-300"
-                }`}
-              >
-                {bg === "none" ? "No Background" : "Grove Background"}
-              </button>
-            ))}
+            {(["none", "grove", "forest-sunset", "forest-dawn"] as BackgroundOption[]).map((bg) => {
+              const labels: Record<BackgroundOption, string> = {
+                none: "No Background",
+                grove: "Grove (Current)",
+                "forest-sunset": "Forest Sunset",
+                "forest-dawn": "Forest Dawn",
+              };
+              return (
+                <button
+                  key={bg}
+                  onClick={() => setActiveBackground(bg)}
+                  className={`px-4 py-2 rounded-xl text-sm transition-all soft-press ${
+                    activeBackground === bg
+                      ? "bg-grove-primary text-white"
+                      : "bg-white border border-stone-200 text-stone-700 hover:border-emerald-300"
+                  }`}
+                >
+                  {labels[bg]}
+                </button>
+              );
+            })}
           </div>
 
-          {/* Preview */}
-          <div className="max-w-xs">
-            <div
-              className="aspect-square rounded-xl overflow-hidden border-2 border-grove-primary ring-2 ring-emerald-200"
-            >
-              <img
-                src={BACKGROUNDS.grove}
-                alt="Grove background preview"
-                className="w-full h-full object-cover"
-              />
-            </div>
+          {/* Preview thumbnails */}
+          <div className="grid grid-cols-3 gap-4">
+            {(["grove", "forest-sunset", "forest-dawn"] as const).map((bg) => {
+              const labels = {
+                grove: "Grove (Current)",
+                "forest-sunset": "Forest Sunset",
+                "forest-dawn": "Forest Dawn",
+              };
+              const isActive = activeBackground === bg;
+              return (
+                <button
+                  key={bg}
+                  onClick={() => setActiveBackground(bg)}
+                  className={`text-left soft-press ${isActive ? "ring-2 ring-grove-primary ring-offset-2" : ""}`}
+                >
+                  <div className="aspect-square rounded-xl overflow-hidden border border-stone-200">
+                    <img
+                      src={BACKGROUNDS[bg]}
+                      alt={`${labels[bg]} preview`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <p className={`text-xs mt-2 ${isActive ? "text-grove-primary font-medium" : "text-ink-muted"}`}>
+                    {labels[bg]}
+                  </p>
+                </button>
+              );
+            })}
           </div>
         </section>
 
