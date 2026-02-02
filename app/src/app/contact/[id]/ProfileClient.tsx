@@ -120,28 +120,28 @@ const HEALTH_THEMES: Record<
   }
 > = {
   thriving: {
-    color: 'bg-emerald-100',
-    border: 'border-emerald-200',
-    icon: <Flower2 className="w-5 h-5 text-emerald-700" />,
-    text: 'text-emerald-800',
+    color: 'bg-grove-thriving/10',
+    border: 'border-grove-thriving/40',
+    icon: <Flower2 className="w-5 h-5 text-grove-thriving" />,
+    text: 'text-grove-thriving',
   },
   growing: {
-    color: 'bg-emerald-50',
-    border: 'border-emerald-100',
-    icon: <Sprout className="w-5 h-5 text-emerald-600" />,
-    text: 'text-emerald-700',
+    color: 'bg-grove-growing/10',
+    border: 'border-grove-growing/40',
+    icon: <Sprout className="w-5 h-5 text-grove-growing" />,
+    text: 'text-grove-growing',
   },
   thirsty: {
-    color: 'bg-lime-50/50',
-    border: 'border-lime-100',
-    icon: <Leaf className="w-5 h-5 text-lime-600" />,
-    text: 'text-lime-700',
+    color: 'bg-grove-thirsty/10',
+    border: 'border-grove-thirsty/40',
+    icon: <Leaf className="w-5 h-5 text-grove-thirsty" />,
+    text: 'text-grove-thirsty',
   },
   parched: {
-    color: 'bg-orange-50',
-    border: 'border-orange-100',
-    icon: <Droplets className="w-5 h-5 text-orange-600" />,
-    text: 'text-orange-700',
+    color: 'bg-grove-parched/10',
+    border: 'border-grove-parched/40',
+    icon: <Droplets className="w-5 h-5 text-grove-parched" />,
+    text: 'text-grove-parched',
   },
 };
 
@@ -555,13 +555,13 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
   const activeSeedlings = contact.seedlings.filter((s) => s.status === 'ACTIVE');
 
   return (
-    <div className="min-h-screen pb-24">
+    <div className="min-h-screen pb-24 grove-bg">
       {/* Top Navigation Bar */}
-      <nav className="sticky top-0 z-40 bg-[#FDFCFB]/80 backdrop-blur-md border-b border-stone-100 px-6 py-4">
+      <nav className="sticky top-0 z-40 glass-floating border-b border-white/30 px-6 py-4">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <Link
             href="/"
-            className="flex items-center gap-2 text-stone-500 hover:text-emerald-800 font-bold transition-all group"
+            className="flex items-center gap-2 text-ink-muted hover:text-grove-primary font-bold transition-all group"
           >
             <ChevronLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
             <span>Back to Garden</span>
@@ -577,7 +577,8 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
         </div>
       </nav>
 
-      <main className="max-w-6xl mx-auto px-6 mt-12">
+      <main className="max-w-6xl mx-auto px-4 mt-8">
+        <div className="glass-container p-6 md:p-8">
         {/* Header Section */}
         <section className="flex flex-col md:flex-row gap-10 items-start md:items-center mb-12">
           <div className="relative group">
@@ -689,9 +690,9 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
           <div className="lg:col-span-2 space-y-12">
             {/* Essential People */}
             {contact.familyMembers.length > 0 && (
-              <div className="bg-white rounded-5xl p-8 border border-stone-100 shadow-sm relative overflow-hidden">
+              <div className="glass-card rounded-3xl p-8 relative overflow-hidden">
                 <div className="flex items-center gap-3 mb-8">
-                  <div className="p-3 bg-rose-50 rounded-2xl text-rose-600">
+                  <div className="p-3 bg-grove-coral/20 rounded-2xl text-grove-coral">
                     <Users className="w-5 h-5" />
                   </div>
                   <h2 className="text-2xl font-serif font-bold">
@@ -726,12 +727,12 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
             {(alwaysPrefs.length > 0 || neverPrefs.length > 0) && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Always */}
-                <div className="bg-emerald-50/30 rounded-5xl p-8 border border-emerald-100/50">
+                <div className="glass-card bg-grove-primary/5 rounded-3xl p-8">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2 bg-white rounded-xl text-emerald-600 shadow-sm">
+                    <div className="p-2 bg-white/60 rounded-xl text-grove-primary">
                       <Star className="w-4 h-4 fill-current" />
                     </div>
-                    <h3 className="text-xl font-serif font-bold text-emerald-900 italic">
+                    <h3 className="text-xl font-serif font-bold text-grove-primary italic">
                       Always
                     </h3>
                   </div>
@@ -747,19 +748,19 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-stone-400 text-sm italic">
+                    <p className="text-ink-muted text-sm italic">
                       No preferences added yet
                     </p>
                   )}
                 </div>
 
                 {/* Never */}
-                <div className="bg-stone-100/40 rounded-5xl p-8 border border-stone-200/50">
+                <div className="glass-card rounded-3xl p-8">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2 bg-white rounded-xl text-stone-400 shadow-sm">
+                    <div className="p-2 bg-white/60 rounded-xl text-ink-muted">
                       <Wind className="w-4 h-4" />
                     </div>
-                    <h3 className="text-xl font-serif font-bold text-stone-800 italic">
+                    <h3 className="text-xl font-serif font-bold text-ink-rich italic">
                       Never
                     </h3>
                   </div>
@@ -775,7 +776,7 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-stone-400 text-sm italic">
+                    <p className="text-ink-muted text-sm italic">
                       Nothing to avoid recorded
                     </p>
                   )}
@@ -785,12 +786,12 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
 
             {/* Topics of Interest */}
             {topics.length > 0 && (
-              <div className="bg-white rounded-5xl p-8 border border-stone-100 shadow-sm">
+              <div className="glass-card rounded-3xl p-8">
                 <div className="flex items-center gap-3 mb-8">
-                  <div className="p-3 bg-amber-50 rounded-2xl text-amber-600">
+                  <div className="p-3 bg-grove-peach/20 rounded-2xl text-grove-peach">
                     <Zap className="w-5 h-5" />
                   </div>
-                  <h2 className="text-2xl font-serif font-bold">
+                  <h2 className="text-2xl font-serif font-bold text-ink-rich">
                     Topics They Care About
                   </h2>
                 </div>
@@ -798,7 +799,7 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
                   {topics.map((topic) => (
                     <div
                       key={topic.id}
-                      className="px-6 py-3 bg-stone-50 text-stone-700 rounded-2xl border border-stone-100 font-medium"
+                      className="px-6 py-3 bg-white/50 text-ink-rich rounded-2xl border border-white/50 font-medium"
                     >
                       {topic.content}
                     </div>
@@ -818,21 +819,21 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
           {/* Right Column: The Seedling Bed */}
           <div className="space-y-8">
             <div className="sticky top-28">
-              <div className="bg-emerald-900 rounded-5xl p-8 text-white shadow-2xl shadow-emerald-900/20 relative overflow-hidden">
+              <div className="glass-floating bg-grove-primary/90 rounded-3xl p-8 text-white relative overflow-hidden">
                 <div className="relative z-10">
                   <div className="flex items-center gap-3 mb-8">
-                    <Sprout className="w-6 h-6 text-emerald-300" />
+                    <Sprout className="w-6 h-6 text-white/70" />
                     <h2 className="text-2xl font-serif font-bold text-white">
                       The Seedling Bed
                     </h2>
                   </div>
-                  <p className="text-emerald-100/70 text-sm mb-8 italic">
+                  <p className="text-white/60 text-sm mb-8 italic">
                     Future check-ins and ideas to nurture this connection.
                   </p>
 
                   <div className="space-y-4">
                     {activeSeedlings.length === 0 ? (
-                      <p className="text-emerald-100/50 text-sm italic text-center py-4">
+                      <p className="text-white/40 text-sm italic text-center py-4">
                         No seedlings planted yet. Add follow-up ideas!
                       </p>
                     ) : (
@@ -855,6 +856,7 @@ export default function ProfileClient({ contact }: ProfileClientProps) {
               </div>
             </div>
           </div>
+        </div>
         </div>
       </main>
 
@@ -933,7 +935,7 @@ function AddSeedlingButton({ onAdd }: { onAdd: (content: string) => Promise<void
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="What should you follow up on?"
-          className="w-full bg-transparent text-white placeholder:text-emerald-100/50 text-sm resize-none focus:outline-none"
+          className="w-full bg-transparent text-white placeholder:text-white/40 text-sm resize-none focus:outline-none"
           rows={3}
           autoFocus
         />
@@ -943,14 +945,14 @@ function AddSeedlingButton({ onAdd }: { onAdd: (content: string) => Promise<void
               setIsAdding(false);
               setContent('');
             }}
-            className="flex-1 py-2 text-xs font-bold uppercase tracking-widest text-emerald-100/70 hover:text-white transition-colors"
+            className="flex-1 py-2 text-xs font-bold uppercase tracking-widest text-white/60 hover:text-white soft-press transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={isSaving || !content.trim()}
-            className="flex-1 py-2 bg-emerald-700 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-emerald-600 transition-colors disabled:opacity-50"
+            className="flex-1 py-2 bg-white/20 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-white/30 soft-press transition-colors disabled:opacity-50"
           >
             {isSaving ? 'Saving...' : 'Save'}
           </button>
@@ -962,7 +964,7 @@ function AddSeedlingButton({ onAdd }: { onAdd: (content: string) => Promise<void
   return (
     <button
       onClick={() => setIsAdding(true)}
-      className="w-full mt-8 py-4 bg-emerald-800 hover:bg-emerald-700 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition-all"
+      className="w-full mt-8 py-4 bg-white/10 hover:bg-white/20 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 soft-press transition-all"
     >
       <Plus className="w-4 h-4" /> Add Seedling
     </button>

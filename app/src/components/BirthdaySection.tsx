@@ -96,15 +96,15 @@ export default function BirthdaySection({ birthday, birthdayMonth, birthdayDay, 
   // Empty state
   if (!hasBirthday && !isEditing) {
     return (
-      <div className="bg-white rounded-3xl border border-stone-100 p-6 shadow-sm">
+      <div className="glass-card rounded-3xl p-6">
         <div className="flex items-center gap-3 mb-4">
-          <Cake className="w-5 h-5 text-stone-400" />
-          <h3 className="text-lg font-serif font-bold text-stone-800">Birthday</h3>
+          <Cake className="w-5 h-5 text-ink-muted" />
+          <h3 className="text-lg font-serif font-bold text-ink-rich">Birthday</h3>
         </div>
-        <p className="text-stone-400 text-sm mb-4">No birthday set</p>
+        <p className="text-ink-muted text-sm mb-4">No birthday set</p>
         <button
           onClick={() => setIsEditing(true)}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-emerald-700 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-grove-primary bg-grove-primary/10 rounded-xl hover:bg-grove-primary/20 soft-press transition-colors"
         >
           <Plus className="w-4 h-4" />
           Add Birthday
@@ -116,10 +116,10 @@ export default function BirthdaySection({ birthday, birthdayMonth, birthdayDay, 
   // Edit mode
   if (isEditing) {
     return (
-      <div className="bg-white rounded-3xl border border-emerald-200 p-6 shadow-sm">
+      <div className="glass-card rounded-3xl border border-grove-primary/30 p-6">
         <div className="flex items-center gap-3 mb-4">
-          <Cake className="w-5 h-5 text-emerald-600" />
-          <h3 className="text-lg font-serif font-bold text-stone-800">Birthday</h3>
+          <Cake className="w-5 h-5 text-grove-primary" />
+          <h3 className="text-lg font-serif font-bold text-ink-rich">Birthday</h3>
         </div>
         <div className="space-y-4">
           {/* Month and Day selectors */}
@@ -127,7 +127,7 @@ export default function BirthdaySection({ birthday, birthdayMonth, birthdayDay, 
             <select
               value={editMonth}
               onChange={(e) => setEditMonth(Number(e.target.value))}
-              className="flex-1 px-4 py-3 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+              className="flex-1 px-4 py-3 border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-grove-primary bg-white/50"
             >
               {MONTHS.map((month, index) => (
                 <option key={month} value={index + 1}>{month}</option>
@@ -136,7 +136,7 @@ export default function BirthdaySection({ birthday, birthdayMonth, birthdayDay, 
             <select
               value={editDay}
               onChange={(e) => setEditDay(Number(e.target.value))}
-              className="w-24 px-4 py-3 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+              className="w-24 px-4 py-3 border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-grove-primary bg-white/50"
             >
               {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => (
                 <option key={day} value={day}>{day}</option>
@@ -150,9 +150,9 @@ export default function BirthdaySection({ birthday, birthdayMonth, birthdayDay, 
               type="checkbox"
               checked={includeYear}
               onChange={(e) => setIncludeYear(e.target.checked)}
-              className="w-5 h-5 rounded border-stone-300 text-emerald-600 focus:ring-emerald-500"
+              className="w-5 h-5 rounded border-white/50 text-grove-primary focus:ring-grove-primary"
             />
-            <span className="text-sm text-stone-600">I know the year</span>
+            <span className="text-sm text-ink-muted">I know the year</span>
           </label>
 
           {/* Year selector (only if include year is checked) */}
@@ -163,7 +163,7 @@ export default function BirthdaySection({ birthday, birthdayMonth, birthdayDay, 
               onChange={(e) => setEditYear(Number(e.target.value))}
               min={1900}
               max={new Date().getFullYear()}
-              className="w-full px-4 py-3 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full px-4 py-3 border border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-grove-primary bg-white/50"
               placeholder="Year"
             />
           )}
@@ -173,7 +173,7 @@ export default function BirthdaySection({ birthday, birthdayMonth, birthdayDay, 
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-xl hover:bg-emerald-700 disabled:opacity-50 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-grove-primary text-white text-sm font-medium rounded-xl hover:bg-grove-primary-hover soft-press disabled:opacity-50 transition-colors"
             >
               {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
               Save
@@ -181,7 +181,7 @@ export default function BirthdaySection({ birthday, birthdayMonth, birthdayDay, 
             <button
               onClick={handleCancel}
               disabled={isSaving}
-              className="flex items-center gap-2 px-4 py-2 text-stone-600 text-sm font-medium rounded-xl border border-stone-200 hover:bg-stone-50 disabled:opacity-50 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 text-ink-muted text-sm font-medium rounded-xl border border-white/30 hover:bg-white/30 soft-press disabled:opacity-50 transition-colors"
             >
               <X className="w-4 h-4" />
               Cancel
@@ -190,7 +190,7 @@ export default function BirthdaySection({ birthday, birthdayMonth, birthdayDay, 
               <button
                 onClick={handleClear}
                 disabled={isSaving}
-                className="flex items-center gap-2 px-4 py-2 text-red-600 text-sm font-medium rounded-xl hover:bg-red-50 disabled:opacity-50 transition-colors ml-auto"
+                className="flex items-center gap-2 px-4 py-2 text-red-600 text-sm font-medium rounded-xl hover:bg-red-500/10 soft-press disabled:opacity-50 transition-colors ml-auto"
               >
                 Clear
               </button>
@@ -215,15 +215,15 @@ export default function BirthdaySection({ birthday, birthdayMonth, birthdayDay, 
   const isSoon = daysUntil > 0 && daysUntil <= 30;
 
   return (
-    <div className={`rounded-3xl border p-6 shadow-sm ${isToday ? 'bg-amber-50 border-amber-200' : 'bg-white border-stone-100'}`}>
+    <div className={`glass-card rounded-3xl p-6 ${isToday ? 'bg-grove-peach/20 border border-grove-peach/30' : ''}`}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <Cake className={`w-5 h-5 ${isToday ? 'text-amber-600' : 'text-stone-400'}`} />
-          <h3 className="text-lg font-serif font-bold text-stone-800">Birthday</h3>
+          <Cake className={`w-5 h-5 ${isToday ? 'text-grove-peach' : 'text-ink-muted'}`} />
+          <h3 className="text-lg font-serif font-bold text-ink-rich">Birthday</h3>
         </div>
         <button
           onClick={() => setIsEditing(true)}
-          className="p-2 text-stone-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+          className="p-2 text-ink-muted hover:text-grove-primary hover:bg-white/30 rounded-lg soft-press transition-colors"
           title="Edit birthday"
         >
           <Pencil className="w-4 h-4" />
@@ -231,8 +231,8 @@ export default function BirthdaySection({ birthday, birthdayMonth, birthdayDay, 
       </div>
 
       <div className="space-y-2">
-        <p className="text-lg font-medium text-stone-800">{displayDate}</p>
-        <p className="text-stone-500 text-sm">
+        <p className="text-lg font-medium text-ink-rich">{displayDate}</p>
+        <p className="text-ink-muted text-sm">
           {age !== null ? (
             <>{age} years old <span className="mx-2">·</span> </>
           ) : null}
@@ -240,17 +240,17 @@ export default function BirthdaySection({ birthday, birthdayMonth, birthdayDay, 
         </p>
 
         {isToday ? (
-          <div className="flex items-center gap-2 mt-3 text-amber-700 font-medium">
+          <div className="flex items-center gap-2 mt-3 text-grove-peach font-medium">
             <PartyPopper className="w-5 h-5" />
             <span>Happy Birthday!</span>
           </div>
         ) : isSoon ? (
-          <div className="flex items-center gap-2 mt-3 text-emerald-700">
+          <div className="flex items-center gap-2 mt-3 text-grove-primary">
             <PartyPopper className="w-4 h-4" />
             <span className="text-sm">Birthday in {daysUntil} {daysUntil === 1 ? 'day' : 'days'}!</span>
           </div>
         ) : (
-          <p className="text-stone-400 text-sm mt-1">
+          <p className="text-ink-muted text-sm mt-1">
             {daysUntil} days until next birthday
           </p>
         )}
