@@ -261,7 +261,7 @@ export default function VoiceRecorder({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end justify-center p-4 md:items-center">
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-end justify-center p-4 md:items-center">
       <div className="glass-floating rounded-4xl w-full max-w-lg overflow-hidden animate-in slide-in-from-bottom duration-300">
         {/* Header */}
         <div className="p-6 border-b border-white/30 flex items-center justify-between">

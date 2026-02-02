@@ -137,7 +137,7 @@ export default function EditablePreference({
             value={editContent}
             onChange={(e) => setEditContent(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="flex-1 px-2 py-1 bg-white border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-grove-primary"
+            className="flex-1 px-2 py-1 bg-white text-ink-rich border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-grove-primary"
           />
           <button
             onClick={handleSaveContent}
