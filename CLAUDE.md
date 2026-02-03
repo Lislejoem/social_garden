@@ -150,3 +150,4 @@ See `docs/BRAND_DIRECTION.md` for:
 - Multi-tenant queries: Always filter by `userId` - use `findFirst({ where: { id, userId } })` for ownership verification (returns 404, not 403)
 - Child record security: Preference, Interaction, Seedling, FamilyMember have their own `userId` field - verify their userId directly (defense in depth)
 - Vitest mock hoisting: `vi.mock()` is hoisted, so use literal values in mock factory, then declare constants after
+- Server/client auth wrapper: For client pages needing server-side auth, create `page.tsx` as server component calling `requireUserId()`, then render a `*Client.tsx` component (e.g., `NewContactClient.tsx`)

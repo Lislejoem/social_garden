@@ -102,3 +102,50 @@ it('handles POST request', async () => {
   expect(json).toEqual({ success: true });
 });
 ```
+
+## Testing API Route Auth
+
+All API routes use `requireUserId()` for auth. Test both authenticated and unauthenticated cases:
+
+```typescript
+import { GET } from './route';
+import { prisma } from '@/lib/prisma';
+import { auth } from '@clerk/nextjs/server';
+
+// Mock Clerk auth - use literal value since vi.mock is hoisted
+vi.mock('@clerk/nextjs/server', () => ({
+  auth: vi.fn().mockResolvedValue({ userId: 'user_test123' }),
+}));
+
+// Mock Prisma with relevant methods
+vi.mock('@/lib/prisma', () => ({
+  prisma: {
+    contact: { findMany: vi.fn(), findFirst: vi.fn() },
+  },
+}));
+
+const TEST_USER_ID = 'user_test123';
+
+describe('GET /api/resource', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(auth).mockResolvedValue({ userId: TEST_USER_ID } as never);
+  });
+
+  // Test 401 for unauthenticated requests
+  it('returns 401 when not authenticated', async () => {
+    vi.mocked(auth).mockResolvedValueOnce({ userId: null } as never);
+
+    const response = await GET(request);
+    expect(response.status).toBe(401);
+  });
+
+  // Test 404 for cross-tenant access (user can't access other user's data)
+  it('returns 404 when accessing another user\'s resource', async () => {
+    vi.mocked(prisma.contact.findFirst).mockResolvedValue(null);
+
+    const response = await GET(request, { params: Promise.resolve({ id: 'other-user-id' }) });
+    expect(response.status).toBe(404);
+  });
+});
+```
