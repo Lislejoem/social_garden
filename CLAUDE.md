@@ -146,3 +146,7 @@ See `docs/BRAND_DIRECTION.md` for:
 - Clerk middleware: Place at `src/middleware.ts`, NOT inside `app/` directory
 - Clerk keys: `CLERK_SECRET_KEY` is server-only; `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` is intentionally public (required for frontend SDK)
 - Clerk custom pages: Set `NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in` and `NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up` env vars to use embedded pages instead of Clerk's hosted pages
+- Auth helper: Use `requireUserId()` from `@/lib/auth` in all API routes and server components - throws "Unauthorized" if not authenticated
+- Multi-tenant queries: Always filter by `userId` - use `findFirst({ where: { id, userId } })` for ownership verification (returns 404, not 403)
+- Child record security: Preference, Interaction, Seedling, FamilyMember have their own `userId` field - verify their userId directly (defense in depth)
+- Vitest mock hoisting: `vi.mock()` is hoisted, so use literal values in mock factory, then declare constants after

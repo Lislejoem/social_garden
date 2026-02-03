@@ -1,6 +1,6 @@
 ---
 name: prisma-patterns
-description: Use when working with database queries, Prisma schema, migrations, or data modeling. Covers SQLite-specific patterns and efficient queries.
+description: Use when working with database queries, Prisma schema, migrations, or data modeling. Covers PostgreSQL patterns, multi-tenant queries, and efficient queries.
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash
 ---
 
@@ -9,30 +9,34 @@ allowed-tools: Read, Grep, Glob, Edit, Write, Bash
 ## Schema Location
 
 Schema file: `app/prisma/schema.prisma`
-Database: SQLite at `app/prisma/dev.db`
+Database: PostgreSQL (Neon) - cloud only, no local DB
 
 ## Current Models
+
+All models have `userId` for multi-tenant isolation:
 
 ```prisma
 model Contact {
   id        String    @id @default(cuid())
+  userId    String    // Clerk user ID
   name      String
-  avatarUrl String?
-  location  String?
-  birthday  DateTime?
-  cadence   String    @default("REGULARLY")
-  socials   String?   // JSON string
-  cachedBriefing      String?   // JSON of ContactBriefing
-  briefingGeneratedAt DateTime? // For cache invalidation
+  // ... other fields
 
-  preferences   Preference[]
-  interactions  Interaction[]
-  seedlings     Seedling[]
-  familyMembers FamilyMember[]
+  @@unique([userId, name])      // Unique name per user
+  @@index([userId, updatedAt])  // Query optimization
+  @@index([userId, hiddenAt])
+}
+
+model Preference {
+  id        String  @id @default(cuid())
+  userId    String  // Own userId for defense in depth
+  contactId String
+  // ...
+  @@index([userId])
 }
 ```
 
-Related models: Preference, Interaction, Seedling, FamilyMember
+Related models: Preference, Interaction, Seedling, FamilyMember (all have userId)
 
 ## Common Commands
 
@@ -50,22 +54,52 @@ npx prisma studio
 npx prisma db push --force-reset
 ```
 
-## Query Patterns
+## Multi-Tenant Query Patterns
 
-### Include Related Data
+### Always Filter by userId
 ```typescript
-const contact = await prisma.contact.findUnique({
-  where: { id },
-  include: {
-    preferences: true,
-    interactions: { orderBy: { date: 'desc' } },
-    seedlings: true,
-    familyMembers: true,
+const userId = await requireUserId();  // from @/lib/auth
+
+const contacts = await prisma.contact.findMany({
+  where: { userId, hiddenAt: null },
+  orderBy: { updatedAt: 'desc' },
+});
+```
+
+### Ownership Verification (Single Record)
+```typescript
+// Use findFirst with id AND userId - returns 404 for other users' data
+const contact = await prisma.contact.findFirst({
+  where: { id, userId },
+  include: { preferences: true },
+});
+
+if (!contact) {
+  return NextResponse.json({ error: 'Not found' }, { status: 404 });
+}
+```
+
+### Create with userId
+```typescript
+// Always set userId from server-side auth, NEVER from request body
+const contact = await prisma.contact.create({
+  data: {
+    userId,  // From requireUserId()
+    name,
+    // ...
   },
 });
 ```
 
-### Partial Updates
+### Child Record Security
+```typescript
+// Verify child record's own userId, not just parent's
+const preference = await prisma.preference.findFirst({
+  where: { id, userId },  // Check preference's userId directly
+});
+```
+
+## Partial Updates
 ```typescript
 const contact = await prisma.contact.update({
   where: { id },
@@ -76,16 +110,16 @@ const contact = await prisma.contact.update({
 });
 ```
 
-### Cascade Deletes
+## Cascade Deletes
 
 All related models use `onDelete: Cascade`, so deleting a Contact automatically deletes its preferences, interactions, seedlings, and family members.
 
-## SQLite-Specific Notes
+## PostgreSQL Notes
 
 - JSON stored as strings - parse in application code
 - `socials` field: `JSON.stringify(socials)` on save, `JSON.parse()` on read
 - `cachedBriefing` field: same pattern for AI briefing cache
-- No native JSON queries - use application-level filtering
+- DATABASE_URL must be in `.env.local` (not `.env`)
 
 ## Prisma Client Location
 
