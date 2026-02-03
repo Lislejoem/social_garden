@@ -15,6 +15,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireUserId } from '@/lib/auth';
 import { generateBriefing } from '@/lib/anthropic';
 import type { Cadence, ContactBriefing } from '@/types';
 
@@ -30,13 +31,14 @@ interface RouteParams {
  */
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
+    const userId = await requireUserId();
     const { id } = await params;
     const { searchParams } = new URL(request.url);
     const forceRefresh = searchParams.get('forceRefresh') === 'true';
 
-    // Fetch the contact with all related data
-    const contact = await prisma.contact.findUnique({
-      where: { id },
+    // Fetch the contact with all related data (security: verify ownership)
+    const contact = await prisma.contact.findFirst({
+      where: { id, userId },
       include: {
         preferences: true,
         interactions: {
@@ -120,6 +122,9 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       fromCache: false,
     });
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('Failed to generate briefing:', error);
     return NextResponse.json(
       { error: 'Failed to generate briefing' },

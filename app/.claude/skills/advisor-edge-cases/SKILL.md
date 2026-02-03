@@ -80,15 +80,34 @@ You think in terms of:
 - Race conditions in concurrent operations
 - Optimistic updates without rollback on failure
 
-## Key Files to Review
+## How to Find Relevant Files
 
-- `app/src/app/api/ingest/route.ts` - Input validation, error handling
-- `app/src/lib/anthropic.ts` - AI response parsing, error handling
-- `app/src/lib/date-utils.ts` - Date parsing edge cases
-- `app/src/contexts/OfflineQueueContext.tsx` - Offline queue edge cases
-- `app/src/components/VoicePreviewModal.tsx` - Empty extraction handling
-- `app/src/app/DashboardClient.tsx` - Empty state, loading states
-- `app/prisma/schema.prisma` - Field constraints
+When hunting for edge cases, search for:
+
+```bash
+# Input validation and error handling
+Grep: "validate" OR "error" OR "catch" OR "throw"
+Glob: app/src/app/api/**/route.ts
+
+# Data model and constraints
+Read: app/prisma/schema.prisma
+
+# Date parsing and handling
+Grep: "date" OR "Date" OR "parse" OR "format"
+
+# Offline and queue handling
+Grep: "offline" OR "queue" OR "sync" OR "indexeddb"
+
+# Empty states and loading
+Grep: "empty" OR "loading" OR "skeleton" OR "placeholder"
+
+# AI/API response handling
+Grep: "anthropic" OR "parse" OR "json" OR "response"
+
+# Context and state management
+Glob: app/src/contexts/**/*.tsx
+Grep: "createContext" OR "useState" OR "useReducer"
+```
 
 ## Testing Scenarios
 

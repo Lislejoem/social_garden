@@ -3,6 +3,11 @@ import type { NextRequest } from 'next/server';
 import { GET, PUT } from './route';
 import { prisma } from '@/lib/prisma';
 
+// Mock Clerk auth - use literal value since vi.mock is hoisted
+vi.mock('@clerk/nextjs/server', () => ({
+  auth: vi.fn().mockResolvedValue({ userId: 'user_test123' }),
+}));
+
 // Mock Prisma
 vi.mock('@/lib/prisma', () => ({
   prisma: {
@@ -12,6 +17,8 @@ vi.mock('@/lib/prisma', () => ({
   },
 }));
 
+const TEST_USER_ID = 'user_test123';
+
 describe('GET /api/settings', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -19,7 +26,7 @@ describe('GET /api/settings', () => {
 
   it('returns default settings when no record exists', async () => {
     const mockSettings = {
-      id: 'default',
+      id: TEST_USER_ID,
       userName: null,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -30,13 +37,13 @@ describe('GET /api/settings', () => {
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.id).toBe('default');
+    expect(data.id).toBe(TEST_USER_ID);
     expect(data.userName).toBeNull();
   });
 
   it('returns existing settings', async () => {
     const mockSettings = {
-      id: 'default',
+      id: TEST_USER_ID,
       userName: 'Joe',
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -68,7 +75,7 @@ describe('PUT /api/settings', () => {
 
   it('creates settings if not exist (upsert)', async () => {
     const mockSettings = {
-      id: 'default',
+      id: TEST_USER_ID,
       userName: 'Joe',
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -87,15 +94,15 @@ describe('PUT /api/settings', () => {
     expect(response.status).toBe(200);
     expect(data.userName).toBe('Joe');
     expect(prisma.userSettings.upsert).toHaveBeenCalledWith({
-      where: { id: 'default' },
+      where: { id: TEST_USER_ID },
       update: { userName: 'Joe' },
-      create: { id: 'default', userName: 'Joe' },
+      create: { id: TEST_USER_ID, userName: 'Joe' },
     });
   });
 
   it('trims whitespace from userName', async () => {
     const mockSettings = {
-      id: 'default',
+      id: TEST_USER_ID,
       userName: 'Joe',
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -136,7 +143,7 @@ describe('PUT /api/settings', () => {
 
   it('clears userName when empty string provided', async () => {
     const mockSettings = {
-      id: 'default',
+      id: TEST_USER_ID,
       userName: null,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -160,7 +167,7 @@ describe('PUT /api/settings', () => {
 
   it('clears userName when whitespace-only string provided', async () => {
     const mockSettings = {
-      id: 'default',
+      id: TEST_USER_ID,
       userName: null,
       createdAt: new Date(),
       updatedAt: new Date(),

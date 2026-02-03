@@ -53,13 +53,28 @@ You think in terms of:
 - Features copied from other apps without validation
 - Complex state management for simple problems
 
-## Key Files to Review
+## How to Find Relevant Files
 
-- `docs/PRODUCT_VISION.md` - Feature priorities, are they justified?
-- `docs/FUTURE_FEATURES.md` - Scope creep risk
-- `app/prisma/schema.prisma` - Model complexity
-- `app/src/types/index.ts` - Type proliferation
-- `CLAUDE.md` - Development principles
+When reviewing for unnecessary complexity, search for:
+
+```bash
+# Data model complexity
+Read: app/prisma/schema.prisma
+
+# Development principles and priorities
+Read: CLAUDE.md
+
+# Architecture decisions
+Read: app/docs/ARCHITECTURE.md
+
+# Type proliferation
+Grep: "type " OR "interface " --type ts
+Glob: app/src/types/**/*.ts
+
+# Feature complexity (look for large components)
+Glob: app/src/components/**/*.tsx
+Glob: app/src/app/**/*.tsx
+```
 
 ## Questions for Specific Features
 

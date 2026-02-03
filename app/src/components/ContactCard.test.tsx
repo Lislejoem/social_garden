@@ -54,7 +54,7 @@ describe('ContactCard', () => {
       render(<ContactCard {...defaultProps} onHidden={onHidden} />);
 
       openMenu();
-      fireEvent.click(screen.getByText('Hide from Garden'));
+      fireEvent.click(screen.getByText('Hide from Grove'));
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
@@ -70,7 +70,7 @@ describe('ContactCard', () => {
         expect(onHidden).toHaveBeenCalledWith(defaultProps.id);
       });
 
-      expect(mockShowToast).toHaveBeenCalledWith(`${defaultProps.name} hidden from your garden`);
+      expect(mockShowToast).toHaveBeenCalledWith(`${defaultProps.name} hidden from your grove`);
     });
 
     it('does not call onHidden when API fails', async () => {
@@ -82,7 +82,7 @@ describe('ContactCard', () => {
       render(<ContactCard {...defaultProps} onHidden={onHidden} />);
 
       openMenu();
-      fireEvent.click(screen.getByText('Hide from Garden'));
+      fireEvent.click(screen.getByText('Hide from Grove'));
 
       await waitFor(() => {
         expect(mockShowError).toHaveBeenCalledWith('Failed to hide contact. Please try again.');
@@ -103,7 +103,7 @@ describe('ContactCard', () => {
       render(<ContactCard {...defaultProps} isHidden={true} onRestored={onRestored} />);
 
       openMenu();
-      fireEvent.click(screen.getByText('Restore to Garden'));
+      fireEvent.click(screen.getByText('Restore to Grove'));
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
@@ -119,7 +119,7 @@ describe('ContactCard', () => {
         expect(onRestored).toHaveBeenCalledWith(defaultProps.id);
       });
 
-      expect(mockShowToast).toHaveBeenCalledWith(`${defaultProps.name} restored to your garden`);
+      expect(mockShowToast).toHaveBeenCalledWith(`${defaultProps.name} restored to your grove`);
     });
 
     it('does not call onRestored when API fails', async () => {
@@ -131,7 +131,7 @@ describe('ContactCard', () => {
       render(<ContactCard {...defaultProps} isHidden={true} onRestored={onRestored} />);
 
       openMenu();
-      fireEvent.click(screen.getByText('Restore to Garden'));
+      fireEvent.click(screen.getByText('Restore to Grove'));
 
       await waitFor(() => {
         expect(mockShowError).toHaveBeenCalledWith('Failed to restore contact. Please try again.');

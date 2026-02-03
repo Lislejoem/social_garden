@@ -245,7 +245,7 @@ describe('ContactBriefingModal', () => {
     });
 
     // Click the backdrop
-    const backdrop = document.querySelector('.bg-black\\/50');
+    const backdrop = document.querySelector('.bg-black\\/30');
     if (backdrop) {
       fireEvent.click(backdrop);
     }

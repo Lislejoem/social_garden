@@ -59,28 +59,28 @@ const HEALTH_THEMES: Record<
   }
 > = {
   thriving: {
-    color: 'bg-emerald-100',
-    border: 'hover:border-emerald-400',
-    icon: <Flower2 className="w-4 h-4 text-emerald-700" />,
-    badge: 'bg-emerald-200 text-emerald-800',
+    color: 'glass-card bg-grove-thriving/10',
+    border: 'hover:border-grove-thriving/40',
+    icon: <Flower2 className="w-4 h-4 text-grove-thriving" />,
+    badge: 'bg-grove-thriving/20 text-grove-thriving',
   },
   growing: {
-    color: 'bg-emerald-50',
-    border: 'hover:border-emerald-200',
-    icon: <Sprout className="w-4 h-4 text-emerald-600" />,
-    badge: 'bg-emerald-100 text-emerald-700',
+    color: 'glass-card bg-grove-growing/10',
+    border: 'hover:border-grove-growing/40',
+    icon: <Sprout className="w-4 h-4 text-grove-growing" />,
+    badge: 'bg-grove-growing/20 text-grove-growing',
   },
   thirsty: {
-    color: 'bg-lime-50/50',
-    border: 'hover:border-lime-200',
-    icon: <Leaf className="w-4 h-4 text-lime-600" />,
-    badge: 'bg-lime-100 text-lime-700',
+    color: 'glass-card bg-grove-thirsty/10',
+    border: 'hover:border-grove-thirsty/40',
+    icon: <Leaf className="w-4 h-4 text-grove-thirsty" />,
+    badge: 'bg-grove-thirsty/20 text-grove-thirsty',
   },
   parched: {
-    color: 'bg-orange-50',
-    border: 'hover:border-orange-200',
-    icon: <Droplets className="w-4 h-4 text-orange-600" />,
-    badge: 'bg-orange-100 text-orange-700',
+    color: 'glass-card bg-grove-parched/10',
+    border: 'hover:border-grove-parched/40',
+    icon: <Droplets className="w-4 h-4 text-grove-parched" />,
+    badge: 'bg-grove-parched/20 text-grove-parched',
   },
 };
 
@@ -110,7 +110,7 @@ const ContactCard = React.memo(function ContactCard({
         body: JSON.stringify({ hiddenAt: new Date().toISOString() }),
       });
       if (!response.ok) throw new Error('Failed to hide contact');
-      showToast(`${name} hidden from your garden`);
+      showToast(`${name} hidden from your grove`);
       onHidden?.(id);
     } catch {
       showError('Failed to hide contact. Please try again.');
@@ -125,7 +125,7 @@ const ContactCard = React.memo(function ContactCard({
         body: JSON.stringify({ hiddenAt: null }),
       });
       if (!response.ok) throw new Error('Failed to restore contact');
-      showToast(`${name} restored to your garden`);
+      showToast(`${name} restored to your grove`);
       onRestored?.(id);
     } catch {
       showError('Failed to restore contact. Please try again.');
@@ -148,7 +148,7 @@ const ContactCard = React.memo(function ContactCard({
   return (
     <Link
       href={`/contact/${id}`}
-      className={`block relative group p-6 rounded-5xl transition-all duration-500 border-2 border-transparent cursor-pointer active:scale-[0.99] ${theme.border} hover:shadow-2xl hover:shadow-emerald-900/5 ${theme.color}`}
+      className={`block relative group p-6 rounded-3xl transition-all duration-500 cursor-pointer soft-press ${theme.border} hover:shadow-xl hover:shadow-emerald-900/5 ${theme.color}`}
     >
       <div className="flex justify-between items-start mb-6">
         <div className="flex items-center gap-4">
@@ -157,10 +157,10 @@ const ContactCard = React.memo(function ContactCard({
               <img
                 src={avatarUrl}
                 alt={name}
-                className="w-16 h-16 rounded-3xl object-cover shadow-inner ring-4 ring-white"
+                className="w-16 h-16 rounded-3xl object-cover shadow-inner ring-2 ring-white/80"
               />
             ) : (
-              <div className="w-16 h-16 rounded-3xl bg-stone-200 ring-4 ring-white flex items-center justify-center text-stone-500 text-xl font-bold">
+              <div className="w-16 h-16 rounded-3xl bg-stone-200 ring-2 ring-white/80 flex items-center justify-center text-stone-500 text-xl font-bold">
                 {name.charAt(0).toUpperCase()}
               </div>
             )}
@@ -169,7 +169,7 @@ const ContactCard = React.memo(function ContactCard({
             </div>
           </div>
           <div>
-            <h3 className="text-xl font-serif font-bold text-stone-800 leading-tight">
+            <h3 className="text-xl font-serif font-bold text-ink-rich leading-tight">
               {name}
             </h3>
             <div className="flex items-center gap-2 mt-1">
@@ -201,7 +201,7 @@ const ContactCard = React.memo(function ContactCard({
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="p-3 bg-white rounded-2xl text-stone-400 hover:text-emerald-700 hover:shadow-md transition-all"
+            className="p-3 bg-white/60 rounded-xl text-ink-muted hover:text-grove-primary hover:shadow-md transition-all"
           >
             <Instagram className="w-4 h-4" />
           </a>
@@ -212,7 +212,7 @@ const ContactCard = React.memo(function ContactCard({
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="p-3 bg-white rounded-2xl text-stone-400 hover:text-emerald-700 hover:shadow-md transition-all"
+            className="p-3 bg-white/60 rounded-xl text-ink-muted hover:text-grove-primary hover:shadow-md transition-all"
           >
             <Linkedin className="w-4 h-4" />
           </a>
@@ -221,7 +221,7 @@ const ContactCard = React.memo(function ContactCard({
           <a
             href={`tel:${socials.phone}`}
             onClick={(e) => e.stopPropagation()}
-            className="p-3 bg-white rounded-2xl text-stone-400 hover:text-emerald-700 hover:shadow-md transition-all"
+            className="p-3 bg-white/60 rounded-xl text-ink-muted hover:text-grove-primary hover:shadow-md transition-all"
           >
             <MessageCircle className="w-4 h-4" />
           </a>
@@ -230,7 +230,7 @@ const ContactCard = React.memo(function ContactCard({
           <a
             href={`mailto:${socials.email}`}
             onClick={(e) => e.stopPropagation()}
-            className="p-3 bg-white rounded-2xl text-stone-400 hover:text-emerald-700 hover:shadow-md transition-all"
+            className="p-3 bg-white/60 rounded-xl text-ink-muted hover:text-grove-primary hover:shadow-md transition-all"
           >
             <Mail className="w-4 h-4" />
           </a>

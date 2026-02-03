@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Gift, Droplets, Settings } from 'lucide-react';
+import { UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import ContactCard from '@/components/ContactCard';
 import SearchBar from '@/components/SearchBar';
@@ -407,50 +408,59 @@ export default function DashboardClient({
   const needsWatering = parchedCount + thirstyCount;
 
   return (
-    <div className="min-h-screen pb-24">
-      <header className="max-w-7xl mx-auto px-6 pt-12 pb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div>
-          <h1 className="text-4xl font-serif font-bold text-stone-800">
-            The Social Garden
-          </h1>
-          <p className="text-stone-500 mt-1">
-            Cultivating {contacts.length} meaningful connection
-            {contacts.length !== 1 ? 's' : ''}
-          </p>
-        </div>
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <a
-            href="/contact/new"
-            className="flex-1 md:flex-none flex items-center justify-center gap-2 px-8 py-4 bg-emerald-900 text-white rounded-3xl font-bold shadow-xl shadow-emerald-900/20 hover:bg-emerald-800 hover:-translate-y-0.5 transition-all"
-          >
-            <Plus className="w-5 h-5" />
-            <span>Plant New Contact</span>
-          </a>
-          <Link
-            href="/settings"
-            className="p-3 text-stone-400 hover:text-emerald-800 hover:bg-emerald-50 rounded-2xl transition-all"
-            title="Settings"
-          >
-            <Settings className="w-5 h-5" />
-          </Link>
-        </div>
-      </header>
+    <div className="min-h-screen pb-24 grove-bg">
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="glass-container p-6 md:p-8">
+          <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+            <div>
+              <h1 className="text-4xl font-serif font-bold text-ink-rich">
+                Grove
+              </h1>
+              <p className="text-ink-muted mt-1">
+                Cultivating {contacts.length} meaningful connection
+                {contacts.length !== 1 ? 's' : ''}
+              </p>
+            </div>
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              <a
+                href="/contact/new"
+                className="flex-1 md:flex-none flex items-center justify-center gap-2 px-8 py-4 bg-grove-primary text-white rounded-3xl font-bold shadow-xl shadow-grove-primary/20 hover:bg-grove-primary-hover hover:-translate-y-0.5 soft-press transition-all"
+              >
+                <Plus className="w-5 h-5" />
+                <span>Plant New Contact</span>
+              </a>
+              <Link
+                href="/settings"
+                className="p-3 text-ink-muted hover:text-grove-primary hover:bg-white/30 rounded-2xl transition-all"
+                title="Settings"
+              >
+                <Settings className="w-5 h-5" />
+              </Link>
+              <UserButton
+                appearance={{
+                  elements: {
+                    avatarBox: 'w-10 h-10',
+                  },
+                }}
+              />
+            </div>
+          </header>
 
-      <main className="max-w-7xl mx-auto px-6">
+          <main>
         {/* Morning Digest Banner */}
         {contacts.length > 0 && (
-          <div className="mb-12 bg-white border border-stone-100 rounded-6xl p-10 shadow-sm relative overflow-hidden group">
+          <div className="mb-12 glass-card rounded-4xl p-8 md:p-10 relative overflow-hidden group">
             <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-10">
               <div className="flex-1 text-center md:text-left">
-                <div className="inline-flex items-center gap-2 text-emerald-700 font-bold text-[10px] uppercase tracking-[0.3em] mb-4 px-3 py-1 bg-emerald-50 rounded-full">
-                  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                  Garden Status
+                <div className="inline-flex items-center gap-2 text-grove-primary font-bold text-[10px] uppercase tracking-[0.3em] mb-4 px-3 py-1 bg-grove-primary/10 rounded-full">
+                  <div className="w-1.5 h-1.5 bg-grove-primary rounded-full animate-pulse" />
+                  Grove Status
                 </div>
-                <h2 className="text-3xl md:text-4xl font-serif font-medium mb-6 leading-tight">
+                <h2 className="text-3xl md:text-4xl font-serif font-medium text-ink-rich mb-6 leading-tight">
                   {needsWatering === 0 ? (
                     <>
-                      Your garden is{' '}
-                      <span className="text-emerald-700 italic underline decoration-emerald-100 underline-offset-8">
+                      Your grove is{' '}
+                      <span className="text-grove-primary italic underline decoration-grove-primary/20 underline-offset-8">
                         thriving
                       </span>
                       .
@@ -459,7 +469,7 @@ export default function DashboardClient({
                     <>
                       {needsWatering} plant{needsWatering !== 1 ? 's' : ''} need
                       {needsWatering === 1 ? 's' : ''}{' '}
-                      <span className="text-orange-600 italic underline decoration-orange-100 underline-offset-8">
+                      <span className="text-grove-parched italic underline decoration-grove-parched/20 underline-offset-8">
                         watering
                       </span>
                       .
@@ -468,13 +478,13 @@ export default function DashboardClient({
                 </h2>
                 <div className="flex flex-wrap justify-center md:justify-start gap-4">
                   {parchedCount > 0 && (
-                    <div className="flex items-center gap-2 bg-orange-50 px-5 py-2.5 rounded-2xl border border-orange-100 text-sm font-medium text-orange-700">
+                    <div className="flex items-center gap-2 bg-grove-parched/10 px-5 py-2.5 rounded-2xl border border-grove-parched/20 text-sm font-medium text-grove-parched">
                       <Droplets className="w-4 h-4" />
                       <span>{parchedCount} parched</span>
                     </div>
                   )}
                   {thirstyCount > 0 && (
-                    <div className="flex items-center gap-2 bg-lime-50 px-5 py-2.5 rounded-2xl border border-lime-100 text-sm font-medium text-lime-700">
+                    <div className="flex items-center gap-2 bg-grove-thirsty/10 px-5 py-2.5 rounded-2xl border border-grove-thirsty/20 text-sm font-medium text-grove-thirsty">
                       <Gift className="w-4 h-4" />
                       <span>{thirstyCount} getting thirsty</span>
                     </div>
@@ -482,7 +492,6 @@ export default function DashboardClient({
                 </div>
               </div>
             </div>
-            <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-50 rounded-full blur-[100px] opacity-40 -translate-y-1/2 translate-x-1/3" />
           </div>
         )}
 
@@ -518,16 +527,16 @@ export default function DashboardClient({
             {activeFilter === 'all' && !searchQuery && (
               <a
                 href="/contact/new"
-                className="border-4 border-dashed border-stone-100 rounded-5xl p-10 flex flex-col items-center justify-center text-stone-300 hover:border-emerald-200 hover:text-emerald-700 hover:bg-emerald-50/30 transition-all group min-h-[350px]"
+                className="glass-card border-2 border-dashed border-white/50 rounded-3xl p-10 flex flex-col items-center justify-center text-ink-muted hover:border-grove-primary/40 hover:text-grove-primary hover:bg-white/30 soft-press transition-all group min-h-[350px]"
               >
-                <div className="w-16 h-16 rounded-3xl border-2 border-dashed border-stone-200 flex items-center justify-center mb-6 group-hover:border-emerald-300 group-hover:bg-white transition-all">
+                <div className="w-16 h-16 rounded-3xl border-2 border-dashed border-white/50 flex items-center justify-center mb-6 group-hover:border-grove-primary/40 group-hover:bg-white/40 transition-all">
                   <Plus className="w-8 h-8" />
                 </div>
-                <p className="font-serif text-xl italic text-stone-500">
+                <p className="font-serif text-xl italic text-ink-muted group-hover:text-grove-primary">
                   Plant a New Connection
                 </p>
                 <p className="text-xs font-sans uppercase tracking-[0.2em] mt-2 opacity-60">
-                  Add to your garden
+                  Add to your grove
                 </p>
               </a>
             )}
@@ -535,19 +544,19 @@ export default function DashboardClient({
         ) : contacts.length === 0 ? (
           // Empty state
           <div className="text-center py-20">
-            <div className="w-24 h-24 rounded-4xl bg-emerald-50 flex items-center justify-center mx-auto mb-6">
-              <Plus className="w-12 h-12 text-emerald-300" />
+            <div className="w-24 h-24 rounded-4xl bg-grove-primary/10 flex items-center justify-center mx-auto mb-6">
+              <Plus className="w-12 h-12 text-grove-primary/50" />
             </div>
-            <h2 className="text-2xl font-serif font-bold text-stone-800 mb-2">
-              Your garden is empty
+            <h2 className="text-2xl font-serif font-bold text-ink-rich mb-2">
+              Your grove is empty
             </h2>
-            <p className="text-stone-500 mb-8 max-w-md mx-auto">
+            <p className="text-ink-muted mb-8 max-w-md mx-auto">
               Start planting connections by recording a voice note or adding
               someone manually.
             </p>
             <a
               href="/contact/new"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-emerald-900 text-white rounded-3xl font-bold shadow-xl shadow-emerald-900/20 hover:bg-emerald-800 transition-all"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-grove-primary text-white rounded-3xl font-bold shadow-xl shadow-grove-primary/20 hover:bg-grove-primary-hover soft-press transition-all"
             >
               <Plus className="w-5 h-5" />
               <span>Plant Your First Contact</span>
@@ -557,10 +566,10 @@ export default function DashboardClient({
           // No search/filter results
           <div className="text-center py-20">
             {activeFilter === 'hidden' && isLoadingHidden ? (
-              <p className="text-stone-500">Loading hidden contacts...</p>
+              <p className="text-ink-muted">Loading hidden contacts...</p>
             ) : (
               <>
-                <p className="text-stone-500">
+                <p className="text-ink-muted">
                   {activeFilter === 'hidden'
                     ? 'No hidden contacts. Contacts you hide will appear here.'
                     : activeFilter !== 'all'
@@ -570,7 +579,7 @@ export default function DashboardClient({
                 {activeFilter !== 'all' && (
                   <button
                     onClick={() => setActiveFilter('all')}
-                    className="mt-4 text-emerald-700 font-medium hover:underline"
+                    className="mt-4 text-grove-primary font-medium hover:underline"
                   >
                     Clear filter
                   </button>
@@ -579,7 +588,9 @@ export default function DashboardClient({
             )}
           </div>
         )}
-      </main>
+          </main>
+        </div>
+      </div>
 
       {/* Floating Photo Capture - positioned left of voice recorder */}
       <div className="fixed bottom-10 right-36 z-50">

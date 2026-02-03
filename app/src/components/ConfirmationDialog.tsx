@@ -28,28 +28,28 @@ export default function ConfirmationDialog({
   const confirmButtonClass =
     confirmVariant === 'danger'
       ? 'bg-red-600 hover:bg-red-700 text-white'
-      : 'bg-emerald-600 hover:bg-emerald-700 text-white';
+      : 'bg-grove-primary hover:bg-grove-primary/90 text-white';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/30 backdrop-blur-sm"
         onClick={isLoading ? undefined : onClose}
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="relative glass-floating rounded-3xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Content */}
         <div className="p-6">
-          <h2 className="text-xl font-serif font-bold text-stone-800 mb-3">
+          <h2 className="text-xl font-serif font-bold text-ink-rich mb-3">
             {title}
           </h2>
-          <p className="text-stone-600">{message}</p>
+          <p className="text-ink-muted">{message}</p>
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 p-6 border-t border-stone-100 bg-stone-50">
+        <div className="flex justify-end gap-3 p-6 border-t border-white/30 bg-white/30">
           <button
             onClick={onClose}
             disabled={isLoading}

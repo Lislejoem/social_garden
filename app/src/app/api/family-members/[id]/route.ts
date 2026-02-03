@@ -8,6 +8,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireUserId } from '@/lib/auth';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -20,9 +21,23 @@ interface RouteParams {
  */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
+    const userId = await requireUserId();
     const { id } = await params;
     const body = await request.json();
     const { name, relation } = body;
+
+    // Verify ownership via family member's own userId (security pattern)
+    const existing = await prisma.familyMember.findFirst({
+      where: { id, userId },
+      select: { id: true },
+    });
+
+    if (!existing) {
+      return NextResponse.json(
+        { error: 'Family member not found' },
+        { status: 404 }
+      );
+    }
 
     const familyMember = await prisma.familyMember.update({
       where: { id },
@@ -40,6 +55,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json(familyMember);
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('Failed to update family member:', error);
     return NextResponse.json(
       { error: 'Failed to update family member' },
@@ -54,11 +72,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
  */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
+    const userId = await requireUserId();
     const { id } = await params;
 
-    // Get the family member first to find the contactId
-    const familyMember = await prisma.familyMember.findUnique({
-      where: { id },
+    // Verify ownership via family member's own userId (security pattern)
+    const familyMember = await prisma.familyMember.findFirst({
+      where: { id, userId },
       select: { contactId: true },
     });
 
@@ -81,6 +100,9 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('Failed to delete family member:', error);
     return NextResponse.json(
       { error: 'Failed to delete family member' },

@@ -69,18 +69,18 @@ export default function EditSocialsModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/30 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="relative glass-floating rounded-3xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-stone-100">
-          <h2 className="text-xl font-serif font-bold text-stone-800">Edit Social Links</h2>
+        <div className="flex items-center justify-between p-6 border-b border-white/30">
+          <h2 className="text-xl font-serif font-bold text-ink-rich">Edit Social Links</h2>
           <button
             onClick={onClose}
-            className="p-2 text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded-xl transition-colors"
+            className="p-2 text-stone-400 hover:text-stone-600 hover:bg-white/50 rounded-xl transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -170,7 +170,7 @@ export default function EditSocialsModal({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 p-6 border-t border-stone-100 bg-stone-50">
+        <div className="flex justify-end gap-3 p-6 border-t border-white/30 bg-white/30">
           <button
             onClick={onClose}
             disabled={isSaving}
@@ -181,7 +181,7 @@ export default function EditSocialsModal({
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="px-5 py-2.5 bg-emerald-600 text-white text-sm font-medium rounded-xl hover:bg-emerald-700 disabled:opacity-50 flex items-center gap-2 transition-colors"
+            className="px-5 py-2.5 bg-grove-primary text-white text-sm font-medium rounded-xl hover:bg-grove-primary/90 disabled:opacity-50 flex items-center gap-2 transition-colors"
           >
             {isSaving ? (
               <>

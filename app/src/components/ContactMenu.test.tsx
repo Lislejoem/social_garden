@@ -36,31 +36,31 @@ describe('ContactMenu', () => {
   });
 
   describe('hide/restore toggle', () => {
-    it('shows "Hide from Garden" when isHidden is false', () => {
+    it('shows "Hide from Grove" when isHidden is false', () => {
       render(<ContactMenu {...defaultProps} isHidden={false} />);
 
       openMenu();
 
-      expect(screen.getByText('Hide from Garden')).toBeInTheDocument();
-      expect(screen.queryByText('Restore to Garden')).not.toBeInTheDocument();
+      expect(screen.getByText('Hide from Grove')).toBeInTheDocument();
+      expect(screen.queryByText('Restore to Grove')).not.toBeInTheDocument();
     });
 
-    it('shows "Hide from Garden" when isHidden is not provided (defaults to false)', () => {
+    it('shows "Hide from Grove" when isHidden is not provided (defaults to false)', () => {
       render(<ContactMenu {...defaultProps} />);
 
       openMenu();
 
-      expect(screen.getByText('Hide from Garden')).toBeInTheDocument();
+      expect(screen.getByText('Hide from Grove')).toBeInTheDocument();
     });
 
-    it('shows "Restore to Garden" when isHidden is true', () => {
+    it('shows "Restore to Grove" when isHidden is true', () => {
       const onRestore = vi.fn().mockResolvedValue(undefined);
       render(<ContactMenu {...defaultProps} isHidden={true} onRestore={onRestore} />);
 
       openMenu();
 
-      expect(screen.getByText('Restore to Garden')).toBeInTheDocument();
-      expect(screen.queryByText('Hide from Garden')).not.toBeInTheDocument();
+      expect(screen.getByText('Restore to Grove')).toBeInTheDocument();
+      expect(screen.queryByText('Hide from Grove')).not.toBeInTheDocument();
     });
   });
 
@@ -70,7 +70,7 @@ describe('ContactMenu', () => {
       render(<ContactMenu {...defaultProps} onHide={onHide} isHidden={false} />);
 
       openMenu();
-      fireEvent.click(screen.getByText('Hide from Garden'));
+      fireEvent.click(screen.getByText('Hide from Grove'));
 
       await waitFor(() => {
         expect(onHide).toHaveBeenCalledTimes(1);
@@ -84,7 +84,7 @@ describe('ContactMenu', () => {
       render(<ContactMenu {...defaultProps} isHidden={true} onRestore={onRestore} />);
 
       openMenu();
-      fireEvent.click(screen.getByText('Restore to Garden'));
+      fireEvent.click(screen.getByText('Restore to Grove'));
 
       await waitFor(() => {
         expect(onRestore).toHaveBeenCalledTimes(1);

@@ -109,8 +109,8 @@ export default function EditableFamilyMember({
 
   if (isEditing) {
     return (
-      <div className="flex items-center gap-4 p-4 rounded-2xl bg-stone-50 border border-stone-200">
-        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-stone-400 font-bold shrink-0">
+      <div className="flex items-center gap-4 p-4 rounded-2xl glass-card border border-grove-primary/30">
+        <div className="w-10 h-10 bg-white/60 rounded-xl flex items-center justify-center text-ink-muted font-bold shrink-0">
           {editName[0]?.toUpperCase() || '?'}
         </div>
         <div className="flex-1 flex flex-col gap-2">
@@ -121,7 +121,7 @@ export default function EditableFamilyMember({
             onChange={(e) => setEditName(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Name"
-            className="px-2 py-1 bg-white border border-stone-200 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="px-2 py-1 bg-white/50 border border-white/30 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-grove-primary"
           />
           <input
             type="text"
@@ -129,23 +129,23 @@ export default function EditableFamilyMember({
             onChange={(e) => setEditRelation(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Relation (e.g., spouse, sister)"
-            className="px-2 py-1 bg-white border border-stone-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="px-2 py-1 bg-white/50 border border-white/30 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-grove-primary"
           />
         </div>
         <div className="flex items-center gap-1 shrink-0">
           {isSaving ? (
-            <Loader2 className="w-4 h-4 animate-spin text-stone-400" />
+            <Loader2 className="w-4 h-4 animate-spin text-ink-muted" />
           ) : (
             <>
               <button
                 onClick={handleSave}
-                className="p-1.5 text-emerald-600 hover:bg-emerald-100 rounded-lg"
+                className="p-1.5 text-grove-primary hover:bg-grove-primary/10 rounded-lg soft-press"
               >
                 <Check className="w-4 h-4" />
               </button>
               <button
                 onClick={handleCancel}
-                className="p-1.5 text-stone-400 hover:bg-stone-200 rounded-lg"
+                className="p-1.5 text-ink-muted hover:bg-white/30 rounded-lg soft-press"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -158,18 +158,18 @@ export default function EditableFamilyMember({
 
   return (
     <div
-      className="flex items-center gap-4 p-4 rounded-2xl bg-stone-50/50 hover:bg-stone-50 transition-colors border border-transparent hover:border-stone-100 group cursor-pointer"
+      className="flex items-center gap-4 p-4 rounded-2xl bg-white/30 hover:bg-white/50 transition-colors border border-transparent hover:border-white/50 group cursor-pointer soft-press"
       onClick={() => setIsEditing(true)}
     >
-      <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-stone-400 font-bold shrink-0">
+      <div className="w-10 h-10 bg-white/60 rounded-xl flex items-center justify-center text-ink-muted font-bold shrink-0">
         {displayName[0]?.toUpperCase()}
       </div>
       <div className="flex-1">
-        <p className="font-bold text-stone-800">
+        <p className="font-bold text-ink-rich">
           {displayName}
-          {isUserMatch && <span className="text-stone-400 font-normal"> (You)</span>}
+          {isUserMatch && <span className="text-ink-muted font-normal"> (You)</span>}
         </p>
-        <p className="text-xs text-stone-400 uppercase tracking-widest">
+        <p className="text-xs text-ink-muted uppercase tracking-widest">
           {member.relation}
         </p>
       </div>
@@ -179,7 +179,7 @@ export default function EditableFamilyMember({
           handleDelete();
         }}
         disabled={isDeleting}
-        className="p-1.5 text-stone-400 hover:text-red-500 hover:bg-red-50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+        className="p-1.5 text-ink-muted hover:text-red-500 hover:bg-red-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
       >
         {isDeleting ? (
           <Loader2 className="w-4 h-4 animate-spin" />

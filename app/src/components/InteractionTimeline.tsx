@@ -21,8 +21,8 @@ export default function InteractionTimeline({
   if (interactions.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-stone-400 italic">No interactions recorded yet</p>
-        <p className="text-stone-300 text-sm mt-2">
+        <p className="text-ink-muted italic">No interactions recorded yet</p>
+        <p className="text-ink-muted/60 text-sm mt-2">
           Use the voice recorder or quick log buttons to record your conversations
         </p>
       </div>
@@ -37,11 +37,11 @@ export default function InteractionTimeline({
   return (
     <div className="space-y-8 pt-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-serif font-bold">Recent Growth</h2>
+        <h2 className="text-2xl font-serif font-bold text-ink-rich">Recent Growth</h2>
         {hasMore && (
           <button
             onClick={() => setShowAll(!showAll)}
-            className="flex items-center gap-1 text-sm font-bold text-emerald-800 hover:text-emerald-900 transition-colors"
+            className="flex items-center gap-1 text-sm font-bold text-grove-primary hover:text-grove-primary-hover soft-press transition-colors"
           >
             {showAll ? (
               <>
@@ -76,7 +76,7 @@ export default function InteractionTimeline({
       {hasMore && !showAll && (
         <button
           onClick={() => setShowAll(true)}
-          className="w-full py-4 text-center text-stone-400 hover:text-emerald-700 text-sm font-medium transition-colors rounded-2xl hover:bg-emerald-50"
+          className="w-full py-4 text-center text-ink-muted hover:text-grove-primary text-sm font-medium transition-colors rounded-2xl hover:bg-white/30 soft-press"
         >
           + {interactions.length - 5} more interactions
         </button>
@@ -103,17 +103,17 @@ function ReadOnlyInteraction({ interaction }: { interaction: Interaction }) {
   };
 
   return (
-    <div className="relative pl-8 pb-8 border-l-2 border-stone-100 last:border-0 last:pb-0">
-      <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-white border-2 border-emerald-400 shadow-sm" />
+    <div className="relative pl-8 pb-8 border-l-2 border-white/50 last:border-0 last:pb-0">
+      <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-white border-2 border-grove-primary shadow-sm" />
       <div className="flex items-center gap-3 mb-2">
-        <span className="text-xs font-bold text-stone-400 uppercase tracking-widest">
+        <span className="text-xs font-bold text-ink-muted uppercase tracking-widest">
           {formatDate(interaction.date)}
         </span>
-        <span className="px-2 py-0.5 bg-stone-100 text-[10px] font-bold rounded-md text-stone-500">
+        <span className="px-2 py-0.5 bg-white/50 text-[10px] font-bold rounded-md text-ink-muted">
           {getDisplayLabel(interaction.type, interaction.platform)}
         </span>
       </div>
-      <p className="text-stone-700 leading-relaxed bg-white p-5 rounded-3xl border border-stone-50 shadow-sm">
+      <p className="text-ink-rich leading-relaxed glass-card p-5 rounded-2xl">
         {interaction.summary}
       </p>
     </div>

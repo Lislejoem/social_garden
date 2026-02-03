@@ -33,7 +33,7 @@ export function _resetClient(): void {
   anthropicClient = null;
 }
 
-const SYSTEM_PROMPT = `You are a personal relationship assistant helping to maintain a "Social Garden" - a personal CRM for nurturing friendships and relationships.
+const SYSTEM_PROMPT = `You are a personal relationship assistant helping to maintain "Grove" - a personal CRM for nurturing friendships and relationships.
 
 Extract structured data from the user's note about a person. The note may be a voice transcript, so be forgiving of minor transcription errors.
 
@@ -126,7 +126,7 @@ export interface ImageData {
   mimeType: ImageMediaType | string;
 }
 
-const IMAGE_SYSTEM_PROMPT = `You are a personal relationship assistant helping to maintain a "Social Garden" - a personal CRM for nurturing friendships and relationships.
+const IMAGE_SYSTEM_PROMPT = `You are a personal relationship assistant helping to maintain "Grove" - a personal CRM for nurturing friendships and relationships.
 
 Analyze the provided image to extract relationship information. The image may be:
 1. A photo of a social situation (dinner, event, meeting, etc.)
@@ -251,7 +251,7 @@ export async function extractFromImage(
   }
 }
 
-const BRIEFING_SYSTEM_PROMPT = `You are a personal relationship assistant helping to prepare for conversations with contacts in a "Social Garden" - a personal CRM for nurturing friendships and relationships.
+const BRIEFING_SYSTEM_PROMPT = `You are a personal relationship assistant helping to prepare for conversations with contacts in "Grove" - a personal CRM for nurturing friendships and relationships.
 
 Given information about a contact, generate a helpful briefing that prepares the user to have a meaningful conversation with them.
 

@@ -8,6 +8,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireUserId } from '@/lib/auth';
 
 /**
  * GET /api/contacts
@@ -16,13 +17,17 @@ import { prisma } from '@/lib/prisma';
  */
 export async function GET(request: NextRequest) {
   try {
+    const userId = await requireUserId();
     const { searchParams } = new URL(request.url);
     const hiddenOnly = searchParams.get('hiddenOnly') === 'true';
 
     const contacts = await prisma.contact.findMany({
-      where: hiddenOnly
-        ? { hiddenAt: { not: null } }
-        : { hiddenAt: null },
+      where: {
+        userId,
+        ...(hiddenOnly
+          ? { hiddenAt: { not: null } }
+          : { hiddenAt: null }),
+      },
       include: {
         preferences: true,
         interactions: {
@@ -35,6 +40,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(contacts);
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('Failed to fetch contacts:', error);
     return NextResponse.json(
       { error: 'Failed to fetch contacts' },
@@ -50,6 +58,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
+    const userId = await requireUserId();
     const body = await request.json();
     const { name, avatarUrl, location, birthday, cadence, socials } = body;
 
@@ -62,6 +71,7 @@ export async function POST(request: NextRequest) {
 
     const contact = await prisma.contact.create({
       data: {
+        userId,
         name,
         avatarUrl: avatarUrl || null,
         location: location || null,
@@ -73,6 +83,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(contact, { status: 201 });
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('Failed to create contact:', error);
     return NextResponse.json(
       { error: 'Failed to create contact' },

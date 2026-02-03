@@ -10,7 +10,7 @@ interface SearchBarProps {
 
 export default function SearchBar({
   onSearch,
-  placeholder = "Ask your garden: 'Who told me they were starting a new job?'",
+  placeholder = "Ask your grove: 'Who told me they were starting a new job?'",
 }: SearchBarProps) {
   const [query, setQuery] = useState('');
 

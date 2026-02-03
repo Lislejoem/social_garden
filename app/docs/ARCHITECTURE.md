@@ -1,8 +1,8 @@
-# Social Garden Architecture
+# Grove Architecture
 
 ## Overview
 
-Social Garden is a personal CRM app that uses AI to process voice notes and extract relationship information. Built with Next.js 14, it follows a server-first architecture with client components for interactivity.
+Grove is a personal CRM app that uses AI to process voice notes and extract relationship information. Built with Next.js 14, it follows a server-first architecture with client components for interactivity.
 
 ## Data Flow
 

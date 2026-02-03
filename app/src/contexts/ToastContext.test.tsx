@@ -45,9 +45,9 @@ describe('ToastContext', () => {
     fireEvent.click(screen.getByText('Show Success'));
 
     expect(screen.getByText('Success message')).toBeInTheDocument();
-    // Check it has emerald styling (success)
+    // Check it has grove-primary styling (success)
     const toastContainer = screen.getByText('Success message').closest('div');
-    expect(toastContainer).toHaveClass('bg-emerald-900');
+    expect(toastContainer).toHaveClass('bg-grove-primary/90');
   });
 
   it('displays error toast when showError is called', () => {
@@ -62,7 +62,7 @@ describe('ToastContext', () => {
     expect(screen.getByText('Error message')).toBeInTheDocument();
     // Check it has red styling (error)
     const toastContainer = screen.getByText('Error message').closest('div');
-    expect(toastContainer).toHaveClass('bg-red-600');
+    expect(toastContainer).toHaveClass('bg-red-600/90');
   });
 
   it('displays retry button when onRetry is provided to showError', () => {

@@ -8,11 +8,11 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireUserId } from '@/lib/auth';
 
 // Force dynamic rendering to support PUT method
 export const dynamic = 'force-dynamic';
 
-const DEFAULT_SETTINGS_ID = 'default';
 const MAX_USERNAME_LENGTH = 100;
 
 /**
@@ -21,15 +21,20 @@ const MAX_USERNAME_LENGTH = 100;
  */
 export async function GET() {
   try {
-    // Use upsert to get or create default settings
+    const userId = await requireUserId();
+
+    // Use upsert to get or create user-specific settings
     const settings = await prisma.userSettings.upsert({
-      where: { id: DEFAULT_SETTINGS_ID },
+      where: { id: userId },
       update: {},
-      create: { id: DEFAULT_SETTINGS_ID },
+      create: { id: userId },
     });
 
     return NextResponse.json(settings);
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('Failed to get user settings:', error);
     return NextResponse.json(
       { error: 'Failed to get user settings' },
@@ -45,6 +50,7 @@ export async function GET() {
  */
 export async function PUT(request: NextRequest) {
   try {
+    const userId = await requireUserId();
     const body = await request.json();
     let { userName } = body;
 
@@ -67,13 +73,16 @@ export async function PUT(request: NextRequest) {
 
     // Upsert to handle case where settings don't exist yet
     const settings = await prisma.userSettings.upsert({
-      where: { id: DEFAULT_SETTINGS_ID },
+      where: { id: userId },
       update: { userName },
-      create: { id: DEFAULT_SETTINGS_ID, userName },
+      create: { id: userId, userName },
     });
 
     return NextResponse.json(settings);
   } catch (error) {
+    if (error instanceof Error && error.message === 'Unauthorized') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.error('Failed to update user settings:', error);
     return NextResponse.json(
       { error: 'Failed to update user settings' },

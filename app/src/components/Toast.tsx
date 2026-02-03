@@ -46,9 +46,7 @@ export default function Toast({
   };
 
   const isSuccess = type === 'success';
-  const bgColor = isSuccess ? 'bg-emerald-900' : 'bg-red-600';
-  const iconBgColor = isSuccess ? 'bg-emerald-700' : 'bg-red-700';
-  const hoverColor = isSuccess ? 'hover:bg-emerald-800' : 'hover:bg-red-700';
+  const bgColor = isSuccess ? 'bg-grove-primary/90' : 'bg-red-600/90';
   const Icon = isSuccess ? Check : AlertCircle;
 
   return (
@@ -59,15 +57,15 @@ export default function Toast({
           : 'opacity-0 translate-y-4'
       }`}
     >
-      <div className={`${bgColor} text-white px-6 py-4 rounded-2xl shadow-xl flex items-center gap-4`}>
-        <div className={`w-8 h-8 ${iconBgColor} rounded-full flex items-center justify-center shrink-0`}>
+      <div className={`glass-floating ${bgColor} text-white px-6 py-4 rounded-2xl flex items-center gap-4`}>
+        <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center shrink-0">
           <Icon className="w-5 h-5" />
         </div>
         <p className="font-medium">{message}</p>
         {onRetry && (
           <button
             onClick={onRetry}
-            className={`px-3 py-1.5 ${hoverColor} rounded-lg transition-colors flex items-center gap-1.5 text-sm font-medium`}
+            className="px-3 py-1.5 hover:bg-white/20 rounded-lg transition-colors flex items-center gap-1.5 text-sm font-medium"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             Retry
@@ -75,7 +73,7 @@ export default function Toast({
         )}
         <button
           onClick={handleClose}
-          className={`p-1.5 ${hoverColor} rounded-lg transition-colors shrink-0`}
+          className="p-1.5 hover:bg-white/20 rounded-lg transition-colors shrink-0"
           aria-label="Close"
         >
           <X className="w-4 h-4" />

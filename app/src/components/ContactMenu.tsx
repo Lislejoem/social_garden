@@ -128,8 +128,8 @@ export default function ContactMenu({
                   <Eye className="w-5 h-5 text-emerald-600" />
                 )}
                 <div>
-                  <p className="font-medium text-stone-800">Restore to Garden</p>
-                  <p className="text-xs text-stone-400">Show in your garden again</p>
+                  <p className="font-medium text-stone-800">Restore to Grove</p>
+                  <p className="text-xs text-stone-400">Show in your grove again</p>
                 </div>
               </button>
             ) : (
@@ -145,7 +145,7 @@ export default function ContactMenu({
                   <EyeOff className="w-5 h-5 text-stone-600" />
                 )}
                 <div>
-                  <p className="font-medium text-stone-800">Hide from Garden</p>
+                  <p className="font-medium text-stone-800">Hide from Grove</p>
                   <p className="text-xs text-stone-400">Keep their info, just don&apos;t show them</p>
                 </div>
               </button>

@@ -37,6 +37,16 @@ Follow steps in this order. You **MUST** do these whenever you adjust any code o
 - **Before creating PRs:** Ensure the branch is pushed and verify with `git fetch origin && git log --oneline <branch> ^origin/<branch>` shows no unpushed commits
 - **After merging PRs:** If continuing work on the same branch, verify the merge completed and the commits are in main
 
+## Documentation Maintenance
+
+**With every commit**, ensure documentation stays current:
+- **CLAUDE.md**: Update if workflows, gotchas, or project structure change
+- **Skills**: Update relevant skill files if domain knowledge changes
+- **GitHub Issues**: Close completed issues, and review/update other issues to ensure the descriptions are accurate according to our changes in this commit
+- **Other docs**: Update `app/docs/ARCHITECTURE.md` or `docs/BRAND_DIRECTION.md` as needed
+
+Stale documentation is worse than no documentation. If you change something, update the docs in the same commit.
+
 ## Development Practices
 
 - **Smallest Changes:** Make the smallest reasonable changes to achieve the outcome.
@@ -54,13 +64,13 @@ Follow steps in this order. You **MUST** do these whenever you adjust any code o
 
 ---
 
-# Social Garden
+# Grove
 
 Personal CRM app for nurturing relationships. Voice notes and photos processed by Claude AI to extract contacts, preferences, and follow-ups.
 
 ## Tech Stack
 
-Next.js 14.2 (App Router) • TypeScript 5 • PostgreSQL (Neon) + Prisma • Vercel • Tailwind CSS • Anthropic Claude API
+Next.js 14.2 (App Router) • TypeScript 5 • PostgreSQL (Neon) + Prisma • Clerk Auth • Vercel • Tailwind CSS • Anthropic Claude API
 
 Github repo: `Lislejoem/social_garden`
 
@@ -81,6 +91,7 @@ Load skills for detailed guidance on specific areas:
 
 | Skill | When to use |
 |-------|-------------|
+| `skill-discovery` | **Required** before creating new skills - finds and synthesizes existing skills |
 | `testing` | Writing tests, mocking Anthropic SDK |
 | `prisma-patterns` | Database queries, schema, migrations |
 | `nextjs-app-router` | Pages, layouts, API routes, static vs dynamic rendering issues |
@@ -98,13 +109,13 @@ Skills location: `app/.claude/skills/*/SKILL.md`
 
 ## Advisors
 
-12 AI advisors provide perspectives on product decisions. Invoke as skills (e.g., `/advisor-ux-mobile`).
+16 AI advisors provide perspectives on product decisions. Invoke as skills (e.g., `/advisor-ux-mobile`).
 
 | Category | Advisors |
 |----------|----------|
-| Expert | `ux-mobile`, `privacy-security`, `ai-llm`, `performance`, `content`, `behavioral-psych`, `agent-first` |
-| Persona | `persona-busy-parent`, `persona-connector`, `persona-infrequent` |
-| Critical | `edge-cases`, `devils-advocate` |
+| Expert | `ux-mobile`, `privacy-security`, `security-pentest`, `ai-llm`, `performance`, `content`, `behavioral-psych`, `agent-first`, `growth-marketer` |
+| Persona | `persona-busy-parent`, `persona-connector`, `persona-infrequent`, `persona-early-adopter` |
+| Critical | `edge-cases`, `devils-advocate`, `startup-ceo` |
 
 ## Product Principles
 
@@ -115,6 +126,14 @@ Skills location: `app/.claude/skills/*/SKILL.md`
 - **Privacy + Security**: All-in on integrations, but security is first-class
 - **Gardening metaphor**: Core to brand, extend don't replace
 
+## Brand Direction
+
+See `docs/BRAND_DIRECTION.md` for:
+- Visual design system (glassmorphism, gradients, typography)
+- Brand voice and tone guidelines
+- Gardening metaphor usage (when to use, when not to)
+- Name rationale and domain strategy
+
 ## Gotchas
 
 - `socials` and `cachedBriefing` are JSON strings in PostgreSQL
@@ -124,3 +143,11 @@ Skills location: `app/.claude/skills/*/SKILL.md`
 - Prisma migrations: Use `prisma db push` (non-interactive env doesn't support `prisma migrate dev`)
 - DATABASE_URL is in `.env.local`, not `.env` (Prisma looks at `.env` by default)
 - Windows NUL files: Bash commands with Windows syntax (e.g., `2>NUL`) can create junk files named "NUL". Delete them if found.
+- Clerk middleware: Place at `src/middleware.ts`, NOT inside `app/` directory
+- Clerk keys: `CLERK_SECRET_KEY` is server-only; `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` is intentionally public (required for frontend SDK)
+- Clerk custom pages: Set `NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in` and `NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up` env vars to use embedded pages instead of Clerk's hosted pages
+- Auth helper: Use `requireUserId()` from `@/lib/auth` in all API routes and server components - throws "Unauthorized" if not authenticated
+- Multi-tenant queries: Always filter by `userId` - use `findFirst({ where: { id, userId } })` for ownership verification (returns 404, not 403)
+- Child record security: Preference, Interaction, Seedling, FamilyMember have their own `userId` field - verify their userId directly (defense in depth)
+- Vitest mock hoisting: `vi.mock()` is hoisted, so use literal values in mock factory, then declare constants after
+- Server/client auth wrapper: For client pages needing server-side auth, create `page.tsx` as server component calling `requireUserId()`, then render a `*Client.tsx` component (e.g., `NewContactClient.tsx`)

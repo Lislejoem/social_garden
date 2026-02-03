@@ -83,17 +83,17 @@ export default function EditableSeedling({
 
   return (
     <div
-      className={`p-4 rounded-2xl transition-colors group ${
+      className={`p-4 glass-card transition-colors group ${
         isPlanted
-          ? 'bg-emerald-50 border border-emerald-100'
-          : 'bg-amber-50 border border-amber-100 hover:bg-amber-100/50'
+          ? 'bg-grove-primary/10'
+          : 'bg-grove-seedling/10 hover:bg-grove-seedling/15'
       }`}
     >
       <div className="flex items-start gap-3">
         {/* Icon */}
         <div
           className={`p-2 rounded-xl shrink-0 ${
-            isPlanted ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'
+            isPlanted ? 'bg-grove-primary/20 text-grove-primary' : 'bg-grove-seedling/20 text-grove-seedling'
           }`}
         >
           {isPlanted ? <Flower2 className="w-4 h-4" /> : <Sprout className="w-4 h-4" />}
@@ -109,11 +109,11 @@ export default function EditableSeedling({
                 value={editContent}
                 onChange={(e) => setEditContent(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="flex-1 px-2 py-1 bg-white border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="flex-1 px-2 py-1 bg-white text-ink-rich border border-stone-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-grove-primary"
               />
               <button
                 onClick={handleSaveContent}
-                className="p-1 text-emerald-600 hover:bg-emerald-100 rounded"
+                className="p-1 text-grove-primary hover:bg-grove-primary/10 rounded"
               >
                 <Check className="w-4 h-4" />
               </button>
@@ -132,8 +132,8 @@ export default function EditableSeedling({
               onClick={() => !isPlanted && setIsEditing(true)}
               className={`text-sm font-medium ${
                 isPlanted
-                  ? 'text-emerald-700 line-through opacity-70'
-                  : 'text-stone-700 cursor-pointer'
+                  ? 'text-grove-primary line-through opacity-70'
+                  : 'text-ink-rich cursor-pointer'
               }`}
             >
               {seedling.content}
@@ -141,7 +141,7 @@ export default function EditableSeedling({
           )}
 
           {/* Date */}
-          <p className="text-xs text-stone-400 mt-1">
+          <p className="text-xs text-ink-muted mt-1">
             {new Date(seedling.createdAt).toLocaleDateString('en-US', {
               month: 'short',
               day: 'numeric',
@@ -155,7 +155,7 @@ export default function EditableSeedling({
             <button
               onClick={handleMarkPlanted}
               disabled={isSaving}
-              className="p-1.5 text-emerald-600 hover:bg-emerald-100 rounded-lg"
+              className="p-1.5 text-grove-primary hover:bg-grove-primary/10 rounded-lg"
               title="Mark as planted"
             >
               {isSaving ? (

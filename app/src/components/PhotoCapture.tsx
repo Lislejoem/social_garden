@@ -138,7 +138,7 @@ export default function PhotoCapture({ onCapture }: PhotoCaptureProps) {
     return (
       <button
         onClick={handleOpen}
-        className="w-14 h-14 bg-stone-700 text-white rounded-3xl shadow-xl flex items-center justify-center hover:scale-110 hover:rotate-6 active:scale-95 transition-all"
+        className="w-14 h-14 glass-floating bg-ink-rich/80 text-white rounded-3xl flex items-center justify-center hover:scale-110 hover:rotate-6 soft-press transition-all"
         title="Capture a photo"
       >
         <Camera className="w-7 h-7" />
@@ -147,17 +147,17 @@ export default function PhotoCapture({ onCapture }: PhotoCaptureProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-end justify-center p-4 md:items-center">
-      <div className="bg-white rounded-4xl w-full max-w-lg shadow-2xl overflow-hidden animate-in slide-in-from-bottom duration-300">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end justify-center p-4 md:items-center">
+      <div className="glass-floating rounded-4xl w-full max-w-lg overflow-hidden animate-in slide-in-from-bottom duration-300">
         {/* Header */}
-        <div className="p-6 border-b border-stone-100 flex items-center justify-between">
+        <div className="p-6 border-b border-white/30 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full bg-emerald-500" />
+            <div className="w-3 h-3 rounded-full bg-grove-primary" />
             <h3 className="font-serif text-xl font-bold">Add Photo</h3>
           </div>
           <button
             onClick={handleClose}
-            className="p-2 text-stone-400 hover:text-stone-600 rounded-xl hover:bg-stone-50 transition-all"
+            className="p-2 text-ink-muted hover:text-ink-rich rounded-xl hover:bg-white/20 transition-all"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -167,7 +167,7 @@ export default function PhotoCapture({ onCapture }: PhotoCaptureProps) {
         {/* Content */}
         <div className="p-6">
           {error && (
-            <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-2xl text-sm">
+            <div className="mb-4 p-4 glass-card bg-red-500/10 text-red-700 rounded-2xl text-sm">
               {error}
             </div>
           )}
@@ -194,30 +194,30 @@ export default function PhotoCapture({ onCapture }: PhotoCaptureProps) {
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
-              className={`mb-4 p-8 border-2 border-dashed rounded-2xl cursor-pointer transition-all flex flex-col items-center justify-center min-h-[180px] ${
+              className={`mb-4 p-8 glass-card border-2 border-dashed rounded-2xl cursor-pointer transition-all flex flex-col items-center justify-center min-h-[180px] ${
                 isDragOver
-                  ? 'border-emerald-500 bg-emerald-50'
-                  : 'border-stone-200 hover:border-emerald-300 hover:bg-stone-50'
+                  ? 'border-grove-primary bg-grove-primary/10'
+                  : 'border-white/40 hover:border-grove-primary/50 hover:bg-white/20'
               }`}
             >
-              <div className="w-16 h-16 rounded-2xl bg-stone-100 flex items-center justify-center mb-4">
+              <div className="w-16 h-16 rounded-2xl bg-white/40 flex items-center justify-center mb-4">
                 {isDragOver ? (
-                  <Upload className="w-8 h-8 text-emerald-500" />
+                  <Upload className="w-8 h-8 text-grove-primary" />
                 ) : (
-                  <ImageIcon className="w-8 h-8 text-stone-400" />
+                  <ImageIcon className="w-8 h-8 text-ink-muted" />
                 )}
               </div>
-              <p className="text-stone-500 text-center">
+              <p className="text-ink-muted text-center">
                 {isDragOver ? (
                   'Drop image here'
                 ) : (
                   <>
-                    <span className="text-emerald-700 font-medium">Click to select</span>
+                    <span className="text-grove-primary font-medium">Click to select</span>
                     {' or drop image here'}
                   </>
                 )}
               </p>
-              <p className="text-stone-400 text-sm mt-1">
+              <p className="text-ink-muted/70 text-sm mt-1">
                 JPEG, PNG, GIF, or WebP (max 5MB)
               </p>
             </div>
@@ -234,31 +234,31 @@ export default function PhotoCapture({ onCapture }: PhotoCaptureProps) {
 
           {/* Context input */}
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-2">
+            <label className="block text-sm font-medium text-ink-rich mb-2">
               Add context (optional)
             </label>
             <textarea
               value={context}
               onChange={(e) => setContext(e.target.value)}
               placeholder="Add context, e.g., 'Dinner at Sarah's favorite restaurant'"
-              className="w-full p-4 border border-stone-200 rounded-2xl text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
+              className="w-full p-4 glass-card border border-white/30 rounded-2xl text-ink-rich placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-grove-primary focus:border-transparent resize-none"
               rows={2}
             />
           </div>
         </div>
 
         {/* Actions */}
-        <div className="p-6 border-t border-stone-100 flex gap-3">
+        <div className="p-6 border-t border-white/30 flex gap-3">
           <button
             onClick={handleClose}
-            className="flex-1 py-4 bg-stone-100 text-stone-700 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-stone-200 transition-all"
+            className="flex-1 py-4 bg-white/50 text-ink-rich rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-white/70 soft-press transition-all"
           >
             Cancel
           </button>
           <button
             onClick={handleProcess}
             disabled={!selectedFile || isProcessing}
-            className="flex-1 py-4 bg-emerald-900 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 py-4 bg-grove-primary text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-grove-primary-hover soft-press transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isProcessing ? (
               <>
