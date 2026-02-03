@@ -22,20 +22,28 @@ export const metadata: Metadata = {
   description: "Cultivate your meaningful connections",
 };
 
+// Check if Clerk is configured (for CI builds without secrets)
+const clerkPubKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <ClerkProvider>
-      <html lang="en">
-        <body
-          className={`${cormorant.variable} ${karla.variable} font-sans antialiased bg-[#FDFCFB] text-stone-900 selection:bg-emerald-100`}
-        >
-          <Providers>{children}</Providers>
-        </body>
-      </html>
-    </ClerkProvider>
+  const content = (
+    <html lang="en">
+      <body
+        className={`${cormorant.variable} ${karla.variable} font-sans antialiased bg-[#FDFCFB] text-stone-900 selection:bg-emerald-100`}
+      >
+        <Providers>{children}</Providers>
+      </body>
+    </html>
   );
+
+  // Skip ClerkProvider during builds without the key (e.g., CI)
+  if (!clerkPubKey) {
+    return content;
+  }
+
+  return <ClerkProvider>{content}</ClerkProvider>;
 }
