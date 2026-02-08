@@ -33,7 +33,7 @@ export default function RootLayout({
   const content = (
     <html lang="en">
       <body
-        className={`${cormorant.variable} ${karla.variable} font-sans antialiased bg-[#FDFCFB] text-stone-900 selection:bg-emerald-100`}
+        className={`${cormorant.variable} ${karla.variable} font-sans antialiased bg-surface-offWhite text-ink-rich selection:bg-grove-lightGreen/30`}
       >
         <Providers>{children}</Providers>
       </body>

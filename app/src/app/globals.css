@@ -3,22 +3,19 @@
 @tailwind utilities;
 
 :root {
-  --background: #FDFCFB;
-  --foreground: #1c1917;
-
-  /* Glassmorphism tokens (Layered Depth approach) */
-  --glass-blur-strong: 12px;
-  --glass-blur-medium: 4px;
-  --glass-bg-translucent: rgba(255, 255, 255, 0.6);
-  --glass-bg-light: rgba(255, 255, 255, 0.4);
-  --glass-border: rgba(255, 255, 255, 0.5);
+  --background: #fdfcfb;
+  --foreground: #3d3d3d;
 
   /* Animation tokens */
   --press-scale: 0.98;
   --press-duration: 150ms;
 
-  /* Grove background */
-  --grove-bg-image: url("/backgrounds/aad895_49c557_blob_scene_3k_square.svg");
+  /* DEPRECATED: Glassmorphism tokens - kept for backward compatibility */
+  --glass-blur-strong: 12px;
+  --glass-blur-medium: 4px;
+  --glass-bg-translucent: rgba(255, 255, 255, 0.6);
+  --glass-bg-light: rgba(255, 255, 255, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.5);
 }
 
 body {
@@ -28,51 +25,60 @@ body {
 
 @layer components {
   /* ===========================================
-     GLASSMORPHISM LAYERS (Option D: Layered Depth)
-     - Background layer: Full blur (12px)
-     - Mid-ground layer: Light blur (4px)
-     - Foreground layer: No blur, translucent
-     - Floating layer: Full blur (12px) - FAB, modals
+     GRAIN OVERLAY
+     Adds organic texture at ~1% opacity
+     Usage: Add .grain-overlay to a positioned container
      =========================================== */
 
-  /* Background layer - used for page-level overlays */
-  .glass-background {
-    backdrop-filter: blur(var(--glass-blur-strong));
-    -webkit-backdrop-filter: blur(var(--glass-blur-strong));
-    background: var(--glass-bg-translucent);
-    border: 1px solid var(--glass-border);
+  .grain-overlay::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.01;
+    pointer-events: none;
+    z-index: 1;
   }
 
-  /* Mid-ground layer - dashboard containers, main content areas */
-  .glass-container {
-    backdrop-filter: blur(var(--glass-blur-medium));
-    -webkit-backdrop-filter: blur(var(--glass-blur-medium));
-    background: var(--glass-bg-translucent);
-    border: 1px solid var(--glass-border);
-    border-radius: 1.5rem;
+  /* ===========================================
+     MESH BACKGROUND
+     Subtle mesh gradient with positioned blobs
+     Usage: Add .mesh-background to body or page container
+     =========================================== */
+
+  .mesh-background {
+    position: relative;
+    background-color: #fdfcfb;
   }
 
-  /* Foreground layer - cards, list items (NO blur for performance) */
-  .glass-card {
-    background: var(--glass-bg-light);
-    border: 1px solid var(--glass-border);
-    border-radius: 1rem;
+  .mesh-background::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 10% 10%, rgba(170, 216, 149, 0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 70% 50% at 90% 90%, rgba(244, 168, 154, 0.15) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
   }
 
-  /* Floating layer - FAB, modals, overlays */
-  .glass-floating {
-    backdrop-filter: blur(var(--glass-blur-strong));
-    -webkit-backdrop-filter: blur(var(--glass-blur-strong));
-    background: var(--glass-bg-translucent);
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  /* ===========================================
+     EDITORIAL CARDS
+     Clean white cards with subtle shadows
+     =========================================== */
+
+  .editorial-card {
+    background: white;
+    border: 1px solid rgba(61, 61, 61, 0.05);
+    border-radius: 1.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
   }
 
-  /* GPU hints for smooth animations */
-  .glass-container,
-  .glass-floating {
-    will-change: transform;
-    contain: layout paint;
+  .editorial-feature-card {
+    background: white;
+    border: 1px solid rgba(61, 61, 61, 0.05);
+    border-radius: 2.5rem;
+    box-shadow: 0 20px 40px -15px rgba(73, 197, 87, 0.12);
   }
 
   /* ===========================================
@@ -88,14 +94,43 @@ body {
   }
 
   /* ===========================================
-     GROVE BACKGROUND
+     DEPRECATED: GLASSMORPHISM LAYERS
+     Kept for backward compatibility - migrate to editorial-card
      =========================================== */
 
-  .grove-bg {
-    background-image: var(--grove-bg-image);
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
+  .glass-background {
+    backdrop-filter: blur(var(--glass-blur-strong));
+    -webkit-backdrop-filter: blur(var(--glass-blur-strong));
+    background: var(--glass-bg-translucent);
+    border: 1px solid var(--glass-border);
+  }
+
+  .glass-container {
+    backdrop-filter: blur(var(--glass-blur-medium));
+    -webkit-backdrop-filter: blur(var(--glass-blur-medium));
+    background: var(--glass-bg-translucent);
+    border: 1px solid var(--glass-border);
+    border-radius: 1.5rem;
+  }
+
+  .glass-card {
+    background: var(--glass-bg-light);
+    border: 1px solid var(--glass-border);
+    border-radius: 1rem;
+  }
+
+  .glass-floating {
+    backdrop-filter: blur(var(--glass-blur-strong));
+    -webkit-backdrop-filter: blur(var(--glass-blur-strong));
+    background: var(--glass-bg-translucent);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  }
+
+  .glass-container,
+  .glass-floating {
+    will-change: transform;
+    contain: layout paint;
   }
 }
 
